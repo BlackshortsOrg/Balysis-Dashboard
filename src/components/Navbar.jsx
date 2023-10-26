@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function Navbar(){
     return(
-        <div className="w-[15vw] h-[100vh] shadow flex flex-col pt-5">
+        <div className="w-[15vw] h-[100vh] shadow drop-shadow-lg flex flex-col pt-5">
             <Image src="/logo.png" width="200" height="100" alt="balysis" />
             <Link href="/dashboard">
             <h1 className="text-[22px] font-bold mb-9 pl-6">Dashboard</h1>
