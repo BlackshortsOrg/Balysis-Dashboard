@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -15,10 +16,16 @@ import {
 } from "@/components/ui/table";
 
 export function UserTable({ columns, data }) {
+  const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      rowSelection,
+    },
+    enableRowSelection: true,
   });
 
   return (
@@ -34,7 +41,7 @@ export function UserTable({ columns, data }) {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 );

@@ -21,6 +21,7 @@ const buttonVariants = cva(
           "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         link: "text-slate-900 underline-offset-4 hover:underline dark:text-slate-50",
         addUser: "bg-[#41AFFF] text-white shadow-sm hover:bg-[#41AFFF]/90",
+        editUser: "bg-[#FFC107] text-white shadow-sm hover:bg-[#FFC107]/90",
       },
       size: {
         default: "h-9 px-4 py-2",
@@ -33,7 +34,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const Button = React.forwardRef(
@@ -46,7 +47,7 @@ const Button = React.forwardRef(
         {...props}
       />
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
