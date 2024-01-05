@@ -165,10 +165,10 @@ const accounts = () => {
   return (
     <div className="h-screen w-full mx-8">
       <h1 className="text-4xl font-semibold">All Accounts</h1>
-      <Button variant="addUser">
-        <PlusIcon />
-        <span>Add User</span>
-      </Button>
+      {/* <Button variant="addUser"> */}
+      {/*   <PlusIcon /> */}
+      {/*   <span>Add User</span> */}
+      {/* </Button> */}
       <AddUserButton />
       <UserTable columns={columns} data={data} />
     </div>
