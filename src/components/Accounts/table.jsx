@@ -55,6 +55,7 @@ export function UserTable({ columns, data }) {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onClick={(e) => console.log("Row Clicked", row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

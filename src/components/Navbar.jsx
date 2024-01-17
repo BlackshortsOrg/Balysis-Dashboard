@@ -4,15 +4,16 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <div className="w-[15vw] h-[100vh] shadow drop-shadow-lg flex flex-col pt-5">
+    <div className="w-[15vw] h-[100vh] shadow drop-shadow-lg flex flex-col pt-5 justify-evenly">
       {/*TODO Replace logo with better quality logo */}
       <Image
         src="/images/balysislogo.png"
         width="200"
         height="100"
         alt="balysis"
+        className=""
       />
-      <Link href="/dashboard">
+      <Link href="/dashboard" className="">
         <h1 className="text-[22px] font-bold mb-9 pl-6">Dashboard</h1>
       </Link>
       <div className="pl-9">
