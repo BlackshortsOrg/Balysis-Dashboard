@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlusIcon, Pencil2Icon } from "@radix-ui/react-icons";
+import { PlusIcon, Pencil2Icon, GearIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useState } from "react";
 import { Combobox } from "@headlessui/react";
@@ -39,17 +39,17 @@ const people = [
   "NSE:ADANIPOWER-EQ",
 ];
 
-const TradeButton = () => {
+const TradeButton = ({ rowSelection, data }) => {
   const [segment, setSegment] = useState("Equity");
   const [orderType, setOrderType] = useState("MARKET_ORDER");
   const [price, setPrice] = useState(0.0);
   const [qty, setQty] = useState(0);
   const [side, setSide] = useState(1);
 
-  const [username, setUsername] = useState("John Doe");
-  const [broker, setBroker] = useState("fyers");
-  const [clientId, setClientId] = useState("FY1234");
-  const [secretId, setSecretId] = useState("FY1234");
+  // const [username, setUsername] = useState("John Doe");
+  // const [broker, setBroker] = useState("fyers");
+  // const [clientId, setClientId] = useState("FY1234");
+  // const [secretId, setSecretId] = useState("FY1234");
 
   const unselectedSegmentClasses =
     "basis-1/4 text-center shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100 py-4";
@@ -57,6 +57,12 @@ const TradeButton = () => {
     "basis-1/4 bg-[#41AFFF] text-white text-center shadow-gray-50 border-slate-200 border rounded-xl py-4";
 
   const newTradeAPICall = (e) => {
+    console.log(rowSelection)
+    var selectedIds = []
+    for (const [rownum, state] of Object.entries(rowSelection)) {
+      selectedIds.push(data[rownum].id)
+    }
+    console.log(selectedIds)
     e.preventDefault();
     const tradeData = {
       ticker: selectedPerson,
@@ -68,23 +74,23 @@ const TradeButton = () => {
     console.log(tradeData);
   };
 
-  const createUserApiCall = (e) => {
-    e.preventDefault();
-    fetch("http://localhost:3000/user/new", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: username,
-        client_id: clientId,
-        secret_id: secretId,
-        // broker,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data));
-  };
+  // const createUserApiCall = (e) => {
+  //   e.preventDefault();
+  //   fetch("http://localhost:3000/user/new", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       name: username,
+  //       client_id: clientId,
+  //       secret_id: secretId,
+  //       // broker,
+  //     }),
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => console.log(data));
+  // };
   const [selectedPerson, setSelectedPerson] = useState(people[0]);
   const [query, setQuery] = useState("");
 
@@ -92,8 +98,8 @@ const TradeButton = () => {
     query === ""
       ? people
       : people.filter((person) => {
-          return person.toLowerCase().includes(query.toLowerCase());
-        });
+        return person.toLowerCase().includes(query.toLowerCase());
+      });
 
   return (
     <Dialog>

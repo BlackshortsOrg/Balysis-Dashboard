@@ -9,50 +9,60 @@ import AddUserButton from "@/components/Accounts/addUserButton";
 
 const data = [
   {
-    id: "729ed52f",
+    id: 1,
     name: "Esharky",
     broker: "Fyers",
-    brokerID: "123456",
+    client_id: "123456",
+    secret_id: "123456",
+    last_login: "2021-09-01 12:00:00",
     active: true,
   },
   {
-    id: "729ed52f",
+    id: 2,
     name: "Abhishek",
     broker: "Fyers",
-    brokerID: "23456",
+    client_id: "123456",
+    secret_id: "123456",
+    last_login: "2021-09-01 12:00:00",
     active: false,
   },
   {
-    id: "729ed52f",
+    id: 3,
     name: "Aadeesh",
     broker: "Zerodha",
-    brokerID: "345678",
+    client_id: "123456",
+    secret_id: "123456",
+    last_login: "2021-09-01 12:00:00",
     active: false,
   },
 ];
 
 const columns = [
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
+    header: "ID",
+    accessorKey: "id",
   },
   {
     header: "Name",
@@ -98,8 +108,16 @@ const columns = [
     },
   },
   {
-    header: "Broker ID",
-    accessorKey: "brokerID",
+    header: "Client ID",
+    accessorKey: "client_id",
+  },
+  {
+    header: "Secret ID",
+    accessorKey: "secret_id",
+  },
+  {
+    header: "Last Login",
+    accessorKey: "last_login",
   },
   {
     header: "Active",
@@ -181,10 +199,6 @@ const accounts = () => {
   return (
     <div className="h-screen w-full mx-8">
       <h1 className="text-4xl my-4 font-semibold">All Accounts</h1>
-      {/* <Button variant="addUser"> */}
-      {/*   <PlusIcon /> */}
-      {/*   <span>Add User</span> */}
-      {/* </Button> */}
       <div className="my-2">
         <AddUserButton />
       </div>

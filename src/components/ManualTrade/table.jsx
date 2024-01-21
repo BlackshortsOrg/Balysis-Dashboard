@@ -15,20 +15,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export function UserTable({ columns, data }) {
-  const [rowSelection, setRowSelection] = React.useState({});
+export function UserTable({ columns, data, rowSelection, setRowSelection }) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
-    // (newSelectedRows) => {
-    //   selectedIds = []
-    //   for (const rownum of newSelectedRows) {
-    //     selectedIds.push(data[rownum].id)
-    //   }
-    //   setRowSelection(newSelectedRows);
-    // },
     state: {
       rowSelection,
     },
@@ -62,7 +54,6 @@ export function UserTable({ columns, data }) {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                onClick={(e) => console.log("Row Clicked", row)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

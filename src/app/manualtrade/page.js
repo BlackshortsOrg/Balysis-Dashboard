@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { UserTable } from "@/components/Accounts/table";
+import { UserTable } from "@/components/ManualTrade/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import {
@@ -171,13 +171,14 @@ const columns = [
 ];
 
 const accounts = () => {
+  const [rowSelection, setRowSelection] = React.useState([]);
   return (
     <div className="h-screen w-full mx-8">
       <h1 className="text-4xl font-semibold mt-10">Manual Trade</h1>
       <div className="my-4">
-        <TradeButton />
+        <TradeButton rowSelection={rowSelection} data={data} />
       </div>
-      <UserTable columns={columns} data={data} />
+      <UserTable columns={columns} data={data} rowSelection={rowSelection} setRowSelection={setRowSelection} />
     </div>
   );
 };

@@ -1,14 +1,13 @@
 import SecurityCard from "./SecurityCard";
 
-const SecurityCards = () => {
+const SecurityCards = ({ metrics }) => {
   return (
     <div className="flex flex-row items-center justify-evenly mt-8">
-      <SecurityCard />
-      <SecurityCard />
-      <SecurityCard />
-      <SecurityCard />
-      <SecurityCard />
-      <SecurityCard />
+      {
+        Object.entries(metrics).map(([key, val]) => {
+          return <SecurityCard header={key} data={val} />
+        })
+      }
     </div>
   );
 };
