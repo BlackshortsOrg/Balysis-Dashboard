@@ -2,6 +2,12 @@
 import React from "react";
 import { UserTable } from "@/components/ManualTrade/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  PlusIcon,
+  Pencil2Icon,
+  GearIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
 import Image from "next/image";
 import {
   Menubar,
@@ -13,6 +19,15 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import TradeButton from "@/components/ManualTrade/tradeButton";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const data = [
   {
@@ -41,6 +56,20 @@ const data = [
     unrealized: 5000,
     realized: 5000,
     no_strategies: 8,
+  },
+];
+
+const signals_data = [
+  {
+    id: 1,
+    time: "27 JAN 2024 9:00 AM",
+    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
+    strategy_id: 1,
+    user_id: 1,
+    status: "TRADED",
+    traded_price: 250.0,
+    qty: 2,
+    message: "Buy 2 lots of NIFTY 50",
   },
 ];
 
@@ -178,7 +207,48 @@ const accounts = () => {
       <div className="my-4">
         <TradeButton rowSelection={rowSelection} data={data} />
       </div>
-      <UserTable columns={columns} data={data} rowSelection={rowSelection} setRowSelection={setRowSelection} />
+      <UserTable
+        columns={columns}
+        data={data}
+        rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
+      />
+      <h1 className="text-4xl font-semibold mt-10">All Signals</h1>
+      <Table>
+        <TableCaption>All list of your recent manual signals</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="">Time</TableHead>
+            <TableHead>Signal ID</TableHead>
+            <TableHead>Strategy ID</TableHead>
+            <TableHead className="">User ID</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Traded Price</TableHead>
+            <TableHead>Traded Qty</TableHead>
+            <TableHead>Message</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {signals_data.map((signal) => (
+            <TableRow key={signal.id}>
+              <TableCell className="">{signal.time}</TableCell>
+              <TableCell>{signal.signal_id}</TableCell>
+              <TableCell>{signal.strategy_id}</TableCell>
+              <TableCell className="">{signal.user_id}</TableCell>
+              <TableCell>{signal.status}</TableCell>
+              <TableCell>{signal.traded_price}</TableCell>
+              <TableCell>{signal.qty}</TableCell>
+              <TableCell>{signal.message}</TableCell>
+              <TableCell>
+                <Pencil2Icon />
+              </TableCell>
+              <TableCell>
+                <TrashIcon />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };

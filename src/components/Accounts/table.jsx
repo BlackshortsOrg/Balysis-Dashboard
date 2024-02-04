@@ -22,13 +22,6 @@ export function UserTable({ columns, data }) {
     columns,
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
-    // (newSelectedRows) => {
-    //   selectedIds = []
-    //   for (const rownum of newSelectedRows) {
-    //     selectedIds.push(data[rownum].id)
-    //   }
-    //   setRowSelection(newSelectedRows);
-    // },
     state: {
       rowSelection,
     },
@@ -47,9 +40,9 @@ export function UserTable({ columns, data }) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 );
               })}

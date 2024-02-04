@@ -28,15 +28,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlusIcon, Pencil2Icon, GearIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Combobox } from "@headlessui/react";
+import SegmentCarousel from "./SegmentCarousel";
+import { getEquityTickersAPI } from "@/api/getEquityTickers";
 
-const people = [
-  "NSE:ITC-EQ",
-  "NSE:IDEA-EQ",
-  "NSE:COALINDIA-EQ",
-  "GOOGL",
-  "NSE:ADANIPOWER-EQ",
+const stocks = [
+  {
+    ticker: "RELIANCE",
+    name: "Reliance Industries Ltd.",
+  },
+  {
+    ticker: "HDFCBANK",
+    name: "HDFC Bank Ltd.",
+  },
+  {
+    ticker: "INFY",
+    name: "Infosys Ltd.",
+  },
 ];
 
 const TradeButton = ({ rowSelection, data }) => {
@@ -45,24 +54,25 @@ const TradeButton = ({ rowSelection, data }) => {
   const [price, setPrice] = useState(0.0);
   const [qty, setQty] = useState(0);
   const [side, setSide] = useState(1);
+  const [stocks, setStocks] = useState([]);
 
-  // const [username, setUsername] = useState("John Doe");
-  // const [broker, setBroker] = useState("fyers");
-  // const [clientId, setClientId] = useState("FY1234");
-  // const [secretId, setSecretId] = useState("FY1234");
+  async function setEquityData() {
+    const data = await getEquityTickersAPI();
+    console.log(data);
+    setStocks(data);
+  }
 
-  const unselectedSegmentClasses =
-    "basis-1/4 text-center shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100 py-4";
-  const selectedSegmentClasses =
-    "basis-1/4 bg-[#41AFFF] text-white text-center shadow-gray-50 border-slate-200 border rounded-xl py-4";
+  useEffect(() => {
+    setEquityData();
+  }, []);
 
   const newTradeAPICall = (e) => {
-    console.log(rowSelection)
-    var selectedIds = []
+    console.log(rowSelection);
+    var selectedIds = [];
     for (const [rownum, state] of Object.entries(rowSelection)) {
-      selectedIds.push(data[rownum].id)
+      selectedIds.push(data[rownum].id);
     }
-    console.log(selectedIds)
+    console.log(selectedIds);
     e.preventDefault();
     const tradeData = {
       ticker: selectedPerson,
@@ -74,32 +84,17 @@ const TradeButton = ({ rowSelection, data }) => {
     console.log(tradeData);
   };
 
-  // const createUserApiCall = (e) => {
-  //   e.preventDefault();
-  //   fetch("http://localhost:3000/user/new", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       name: username,
-  //       client_id: clientId,
-  //       secret_id: secretId,
-  //       // broker,
-  //     }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => console.log(data));
-  // };
-  const [selectedPerson, setSelectedPerson] = useState(people[0]);
+  const [selectedStock, setSelectedStock] = useState(stocks[0]);
   const [query, setQuery] = useState("");
 
-  const filteredPeople =
+  const filteredStocks =
     query === ""
-      ? people
-      : people.filter((person) => {
-        return person.toLowerCase().includes(query.toLowerCase());
-      });
+      ? stocks.slice(0, 50)
+      : stocks
+          .filter((stock) => {
+            return stock.name.toLowerCase().includes(query.toLowerCase());
+          })
+          .slice(0, 50);
 
   return (
     <Dialog>
@@ -117,59 +112,7 @@ const TradeButton = ({ rowSelection, data }) => {
           <Carousel className="max-w-[725px]">
             <CarouselContent>
               <CarouselItem>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Chose Segment</CardTitle>
-                    <CardDescription>
-                      Chose Segment from Equity,Commodity,Derivatives
-                      Options/Futures
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-row">
-                      <div
-                        className={
-                          segment === "Equity"
-                            ? selectedSegmentClasses
-                            : unselectedSegmentClasses
-                        }
-                        onClick={() => setSegment("Equity")}
-                      >
-                        Equity
-                      </div>
-                      <div
-                        className={
-                          segment === "Futures"
-                            ? selectedSegmentClasses
-                            : unselectedSegmentClasses
-                        }
-                        onClick={() => setSegment("Futures")}
-                      >
-                        Futures
-                      </div>
-                      <div
-                        className={
-                          segment === "Options"
-                            ? selectedSegmentClasses
-                            : unselectedSegmentClasses
-                        }
-                        onClick={() => setSegment("Options")}
-                      >
-                        Options
-                      </div>
-                      <div
-                        className={
-                          segment === "Commodity"
-                            ? selectedSegmentClasses
-                            : unselectedSegmentClasses
-                        }
-                        onClick={() => setSegment("Commodity")}
-                      >
-                        Commodity
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <SegmentCarousel segment={segment} setSegment={setSegment} />
               </CarouselItem>
               <CarouselItem>
                 <Card>
@@ -177,22 +120,24 @@ const TradeButton = ({ rowSelection, data }) => {
                     <CardTitle>Chose Stock</CardTitle>
                     <CardContent>
                       <Combobox
-                        value={selectedPerson}
-                        onChange={setSelectedPerson}
+                        value={selectedStock}
+                        onChange={_.debounce(setSelectedStock, 200)}
                       >
                         <Combobox.Input
-                          onChange={(event) => setQuery(event.target.value)}
+                          onSubmit={(event) => setQuery(event.target.value)}
                           className="w-full bg-slate-50 border-slate-200 border rounded-xl px-4 py-2 mt-4"
                         />
-                        <Combobox.Options className="bg-slate-50 py-1 rounded-xl mt-2">
-                          {filteredPeople.map((person) => (
+                        <Combobox.Options className="bg-slate-50 py-1 rounded-xl mt-2 overflow-auto">
+                          {filteredStocks.map((stock) => (
                             <Combobox.Option
-                              key={person}
-                              value={person}
+                              key={stock.ticker}
+                              value={stock}
                               className=""
                             >
                               <div className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl">
-                                {person}
+                                {stock.exchange_id} , {stock.fyers_ticker},{" "}
+                                {stock.zerodha_instrument_token},{" "}
+                                {stock.zerodha_tradingsymbol}
                               </div>
                             </Combobox.Option>
                           ))}

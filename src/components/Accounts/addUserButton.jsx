@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { PlusIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useState } from "react";
+import { createUserAPI } from "@/api/createUser";
 
 const addUserButton = () => {
   const [username, setUsername] = useState("John Doe");
@@ -20,22 +21,11 @@ const addUserButton = () => {
   const [clientId, setClientId] = useState("FY1234");
   const [secretId, setSecretId] = useState("FY1234");
 
-  const createUserApiCall = (e) => {
+  const createUserApiCall = async (e) => {
     e.preventDefault();
-    fetch("http://localhost:3000/user/new", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: username,
-        client_id: clientId,
-        secret_id: secretId,
-        // broker,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    //TODO Loading Spinner
+    const res = await createUserAPI(username, broker, clientId, secretId);
+    console.log(res);
   };
 
   return (
