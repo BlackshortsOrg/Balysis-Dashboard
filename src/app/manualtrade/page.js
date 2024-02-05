@@ -64,12 +64,66 @@ const signals_data = [
     id: 1,
     time: "27 JAN 2024 9:00 AM",
     signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
+    stock: "NSE:RELIANCE-EQUITY",
+    signal_type: "NEW_ORDER",
+    order_type: "LIMIT_ORDER",
+    limit_price: 2500.0,
+    stop_price: 123.1,
     strategy_id: 1,
-    user_id: 1,
-    status: "TRADED",
-    traded_price: 250.0,
+    side: 1,
     qty: 2,
-    message: "Buy 2 lots of NIFTY 50",
+  },
+  {
+    id: 2,
+    time: "27 JAN 2024 9:00 AM",
+    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
+    stock: "NSE:RELIANCE-EQUITY",
+    signal_type: "NEW_ORDER",
+    order_type: "LIMIT_ORDER",
+    limit_price: 2500.0,
+    stop_price: 123.1,
+    strategy_id: 1,
+    side: 1,
+    qty: 2,
+  },
+  {
+    id: 1,
+    time: "27 JAN 2024 9:00 AM",
+    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
+    stock: "NSE:RELIANCE-EQUITY",
+    signal_type: "NEW_ORDER",
+    order_type: "LIMIT_ORDER",
+    limit_price: 2500.0,
+    stop_price: 123.1,
+    strategy_id: 1,
+    side: 1,
+    qty: 2,
+  },
+  {
+    id: 3,
+    time: "27 JAN 2024 9:00 AM",
+    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
+    stock: "NSE:RELIANCE-EQUITY",
+    signal_type: "NEW_ORDER",
+    order_type: "LIMIT_ORDER",
+    limit_price: 2500.0,
+    stop_price: 123.1,
+    strategy_id: 1,
+    side: 1,
+    qty: 2,
+  },
+  {
+    id: 4,
+    time: "27 JAN 2024 9:00 AM",
+    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
+    stock: "NSE:RELIANCE-EQUITY",
+    signal_type: "NEW_ORDER",
+    order_type: "LIMIT_ORDER",
+    limit_price: 2500.0,
+    stop_price: 123.1,
+    strategy_id: 1,
+    side: 1,
+    qty: 2,
   },
 ];
 
@@ -97,13 +151,13 @@ const columns = [
     enableHiding: false,
   },
   {
-    header: "id",
+    header: "ID",
     accessorKey: "id",
   },
   {
     header: "Name",
     accessorKey: "name",
-    cell: ({ cell }) => (
+    cell: ({ cell, row }) => (
       <div className="flex flex-row items-center">
         <Image
           className="rounded-full"
@@ -111,7 +165,7 @@ const columns = [
           width={40}
           height={40}
         />
-        <p className="ml-2">{cell.getValue()}</p>
+        <a className="ml-2 hover:underline" href={`/clientpositions/${row.original.id}`}>{cell.getValue()}</a>
       </div>
     ),
   },
@@ -218,14 +272,15 @@ const accounts = () => {
         <TableCaption>All list of your recent manual signals</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="">Time</TableHead>
+            <TableHead>Time</TableHead>
             <TableHead>Signal ID</TableHead>
-            <TableHead>Strategy ID</TableHead>
-            <TableHead className="">User ID</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Traded Price</TableHead>
-            <TableHead>Traded Qty</TableHead>
-            <TableHead>Message</TableHead>
+            <TableHead>Stock</TableHead>
+            <TableHead>Signal Type</TableHead>
+            <TableHead>Order Type</TableHead>
+            <TableHead>Limit Price</TableHead>
+            <TableHead>Stop Price</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead>Side</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -233,12 +288,13 @@ const accounts = () => {
             <TableRow key={signal.id}>
               <TableCell className="">{signal.time}</TableCell>
               <TableCell>{signal.signal_id}</TableCell>
-              <TableCell>{signal.strategy_id}</TableCell>
-              <TableCell className="">{signal.user_id}</TableCell>
-              <TableCell>{signal.status}</TableCell>
-              <TableCell>{signal.traded_price}</TableCell>
+              <TableCell>{signal.stock}</TableCell>
+              <TableCell className="">{signal.signal_type}</TableCell>
+              <TableCell>{signal.order_type}</TableCell>
+              <TableCell>{signal.limit_price}</TableCell>
+              <TableCell>{signal.stop_price}</TableCell>
               <TableCell>{signal.qty}</TableCell>
-              <TableCell>{signal.message}</TableCell>
+              <TableCell>{signal.side === 1 ? "BUY" : "SELL"}</TableCell>
               <TableCell>
                 <Pencil2Icon />
               </TableCell>
