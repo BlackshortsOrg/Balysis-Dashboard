@@ -37,7 +37,7 @@ export default function algotrade() {
       <StrategiesHeader />
       <div className="mx-12 bg-white mt-8 rounded-md shadow-md">
         <div className="mx-8 grid grid-cols-12 py-4">
-          <div className="col-span-7 text-3xl font-bold">{name}</div>
+          <a className="col-span-7 text-3xl font-bold hover:underline" href={`/algotrade/${1}`}>{name}</a>
           <div className="col-span-5 flex flex-row justify-between">
             <div className="text-red-400">{unrealizedpnl}</div>
             <div>{realizedpnl}</div>
