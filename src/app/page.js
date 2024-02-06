@@ -1,5 +1,19 @@
+"use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  return <h1>Balysis Dashboard</h1>;
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to another route after the component mounts
+    router.push("/login");
+  }, []);
+
+  return (
+    <div>
+      <h1>Welcome to the Bialysis</h1>
+    </div>
+  );
 }
