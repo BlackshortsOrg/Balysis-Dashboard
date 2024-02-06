@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import StrategiesHeader from "@/components/AlgoTrade/StrategiesHeader";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,9 +9,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -20,15 +20,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 export default function algotrade() {
-
-  const name = "STR-V5 50"
-  const unrealizedpnl = 123.3
-  const realizedpnl = 12.3
-  const numpositions = 3
-
+  const name = "STR-V5 50";
+  const unrealizedpnl = 123.3;
+  const realizedpnl = 12.3;
+  const numpositions = 3;
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto">
       <div className="flex flex-row w-full pt-10">
@@ -37,11 +35,18 @@ export default function algotrade() {
       <StrategiesHeader />
       <div className="mx-12 bg-white mt-8 rounded-md shadow-md">
         <div className="mx-8 grid grid-cols-12 py-4">
-          <a className="col-span-7 text-3xl font-bold hover:underline" href={`/algotrade/${1}`}>{name}</a>
+          <a
+            className="col-span-7 text-3xl font-bold hover:underline"
+            href={`/algotrade/${1}`}
+          >
+            {name}
+          </a>
           <div className="col-span-5 flex flex-row justify-between">
             <div className="text-red-400">{unrealizedpnl}</div>
             <div>{realizedpnl}</div>
-            <div className="text-red-400 pr-2">{realizedpnl + unrealizedpnl}</div>
+            <div className="text-red-400 pr-2">
+              {realizedpnl + unrealizedpnl}
+            </div>
           </div>
         </div>
         <div className="mx-8 flex flex-row pb-4">
@@ -56,7 +61,8 @@ export default function algotrade() {
                 <DialogHeader>
                   <DialogTitle>Edit Multiplier</DialogTitle>
                   <DialogDescription>
-                    Make changes to your multiplier for this strategy here. Click save when you're done.
+                    Make changes to your multiplier for this strategy here.
+                    Click save when you're done.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -64,11 +70,18 @@ export default function algotrade() {
                     <Label htmlFor="name" className="text-right">
                       Name
                     </Label>
-                    <Input type="number" placeholder={4} id="name" className="col-span-3" />
+                    <Input
+                      type="number"
+                      placeholder={4}
+                      id="name"
+                      className="col-span-3"
+                    />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="addUser" type="submit">Save changes</Button>
+                  <Button variant="addUser" type="submit">
+                    Save changes
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -84,11 +97,17 @@ export default function algotrade() {
                 </DialogHeader>
                 <div className="">
                   <div>
-                    <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">All Time</button>
-                    <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">Daily</button>
+                    <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">
+                      All Time
+                    </button>
+                    <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">
+                      Daily
+                    </button>
                   </div>
                   <Table>
-                    <TableCaption>Orders for current user based on this strategy</TableCaption>
+                    <TableCaption>
+                      Orders for current user based on this strategy
+                    </TableCaption>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="">Time</TableHead>
@@ -104,7 +123,9 @@ export default function algotrade() {
                     </TableHeader>
                     <TableBody>
                       <TableRow>
-                        <TableCell className="font-medium">18-Jul-2023 11:44:29</TableCell>
+                        <TableCell className="font-medium">
+                          18-Jul-2023 11:44:29
+                        </TableCell>
                         <TableCell>abcde-asd-asd</TableCell>
                         <TableCell>NIFTY23JANFUT</TableCell>
                         <TableCell>NRML</TableCell>
@@ -115,7 +136,9 @@ export default function algotrade() {
                         <TableCell className="text-right">Rs 250.00</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="font-medium">18-Jul-2023 11:44:29</TableCell>
+                        <TableCell className="font-medium">
+                          18-Jul-2023 11:44:29
+                        </TableCell>
                         <TableCell>abcde-asd-asd</TableCell>
                         <TableCell>NIFTY23JANFUT</TableCell>
                         <TableCell>NRML</TableCell>
@@ -139,7 +162,6 @@ export default function algotrade() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
