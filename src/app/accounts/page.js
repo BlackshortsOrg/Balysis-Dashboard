@@ -90,7 +90,7 @@ const columns = [
     id: "crud",
     width: "auto",
     cell: ({ row }) => {
-      const fyersTokenURL = "http://app.blackshorts.in:3000/fyers-token";
+      const fyersTokenURL = "http://app.blackshorts.in:3000/tokens/fyers";
       const fyersRedirectURL = `https://api-t1.fyers.in/api/v3/generate-authcode?client_id=${row.original.client_id}&redirect_uri=${fyersTokenURL}&response_type=code&state=${row.original.id}`;
       return (
         <span className="w-10">

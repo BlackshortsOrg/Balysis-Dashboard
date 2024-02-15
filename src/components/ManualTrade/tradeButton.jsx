@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { placeTradeAPI } from "@/api/placeTrade";
 import _ from "lodash";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -82,15 +84,20 @@ const TradeButton = ({ rowSelection, data }) => {
     const tradeData = {
       exchange: selectedStock.exchange,
       symbol: selectedStock.symbol,
-      segment: segment,
+      segment: selectedStock.segment,
       signal_type: "NEW_ORDER",
+      product_type: product_type,
       order_type: orderType,
-      limit_price: limit_price,
-      stop_price: stop_price,
-      qty: qty,
+      limit_price: parseFloat(limit_price),
+      stop_price: parseFloat(stop_price),
+      users: selectedIds,
+      quantity: qty,
       side: side,
     };
     console.log(tradeData);
+    placeTradeAPI(tradeData).then((resp) => {
+      toast("Trade placed successfully")
+    })
   };
 
   const [selectedStock, setSelectedStock] = useState(stocks[0]);

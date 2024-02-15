@@ -1,7 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { UserTable } from "@/components/ManualTrade/table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox"
+import { toast } from "sonner";
+import { activeClientPositionsAPI } from "@/api/activePositions";
+import { getManualSignals } from "@/api/getManualSignals";
 import {
   PlusIcon,
   Pencil2Icon,
@@ -28,104 +31,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { reverse } from "lodash";
 
-const data = [
-  {
-    id: 1,
-    name: "Esharky",
-    broker: "Fyers",
-    margin: 10000,
-    unrealized: 5000,
-    realized: 5000,
-    no_strategies: 2,
-  },
-  {
-    id: 2,
-    name: "Aadeesh",
-    broker: "Fyers",
-    margin: 10000,
-    unrealized: 5000,
-    realized: 5000,
-    no_strategies: 2,
-  },
-  {
-    id: 3,
-    name: "Abhishek",
-    broker: "Zerodha",
-    margin: 10000,
-    unrealized: 5000,
-    realized: 5000,
-    no_strategies: 8,
-  },
-];
-
-const signals_data = [
-  {
-    id: 1,
-    time: "27 JAN 2024 9:00 AM",
-    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
-    stock: "NSE:RELIANCE-EQUITY",
-    signal_type: "NEW_ORDER",
-    order_type: "LIMIT_ORDER",
-    limit_price: 2500.0,
-    stop_price: 123.1,
-    strategy_id: 1,
-    side: 1,
-    qty: 2,
-  },
-  {
-    id: 2,
-    time: "27 JAN 2024 9:00 AM",
-    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
-    stock: "NSE:RELIANCE-EQUITY",
-    signal_type: "NEW_ORDER",
-    order_type: "LIMIT_ORDER",
-    limit_price: 2500.0,
-    stop_price: 123.1,
-    strategy_id: 1,
-    side: 1,
-    qty: 2,
-  },
-  {
-    id: 1,
-    time: "27 JAN 2024 9:00 AM",
-    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
-    stock: "NSE:RELIANCE-EQUITY",
-    signal_type: "NEW_ORDER",
-    order_type: "LIMIT_ORDER",
-    limit_price: 2500.0,
-    stop_price: 123.1,
-    strategy_id: 1,
-    side: 1,
-    qty: 2,
-  },
-  {
-    id: 3,
-    time: "27 JAN 2024 9:00 AM",
-    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
-    stock: "NSE:RELIANCE-EQUITY",
-    signal_type: "NEW_ORDER",
-    order_type: "LIMIT_ORDER",
-    limit_price: 2500.0,
-    stop_price: 123.1,
-    strategy_id: 1,
-    side: 1,
-    qty: 2,
-  },
-  {
-    id: 4,
-    time: "27 JAN 2024 9:00 AM",
-    signal_id: "e5125ed5-5047-418f-a577-3dacd53a2c2c",
-    stock: "NSE:RELIANCE-EQUITY",
-    signal_type: "NEW_ORDER",
-    order_type: "LIMIT_ORDER",
-    limit_price: 2500.0,
-    stop_price: 123.1,
-    strategy_id: 1,
-    side: 1,
-    qty: 2,
-  },
-];
+// const data = [
+//   {
+//     id: 1,
+//     name: "Esharky",
+//     broker: "Fyers",
+//     margin: 10000,
+//     unrealized: 5000,
+//     realized: 5000,
+//     no_strategies: 2,
+//   },
+//   {
+//     id: 2,
+//     name: "Aadeesh",
+//     broker: "Fyers",
+//     margin: 10000,
+//     unrealized: 5000,
+//     realized: 5000,
+//     no_strategies: 2,
+//   },
+//   {
+//     id: 3,
+//     name: "Abhishek",
+//     broker: "Zerodha",
+//     margin: 10000,
+//     unrealized: 5000,
+//     realized: 5000,
+//     no_strategies: 8,
+//   },
+// ];
 
 const columns = [
   {
@@ -254,9 +190,43 @@ const columns = [
 ];
 
 const accounts = () => {
+  const [signals_data, setSignalsData] = useState([])
   const [rowSelection, setRowSelection] = React.useState([]);
+  const [data, setData] = useState([])
+
+  async function fetchSignals() {
+    const resp = await getManualSignals()
+    console.log(resp)
+    setSignalsData(reverse(resp))
+  }
+
+  async function callAPI() {
+    const resp = await activeClientPositionsAPI()
+    console.log(resp)
+    let data = []
+
+    for (const x in resp.userPnl) {
+      const obj = resp.userPnl[x]
+      data.push({
+        id: x,
+        name: obj.name,
+        broker: "Fyers",
+        margin: obj.margin.total,
+        unrealized: obj.total_unrealised_pnl,
+        realized: obj.total_realised_pnl,
+        no_strategies: obj.subscribed_strategies
+      })
+    }
+    setData(data)
+  }
+  useEffect(() => {
+    fetchSignals()
+    callAPI()
+  }, [])
+
+
   return (
-    <div className="h-screen w-full mx-8">
+    <div className="h-screen w-full mx-8 overflow-auto">
       <h1 className="text-4xl font-semibold mt-10">Manual Trade</h1>
       <div className="my-4">
         <TradeButton rowSelection={rowSelection} data={data} />
@@ -267,13 +237,15 @@ const accounts = () => {
         rowSelection={rowSelection}
         setRowSelection={setRowSelection}
       />
-      <h1 className="text-4xl font-semibold mt-10">All Signals</h1>
+      <h1 className="text-4xl font-semibold mt-10 mb-2">All Signals</h1>
+      <button className="px-4 border">Daily</button>
+      <button className="px-4 border">All Time</button>
       <Table>
         <TableCaption>All list of your recent manual signals</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Time</TableHead>
-            <TableHead>Signal ID</TableHead>
+            {/* <TableHead>Signal ID</TableHead> */}
             <TableHead>Stock</TableHead>
             <TableHead>Signal Type</TableHead>
             <TableHead>Order Type</TableHead>
@@ -285,15 +257,15 @@ const accounts = () => {
         </TableHeader>
         <TableBody>
           {signals_data.map((signal) => (
-            <TableRow key={signal.id}>
-              <TableCell className="">{signal.time}</TableCell>
-              <TableCell>{signal.signal_id}</TableCell>
-              <TableCell>{signal.stock}</TableCell>
+            <TableRow key={signal.signal_id}>
+              <TableCell className="">{new Date(signal.created_at).toString()}</TableCell>
+              {/* <TableCell>{signal.signal_id}</TableCell> */}
+              <TableCell>{`${signal.exchange}:${signal.symbol}-${signal.segment}`}</TableCell>
               <TableCell className="">{signal.signal_type}</TableCell>
               <TableCell>{signal.order_type}</TableCell>
-              <TableCell>{signal.limit_price}</TableCell>
-              <TableCell>{signal.stop_price}</TableCell>
-              <TableCell>{signal.qty}</TableCell>
+              <TableCell>{signal.limit_price == -1 ? '-' : signal.limit_price}</TableCell>
+              <TableCell>{signal.stop_price == -1 ? '-' : signal.stop_price}</TableCell>
+              <TableCell>{signal.quantity == -1 ? '-' : signal.quantity}</TableCell>
               <TableCell>{signal.side === 1 ? "BUY" : "SELL"}</TableCell>
               <TableCell>
                 <Pencil2Icon />

@@ -1,124 +1,47 @@
 "use client";
-import React from "react";
-import { PlusIcon } from "@radix-ui/react-icons";
-import { Button } from "@/components/ui/button";
-import { UserTable } from "@/components/Accounts/table";
-import { Checkbox } from "@/components/ui/checkbox";
+import React, { useEffect, useState } from "react";
+import { TxTable } from "@/components/TransactionHistory/table";
 import Image from "next/image";
-import AddUserButton from "@/components/Accounts/addUserButton";
-
-const data = [
-  {
-    transactionid: 1,
-    time: "2021-08-01 12:00:00",
-    name: "Esharky",
-    signalid: "abcde-asd-asd",
-    status: "PENDING",
-    security: "NIFTY",
-    price: 10000,
-    qty: 23,
-  },
-  {
-    transactionid: 2,
-    time: "2021-08-01 12:00:05",
-    name: "Esharky",
-    signalid: "abcde-asd-asd",
-    status: "TRADED",
-    security: "NIFTY",
-    price: 10000,
-    qty: 23,
-  },
-  {
-    transactionid: 3,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "CANCELLED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-  {
-    transactionid: 3,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "CANCELLED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-  {
-    transactionid: 3,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "TRADED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-  {
-    transactionid: 3,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "TRADED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-  {
-    transactionid: 3,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "TRADED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-  {
-    transactionid: 4,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "TRADED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-  {
-    transactionid: 5,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "TRADED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-  {
-    transactionid: 6,
-    time: "2021-08-01 12:00:05",
-    name: "Abhishek",
-    signalid: "asdkj-asd-qwe",
-    status: "TRADED",
-    security: "BANKNIFTY",
-    price: 200,
-    qty: 13,
-  },
-];
+import { getTransactionHistoryAPI } from "@/api/getTransactionHistory";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 const columns = [
   {
     header: "Transaction ID",
-    accessorKey: "transactionid",
+    accessorKey: "transaction_id",
     width: "auto",
   },
   {
     header: "Time",
-    accessorKey: "time",
+    accessorKey: "created_at",
+  },
+  {
+    header: "Signal ID",
+    accessorKey: "id",
+    cell: ({ cell, row }) => {
+      console.log(row)
+      return (
+        <HoverCard>
+          <HoverCardTrigger>
+            <p className="text-blue-500 cursor-pointer">{cell.getValue()}</p>
+          </HoverCardTrigger>
+          <HoverCardContent>
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold">Signal Type: {row.original.signal_type}</p>
+              <p className="text-xs">Order Type: {row.original.order_type}</p>
+              <p className="text-xs">Ref ID: {row.original.ref_id}</p>
+              <p className="text-xs">Ticker: {`${row.original.exchange}:${row.original.symbol}-${row.original.exchange}-${row.original.product_type}`}</p>
+              <p className="text-xs">Limit Price: {row.original.limit_price}</p>
+              <p className="text-xs">Stop Price: {row.original.stop_price}</p>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      )
+    }
   },
   {
     header: "Name",
@@ -136,8 +59,8 @@ const columns = [
     ),
   },
   {
-    header: "Signal ID",
-    accessorKey: "signalid",
+    header: "Strategy",
+    accessorKey: "strategy_name",
   },
   {
     header: "Status",
@@ -160,6 +83,30 @@ const columns = [
               </p>
             </div>
           );
+        case "FILLED":
+          return (
+            <div>
+              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border w-20 pl-2 rounded-sm">
+                FILLED
+              </p>
+            </div>
+          );
+        case "REJECTED":
+          return (
+            <div>
+              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border w-20 pl-2 rounded-sm">
+                REJECTED
+              </p>
+            </div>
+          );
+        case "FAILED":
+          return (
+            <div>
+              <p className="bg-red-200 text-red-600 font-semibold text-xs border-red-600 w-24 py-1 border text-center rounded-sm">
+                FAILED
+              </p>
+            </div>
+          );
         case "CANCELLED":
           return (
             <div>
@@ -172,24 +119,35 @@ const columns = [
     },
   },
   {
-    header: "Security",
-    accessorKey: "security",
+    header: "Traded Price",
+    accessorKey: "traded_price",
   },
   {
-    header: "Price",
-    accessorKey: "price",
+    header: "Traded Qty",
+    accessorKey: "filledqty",
   },
   {
-    header: "Qty",
-    accessorKey: "qty",
-  },
+    header: "Message",
+    accessorKey: "message"
+  }
 ];
 
 const transactionhistory = () => {
+
+  const [data, setData] = useState([])
+  async function callAPI() {
+    const data = await getTransactionHistoryAPI()
+    setData(data)
+  }
+
+  useEffect(() => {
+    callAPI()
+  }, [])
+
   return (
-    <div className="h-screen w-full mx-8">
+    <div className="h-screen w-full mx-8 overflow-auto">
       <h1 className="text-4xl my-4 font-semibold">Transaction History</h1>
-      <UserTable columns={columns} data={data} />
+      <TxTable columns={columns} data={data} />
     </div>
   );
 };

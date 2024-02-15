@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Menubar,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/menubar";
 import { ClientPositionsTable } from "@/components/ClientPositions/ClientPositionsTable";
 import ControlPanelButton from "@/components/ClientPositions/ControlPanelButton";
+import { activeClientPositionsAPI } from "@/api/activePositions";
 
 const data = [
   {
@@ -166,21 +167,54 @@ const columns = [
 ];
 
 const clientpositions = () => {
+  const [table_data, setTableData] = useState([])
+  const [total_data, setTotalData] = useState({ total_realized_pnl: 0, total_unrealized_pnl: 0, total_strategies: 0, total_margin: 0 })
+  async function callAPI() {
+    const resp = await activeClientPositionsAPI()
+    console.log(resp)
+    const tot = {
+      total_realized_pnl: resp.totalMetrics.total_realised_pnl,
+      total_unrealized_pnl: resp.totalMetrics.total_unrealised_pnl,
+      total_strategies: resp.totalMetrics.total_strategies,
+      total_margin: 0
+    }
+    let data = []
+
+    for (const x in resp.userPnl) {
+      const obj = resp.userPnl[x]
+      data.push({
+        id: x,
+        name: obj.name,
+        broker: "Fyers",
+        margin: obj.margin.total,
+        unrealized: obj.total_unrealised_pnl,
+        realized: obj.total_realised_pnl,
+        no_strategies: obj.subscribed_strategies
+      })
+      tot.total_margin += parseFloat(obj.margin.total)
+    }
+    setTableData(data)
+    setTotalData(tot)
+  }
+  useEffect(() => {
+    callAPI()
+  }, [])
+
   return (
     <div className="h-screen w-full mx-8">
       <h1 className="text-4xl font-semibold mt-10">Active Client Positions</h1>
       <div className="my-4 flex flex-row">
         <ControlPanelButton />
         <div className="pt-1 mx-4">Relaized P/L</div>
-        <div className="pt-1 mx-4 text-green-400">Rs 1,00,000</div>
+        <div className="pt-1 mx-4 text-green-400">Rs {total_data.total_realized_pnl}</div>
         <div className="pt-1 mx-4">Unrelaized P/L</div>
-        <div className="pt-1 mx-4 text-green-400">Rs 1,00,000</div>
+        <div className="pt-1 mx-4 text-green-400">Rs {total_data.total_unrealized_pnl}</div>
         <div className="pt-1 mx-4">Total Available Margin</div>
-        <div className="pt-1 mx-4 text-green-400">Rs 1,00,000</div>
+        <div className="pt-1 mx-4 text-green-400">{total_data.total_margin}</div>
         <div className="pt-1 mx-4">Total Strategies</div>
-        <div className="pt-1 mx-4 text-green-400">10</div>
+        <div className="pt-1 mx-4 text-green-400">{total_data.total_strategies}</div>
       </div>
-      <ClientPositionsTable columns={columns} data={data} />
+      <ClientPositionsTable columns={columns} data={table_data} />
     </div>
   );
 };

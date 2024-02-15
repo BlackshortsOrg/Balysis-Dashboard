@@ -1,4 +1,6 @@
+"use client";
 import Image from "next/image";
+import { Toaster, toast } from "sonner";
 
 export default function Login() {
   return (
@@ -51,6 +53,7 @@ export default function Login() {
               <button
                 type="submit"
                 className="w-full px-4 py-3 font-bold text-white bg-indigo-500 rounded-md hover:bg-indigo-600 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700"
+                onClick={() => toast("asdase")}
               >
                 Sign In
               </button>
@@ -58,6 +61,7 @@ export default function Login() {
           </form>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

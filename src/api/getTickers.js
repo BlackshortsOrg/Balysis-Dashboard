@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "./constants";
 
 export const getEquityTickersAPI = async () => {
-  const response = await fetch(`${API_BASE_URL}/equitytickers`, {
+  const response = await fetch(`${API_BASE_URL}/tickers/equity`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -9,7 +9,7 @@ export const getEquityTickersAPI = async () => {
 };
 
 export const getFuturesTickersAPI = async () => {
-  const response = await fetch(`${API_BASE_URL}/futuretickers`, {
+  const response = await fetch(`${API_BASE_URL}/tickers/future`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -18,7 +18,7 @@ export const getFuturesTickersAPI = async () => {
 }
 
 export const getOptionsTickersAPI = async () => {
-  const response = await fetch(`${API_BASE_URL}/optiontickers`, {
+  const response = await fetch(`${API_BASE_URL}/tickers/option`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });

@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "./constants";
 
-export const getManualSignals = async () => {
-  const response = await fetch(`${API_BASE_URL}/strategy/signals?strategy_id=${1}`, {
+export const activeClientPositionsAPI = async () => {
+  const response = await fetch(`${API_BASE_URL}/metrics/active-client-positions`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
