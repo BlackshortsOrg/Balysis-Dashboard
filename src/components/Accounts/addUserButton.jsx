@@ -68,8 +68,8 @@ const addUserButton = () => {
                 }
                 onClick={() => setBroker("fyers")}
                 src="/images/fyers.jpeg"
-                width={100}
-                height={100}
+                width={80}
+                height={80}
               />
               <Image
                 className={
@@ -78,8 +78,18 @@ const addUserButton = () => {
                 }
                 onClick={() => setBroker("zerodha")}
                 src="/images/zerodhalogo.png"
-                width={100}
-                height={100}
+                width={80}
+                height={80}
+              />
+              <Image
+                className={
+                  "rounded-full border-2 inline-block" +
+                  (broker == "iifl" ? " border-[4px] border-green-300" : "")
+                }
+                onClick={() => setBroker("iifl")}
+                src="/images/iifllogo.jpeg"
+                width={80}
+                height={80}
               />
             </span>
           </div>

@@ -17,17 +17,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Combobox } from "@headlessui/react";
 import SegmentCarousel from "./SegmentCarousel";
-import { getEquityTickersAPI, getFuturesTickersAPI, getOptionsTickersAPI } from "@/api/getTickers";
+import {
+  getEquityTickersAPI,
+  getFuturesTickersAPI,
+  getOptionsTickersAPI,
+} from "@/api/getTickers";
 import OrderTypeCarousel from "./orderTypeCarousel";
 import PlaceOrderCarousel from "./placeOrderCarousel";
 
@@ -77,7 +76,7 @@ const TradeButton = ({ rowSelection, data }) => {
     console.log(rowSelection);
     var selectedIds = [];
     for (const [rownum, state] of Object.entries(rowSelection)) {
-      selectedIds.push(data[rownum].id);
+      selectedIds.push(parseInt(data[rownum].id));
     }
     console.log(selectedIds);
     e.preventDefault();
@@ -96,8 +95,8 @@ const TradeButton = ({ rowSelection, data }) => {
     };
     console.log(tradeData);
     placeTradeAPI(tradeData).then((resp) => {
-      toast("Trade placed successfully")
-    })
+      toast("Trade placed successfully");
+    });
   };
 
   const [selectedStock, setSelectedStock] = useState(stocks[0]);
@@ -107,10 +106,10 @@ const TradeButton = ({ rowSelection, data }) => {
     query === ""
       ? stocks.slice(0, 50)
       : stocks
-        .filter((stock) => {
-          return stock.symbol.toLowerCase().includes(query.toLowerCase());
-        })
-        .slice(0, 50);
+          .filter((stock) => {
+            return stock.symbol.toLowerCase().includes(query.toLowerCase());
+          })
+          .slice(0, 50);
 
   return (
     <Dialog>
@@ -153,9 +152,14 @@ const TradeButton = ({ rowSelection, data }) => {
                             >
                               <div className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl">
                                 {stock.fyers_ticker},
-                                {segment === 'Futures' || segment === 'Options' ? (new Date(stock.expiry)).toString() : ""} {" "},
-                                {segment === 'Futures' || segment === 'Options' ? stock.lotsize : ""} {" "},
-                                {stock.name}, {" "}
+                                {segment === "Futures" || segment === "Options"
+                                  ? new Date(stock.expiry).toString()
+                                  : ""}{" "}
+                                ,
+                                {segment === "Futures" || segment === "Options"
+                                  ? stock.lotsize
+                                  : ""}{" "}
+                                ,{stock.name},{" "}
                               </div>
                             </Combobox.Option>
                           ))}
@@ -166,7 +170,10 @@ const TradeButton = ({ rowSelection, data }) => {
                 </Card>
               </CarouselItem>
               <CarouselItem>
-                <OrderTypeCarousel orderType={orderType} setOrderType={setOrderType} />
+                <OrderTypeCarousel
+                  orderType={orderType}
+                  setOrderType={setOrderType}
+                />
               </CarouselItem>
               <CarouselItem>
                 <PlaceOrderCarousel

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { UserTable } from "@/components/ManualTrade/table";
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { activeClientPositionsAPI } from "@/api/activePositions";
 import { getManualSignals } from "@/api/getManualSignals";
@@ -32,6 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { reverse } from "lodash";
+import { cancelTradeAPI } from "@/api/cancelOrder";
 
 // const data = [
 //   {
@@ -101,7 +102,12 @@ const columns = [
           width={40}
           height={40}
         />
-        <a className="ml-2 hover:underline" href={`/clientpositions/${row.original.id}`}>{cell.getValue()}</a>
+        <a
+          className="ml-2 hover:underline"
+          href={`/clientpositions/${row.original.id}`}
+        >
+          {cell.getValue()}
+        </a>
       </div>
     ),
   },
@@ -190,40 +196,39 @@ const columns = [
 ];
 
 const accounts = () => {
-  const [signals_data, setSignalsData] = useState([])
+  const [signals_data, setSignalsData] = useState([]);
   const [rowSelection, setRowSelection] = React.useState([]);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
   async function fetchSignals() {
-    const resp = await getManualSignals()
-    console.log(resp)
-    setSignalsData(reverse(resp))
+    const resp = await getManualSignals();
+    console.log(resp);
+    setSignalsData(reverse(resp));
   }
 
   async function callAPI() {
-    const resp = await activeClientPositionsAPI()
-    console.log(resp)
-    let data = []
+    const resp = await activeClientPositionsAPI();
+    console.log(resp);
+    let data = [];
 
     for (const x in resp.userPnl) {
-      const obj = resp.userPnl[x]
+      const obj = resp.userPnl[x];
       data.push({
         id: x,
         name: obj.name,
         broker: "Fyers",
-        margin: obj.margin.total,
-        unrealized: obj.total_unrealised_pnl,
-        realized: obj.total_realised_pnl,
-        no_strategies: obj.subscribed_strategies
-      })
+        margin: parseFloat(obj.margin.total).toFixed(2),
+        unrealized: parseFloat(obj.total_unrealised_pnl).toFixed(2),
+        realized: parseFloat(obj.total_realised_pnl).toFixed(2),
+        no_strategies: obj.subscribed_strategies - 1,
+      });
     }
-    setData(data)
+    setData(data);
   }
   useEffect(() => {
-    fetchSignals()
-    callAPI()
-  }, [])
-
+    fetchSignals();
+    callAPI();
+  }, []);
 
   return (
     <div className="h-screen w-full mx-8 overflow-auto">
@@ -258,20 +263,28 @@ const accounts = () => {
         <TableBody>
           {signals_data.map((signal) => (
             <TableRow key={signal.signal_id}>
-              <TableCell className="">{new Date(signal.created_at).toString()}</TableCell>
+              <TableCell className="">
+                {new Date(signal.created_at).toString()}
+              </TableCell>
               {/* <TableCell>{signal.signal_id}</TableCell> */}
               <TableCell>{`${signal.exchange}:${signal.symbol}-${signal.segment}`}</TableCell>
               <TableCell className="">{signal.signal_type}</TableCell>
               <TableCell>{signal.order_type}</TableCell>
-              <TableCell>{signal.limit_price == -1 ? '-' : signal.limit_price}</TableCell>
-              <TableCell>{signal.stop_price == -1 ? '-' : signal.stop_price}</TableCell>
-              <TableCell>{signal.quantity == -1 ? '-' : signal.quantity}</TableCell>
+              <TableCell>
+                {signal.limit_price == -1 ? "-" : signal.limit_price}
+              </TableCell>
+              <TableCell>
+                {signal.stop_price == -1 ? "-" : signal.stop_price}
+              </TableCell>
+              <TableCell>
+                {signal.quantity == -1 ? "-" : signal.quantity}
+              </TableCell>
               <TableCell>{signal.side === 1 ? "BUY" : "SELL"}</TableCell>
               <TableCell>
                 <Pencil2Icon />
               </TableCell>
               <TableCell>
-                <TrashIcon />
+                <TrashIcon onClick={() => cancelTradeAPI(signal.signal_id)} />
               </TableCell>
             </TableRow>
           ))}
