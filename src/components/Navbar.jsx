@@ -1,8 +1,13 @@
+"use client";
 import "./Navbar.css";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Navbar() {
+  function logout() {
+    window.sessionStorage.removeItem("token");
+    window.location.href = "/login";
+  }
   return (
     <div className="w-[15vw] h-[100vh] shadow drop-shadow-lg flex flex-col pt-5 justify-evenly">
       {/*TODO Replace logo with better quality logo */}
@@ -36,7 +41,10 @@ export default function Navbar() {
           <h1 className="text-[16px] font-medium mb-6">Historical data</h1>
         </Link>
       </div>
-      <h1 className="text-[16px] text-[#41AFFF] font-bold mb-6 pl-9 mt-[30vh]">
+      <h1
+        className="text-[16px] text-[#41AFFF] font-bold mb-6 pl-9 mt-[30vh] hover:cursor-pointer"
+        onClick={logout}
+      >
         Log Out
       </h1>
     </div>

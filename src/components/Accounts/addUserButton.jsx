@@ -12,19 +12,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlusIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createUserAPI } from "@/api/createUser";
 
 const addUserButton = () => {
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      return sessionStorage.getItem("token");
+    }
+  }
   const [username, setUsername] = useState("John Doe");
   const [broker, setBroker] = useState("fyers");
   const [clientId, setClientId] = useState("FY1234");
   const [secretId, setSecretId] = useState("FY1234");
 
   const createUserApiCall = async (e) => {
+    const token = await checkLogin();
     e.preventDefault();
     //TODO Loading Spinner
-    const res = await createUserAPI(username, broker, clientId, secretId);
+    const res = await createUserAPI(
+      username,
+      broker,
+      clientId,
+      secretId,
+      token,
+    );
     console.log(res);
   };
 

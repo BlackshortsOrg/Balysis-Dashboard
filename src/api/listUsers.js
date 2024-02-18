@@ -1,9 +1,9 @@
 import { API_BASE_URL } from "./constants";
 
-export const listUsersAPI = async () => {
+export const listUsersAPI = async (token) => {
   const response = await fetch(`${API_BASE_URL}/user/all`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: token },
   });
   return await response.json();
 };

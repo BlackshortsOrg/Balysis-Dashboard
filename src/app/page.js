@@ -11,9 +11,5 @@ export default function Home() {
     router.push("/login");
   }, []);
 
-  return (
-    <div>
-      <h1>Welcome to the Bialysis</h1>
-    </div>
-  );
+  return <div></div>;
 }

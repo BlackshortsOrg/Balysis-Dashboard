@@ -7,7 +7,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
+} from "@/components/ui/hover-card";
 
 const columns = [
   {
@@ -23,7 +23,7 @@ const columns = [
     header: "Signal ID",
     accessorKey: "id",
     cell: ({ cell, row }) => {
-      console.log(row)
+      console.log(row);
       return (
         <HoverCard>
           <HoverCardTrigger>
@@ -31,17 +31,22 @@ const columns = [
           </HoverCardTrigger>
           <HoverCardContent>
             <div className="flex flex-col">
-              <p className="text-xs font-semibold">Signal Type: {row.original.signal_type}</p>
+              <p className="text-xs font-semibold">
+                Signal Type: {row.original.signal_type}
+              </p>
               <p className="text-xs">Order Type: {row.original.order_type}</p>
               <p className="text-xs">Ref ID: {row.original.ref_id}</p>
-              <p className="text-xs">Ticker: {`${row.original.exchange}:${row.original.symbol}-${row.original.exchange}-${row.original.product_type}`}</p>
+              <p className="text-xs">
+                Ticker:{" "}
+                {`${row.original.exchange}:${row.original.symbol}-${row.original.exchange}-${row.original.product_type}`}
+              </p>
               <p className="text-xs">Limit Price: {row.original.limit_price}</p>
               <p className="text-xs">Stop Price: {row.original.stop_price}</p>
             </div>
           </HoverCardContent>
         </HoverCard>
-      )
-    }
+      );
+    },
   },
   {
     header: "Name",
@@ -128,21 +133,30 @@ const columns = [
   },
   {
     header: "Message",
-    accessorKey: "message"
-  }
+    accessorKey: "message",
+  },
 ];
 
 const transactionhistory = () => {
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      return sessionStorage.getItem("token");
+    }
+  }
 
-  const [data, setData] = useState([])
-  async function callAPI() {
-    const data = await getTransactionHistoryAPI()
-    setData(data)
+  const [data, setData] = useState([]);
+  async function callAPI(token) {
+    const data = await getTransactionHistoryAPI(token);
+    setData(data);
   }
 
   useEffect(() => {
-    callAPI()
-  }, [])
+    checkLogin().then((token) => {
+      callAPI(token);
+    });
+  }, []);
 
   return (
     <div className="h-screen w-full mx-8 overflow-auto">

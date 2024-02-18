@@ -179,8 +179,8 @@ const clientpositions = () => {
     total_strategies: 0,
     total_margin: 0,
   });
-  async function callAPI() {
-    const resp = await activeClientPositionsAPI();
+  async function callAPI(token) {
+    const resp = await activeClientPositionsAPI(token);
     console.log(resp);
     const tot = {
       total_realized_pnl: resp.totalMetrics.total_realised_pnl.toFixed(2),
@@ -207,8 +207,17 @@ const clientpositions = () => {
     setTableData(data);
     setTotalData(tot);
   }
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      return sessionStorage.getItem("token");
+    }
+  }
   useEffect(() => {
-    callAPI();
+    checkLogin().then((token) => {
+      callAPI(token);
+    });
   }, []);
 
   return (

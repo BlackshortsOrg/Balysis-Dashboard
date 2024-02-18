@@ -202,8 +202,15 @@ const columns = [
 
 const accounts = () => {
   const [data, setData] = React.useState([]);
-  async function listUsers() {
-    const data = await listUsersAPI();
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      return sessionStorage.getItem("token");
+    }
+  }
+  async function listUsers(token) {
+    const data = await listUsersAPI(token);
     for (let i = 0; i < data.length; i++) {
       data[i].active = true;
       data[i].last_login = new Date(data[i].created_at);
@@ -212,7 +219,9 @@ const accounts = () => {
     setData(data);
   }
   React.useEffect(() => {
-    listUsers();
+    checkLogin().then((token) => {
+      listUsers(token);
+    });
   }, []);
   return (
     <div className="h-screen w-full mx-8">

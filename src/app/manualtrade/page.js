@@ -199,15 +199,16 @@ const accounts = () => {
   const [signals_data, setSignalsData] = useState([]);
   const [rowSelection, setRowSelection] = React.useState([]);
   const [data, setData] = useState([]);
+  const [token, setToken] = useState("");
 
-  async function fetchSignals() {
-    const resp = await getManualSignals();
+  async function fetchSignals(token) {
+    const resp = await getManualSignals(token);
     console.log(resp);
     setSignalsData(reverse(resp));
   }
 
-  async function callAPI() {
-    const resp = await activeClientPositionsAPI();
+  async function callAPI(token) {
+    const resp = await activeClientPositionsAPI(token);
     console.log(resp);
     let data = [];
 
@@ -225,9 +226,20 @@ const accounts = () => {
     }
     setData(data);
   }
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      const tk = sessionStorage.getItem("token");
+      setToken(tk);
+      return tk;
+    }
+  }
   useEffect(() => {
-    fetchSignals();
-    callAPI();
+    checkLogin().then((token) => {
+      fetchSignals(token);
+      callAPI(token);
+    });
   }, []);
 
   return (
@@ -284,7 +296,9 @@ const accounts = () => {
                 <Pencil2Icon />
               </TableCell>
               <TableCell>
-                <TrashIcon onClick={() => cancelTradeAPI(signal.signal_id)} />
+                <TrashIcon
+                  onClick={() => cancelTradeAPI(signal.signal_id, token)}
+                />
               </TableCell>
             </TableRow>
           ))}

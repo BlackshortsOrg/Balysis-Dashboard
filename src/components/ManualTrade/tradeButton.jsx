@@ -31,6 +31,13 @@ import OrderTypeCarousel from "./orderTypeCarousel";
 import PlaceOrderCarousel from "./placeOrderCarousel";
 
 const TradeButton = ({ rowSelection, data }) => {
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      return sessionStorage.getItem("token");
+    }
+  }
   const [segment, setSegment] = useState("Equity");
   const [orderType, setOrderType] = useState("MARKET_ORDER");
   const [limit_price, setLimitPrice] = useState(0.0);
@@ -40,36 +47,38 @@ const TradeButton = ({ rowSelection, data }) => {
   const [side, setSide] = useState(1);
   const [stocks, setStocks] = useState([]);
 
-  async function setEquityData() {
-    const data = await getEquityTickersAPI();
+  async function setEquityData(token) {
+    const data = await getEquityTickersAPI(token);
     console.log(data);
     setStocks(data);
   }
-  async function setOptionsData() {
-    const data = await getOptionsTickersAPI();
+  async function setOptionsData(token) {
+    const data = await getOptionsTickersAPI(token);
     console.log(data);
     setStocks(data);
   }
-  async function setFuturesData() {
-    const data = await getFuturesTickersAPI();
+  async function setFuturesData(token) {
+    const data = await getFuturesTickersAPI(token);
     console.log(data);
     setStocks(data);
   }
 
   useEffect(() => {
-    switch (segment) {
-      case "Equity":
-        setEquityData();
-        break;
-      case "Futures":
-        setFuturesData();
-        break;
-      case "Options":
-        setOptionsData();
-        break;
-      default:
-        break;
-    }
+    checkLogin().then((token) => {
+      switch (segment) {
+        case "Equity":
+          setEquityData(token);
+          break;
+        case "Futures":
+          setFuturesData(token);
+          break;
+        case "Options":
+          setOptionsData(token);
+          break;
+        default:
+          break;
+      }
+    });
   }, [segment]);
 
   const newTradeAPICall = (e) => {
