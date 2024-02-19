@@ -31,11 +31,14 @@ import OrderTypeCarousel from "./orderTypeCarousel";
 import PlaceOrderCarousel from "./placeOrderCarousel";
 
 const TradeButton = ({ rowSelection, data }) => {
+  const [token, setToken] = useState("");
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      return sessionStorage.getItem("token");
+      const tk = sessionStorage.getItem("token");
+      setToken(tk);
+      return tk;
     }
   }
   const [segment, setSegment] = useState("Equity");
@@ -103,7 +106,7 @@ const TradeButton = ({ rowSelection, data }) => {
       side: side,
     };
     console.log(tradeData);
-    placeTradeAPI(tradeData).then((resp) => {
+    placeTradeAPI(tradeData, token).then((resp) => {
       toast("Trade placed successfully");
     });
   };
