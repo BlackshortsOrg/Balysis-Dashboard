@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { UserTable } from "@/components/ManualTrade/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import moment from "moment";
 import { toast } from "sonner";
 import { activeClientPositionsAPI } from "@/api/activePositions";
 import { getManualSignals } from "@/api/getManualSignals";
@@ -276,7 +277,9 @@ const accounts = () => {
           {signals_data.map((signal) => (
             <TableRow key={signal.signal_id}>
               <TableCell className="">
-                {new Date(signal.created_at).toString()}
+                {moment(new Date(signal.created_at)).format(
+                  "DD MMM hh:mm:ss A",
+                )}
               </TableCell>
               {/* <TableCell>{signal.signal_id}</TableCell> */}
               <TableCell>{`${signal.exchange}:${signal.symbol}-${signal.segment}`}</TableCell>

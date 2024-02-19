@@ -15,9 +15,18 @@ export default function client({ params }) {
     dertivativepnl: 100000,
     commoditypnl: 100000,
   });
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      const tk = sessionStorage.getItem("token");
+      // setToken(tk);
+      return tk;
+    }
+  }
   const [strategiesData, setStrategiesData] = useState([]);
-  async function fetchStrategiesData() {
-    const resp = await getUserMetricAPI(parseInt(params.id));
+  async function fetchStrategiesData(token) {
+    const resp = await getUserMetricAPI(parseInt(params.id), token);
     const global_metrics = {
       totalpnl: (
         parseFloat(resp.total_realised_pnl) +
@@ -81,7 +90,9 @@ export default function client({ params }) {
     setStrategiesData(strategiesData);
   }
   useEffect(() => {
-    fetchStrategiesData();
+    checkLogin().then((token) => {
+      fetchStrategiesData(token);
+    });
   }, []);
   // const strategiesData = [
   //   {
