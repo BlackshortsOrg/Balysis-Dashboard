@@ -300,7 +300,9 @@ const accounts = () => {
               </TableCell>
               <TableCell>
                 <TrashIcon
-                  onClick={() => cancelTradeAPI(signal.signal_id, token)}
+                  onClick={() => cancelTradeAPI(signal, token).then((res) => {
+                    toast("Cancelled Order")
+                  })}
                 />
               </TableCell>
             </TableRow>

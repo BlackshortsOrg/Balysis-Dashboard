@@ -29,6 +29,12 @@ export default function Navbar() {
             <p>Accounts</p>
           </h1>
         </Link>
+        <Link className="flex flex-row" href="/sets">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiOutlineCodeSandbox className="mr-2 mt-1 scale-[1.50]" />
+            Sets
+          </h1>
+        </Link>
         <Link className="flex flex-row" href="/clientpositions">
           <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
             <AiOutlineStock className="mr-2 mt-1 scale-[1.50]" />
@@ -51,12 +57,6 @@ export default function Navbar() {
           <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
             <AiFillFund className="mr-2 mt-1 scale-[1.50]" />
             Transaction History
-          </h1>
-        </Link>
-        <Link className="flex flex-row" href="/sets">
-          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
-            <AiOutlineCodeSandbox className="mr-2 mt-1 scale-[1.50]" />
-            Sets
           </h1>
         </Link>
       </div>

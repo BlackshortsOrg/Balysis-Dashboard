@@ -75,7 +75,7 @@ const columns = [
         case "PENDING":
           return (
             <div>
-              <p className="bg-yellow-200 text-yellow-600 font-semibold text-xs border-yellow-600 py-1 border w-20 pl-2 rounded-sm">
+              <p className="bg-yellow-200 text-yellow-600 font-semibold text-xs border-yellow-600 py-1 border text-center rounded-sm">
                 PENDING
               </p>
             </div>
@@ -83,7 +83,7 @@ const columns = [
         case "TRADED":
           return (
             <div>
-              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border w-20 pl-2 rounded-sm">
+              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border text-center rounded-sm">
                 TRADED
               </p>
             </div>
@@ -91,7 +91,7 @@ const columns = [
         case "FILLED":
           return (
             <div>
-              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border w-20 pl-2 rounded-sm">
+              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 text-center border rounded-sm">
                 FILLED
               </p>
             </div>
@@ -99,7 +99,7 @@ const columns = [
         case "REJECTED":
           return (
             <div>
-              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border w-20 pl-2 rounded-sm">
+              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border text-center rounded-sm">
                 REJECTED
               </p>
             </div>
@@ -107,7 +107,7 @@ const columns = [
         case "FAILED":
           return (
             <div>
-              <p className="bg-red-200 text-red-600 font-semibold text-xs border-red-600 w-24 py-1 border text-center rounded-sm">
+              <p className="bg-red-200 text-red-600 font-semibold text-xs border-red-600 py-1 border text-center rounded-sm">
                 FAILED
               </p>
             </div>
@@ -115,7 +115,7 @@ const columns = [
         case "CANCELLED":
           return (
             <div>
-              <p className="bg-red-200 text-red-600 font-semibold text-xs border-red-600 w-24 py-1 border pl-2 rounded-sm">
+              <p className="bg-red-200 text-red-600 font-semibold text-xs border-red-600 py-1 text-center border rounded-sm">
                 CANCELLED
               </p>
             </div>
