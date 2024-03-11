@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function OrderTypeCarousel({ orderType, setOrderType }) {
+export default function OrderTypeCarousel({ orderType, setOrderType, carouselApi }) {
   return (
     <Card>
       <CardHeader>
@@ -20,7 +20,10 @@ export default function OrderTypeCarousel({ orderType, setOrderType }) {
           ) : (
             <div
               className="col-span-1 py-4 shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100"
-              onClick={() => setOrderType("MARKET_ORDER")}
+              onClick={() => {
+                setOrderType("MARKET_ORDER")
+                carouselApi.scrollNext()
+              }}
             >
               Market Order
             </div>
@@ -32,7 +35,10 @@ export default function OrderTypeCarousel({ orderType, setOrderType }) {
           ) : (
             <div
               className="col-span-1 py-4 shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100"
-              onClick={() => setOrderType("LIMIT_ORDER")}
+              onClick={() => {
+                setOrderType("LIMIT_ORDER")
+                carouselApi.scrollNext()
+              }}
             >
               Limit Order
             </div>
@@ -44,7 +50,10 @@ export default function OrderTypeCarousel({ orderType, setOrderType }) {
           ) : (
             <div
               className="col-span-1 py-4 shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100"
-              onClick={() => setOrderType("STOP_ORDER")}
+              onClick={() => {
+                setOrderType("STOP_ORDER")
+                carouselApi.scrollNext()
+              }}
             >
               Stop Order
             </div>
@@ -56,7 +65,10 @@ export default function OrderTypeCarousel({ orderType, setOrderType }) {
           ) : (
             <div
               className="col-span-1 py-4 shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100"
-              onClick={() => setOrderType("STOP_LIMIT_ORDER")}
+              onClick={() => {
+                setOrderType("STOP_LIMIT_ORDER")
+                carouselApi.scrollNext()
+              }}
             >
               Stop Limit Order
             </div>

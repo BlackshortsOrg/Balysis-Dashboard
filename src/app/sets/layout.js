@@ -1,8 +1,5 @@
-import { Inter, Roboto } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/components/Navbar";
-const inter = Inter({ subsets: ["latin"] });
-const roboto = Roboto({ subsets: ["latin"], weight: ["500", "100", "300", "400", "700"] })
 
 export const metadata = {
   title: "Create Next App",
@@ -12,7 +9,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={"flex flex-row " + roboto.className} >
+      <body className="flex flex-row">
         <Navbar />
         {children}
       </body>

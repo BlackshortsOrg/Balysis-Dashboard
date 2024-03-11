@@ -7,11 +7,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function SegmentCarousel({ segment, setSegment }) {
+export default function SegmentCarousel({ segment, setSegment, carouselApi }) {
   const unselectedSegmentClasses =
-    "basis-1/4 text-center shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100 py-4";
+    "col-span-1 text-center shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100 py-4";
   const selectedSegmentClasses =
-    "basis-1/4 bg-[#41AFFF] text-white text-center shadow-gray-50 border-slate-200 border rounded-xl py-4";
+    "basis-1/4 bg-[#41AFFF] text-white text-center shadow-gray-50 border-slate-200 border rounded-xl py-4 border-4";
 
   return (
     <Card>
@@ -22,14 +22,17 @@ export default function SegmentCarousel({ segment, setSegment }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-row">
+        <div className="grid grid-cols-2 text-center gap-2">
           <div
             className={
               segment === "Equity"
                 ? selectedSegmentClasses
                 : unselectedSegmentClasses
             }
-            onClick={() => setSegment("Equity")}
+            onClick={() => {
+              setSegment("Equity")
+              carouselApi.scrollNext()
+            }}
           >
             Equity
           </div>
@@ -39,7 +42,10 @@ export default function SegmentCarousel({ segment, setSegment }) {
                 ? selectedSegmentClasses
                 : unselectedSegmentClasses
             }
-            onClick={() => setSegment("Futures")}
+            onClick={() => {
+              setSegment("Futures")
+              carouselApi.scrollNext()
+            }}
           >
             Futures
           </div>
@@ -49,7 +55,10 @@ export default function SegmentCarousel({ segment, setSegment }) {
                 ? selectedSegmentClasses
                 : unselectedSegmentClasses
             }
-            onClick={() => setSegment("Options")}
+            onClick={() => {
+              setSegment("Options")
+              carouselApi.scrollNext()
+            }}
           >
             Options
           </div>
@@ -59,7 +68,10 @@ export default function SegmentCarousel({ segment, setSegment }) {
                 ? selectedSegmentClasses
                 : unselectedSegmentClasses
             }
-            onClick={() => setSegment("Commodity")}
+            onClick={() => {
+              setSegment("Commodity")
+              carouselApi.scrollNext()
+            }}
           >
             Commodity
           </div>

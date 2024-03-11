@@ -17,8 +17,9 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { getStrategySignals } from "@/api/getStrategySignals";
-export default function StrategyBox({ strategy_id, name, unrealizedpnl, realizedpnl }) {
-  const [singals, setSignals] = useState([]);
+import moment from "moment";
+export default function StrategyBox({ id, name, total_unrealised_pnl, total_realised_pnl }) {
+  const [signals, setSignals] = useState([]);
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
@@ -28,7 +29,8 @@ export default function StrategyBox({ strategy_id, name, unrealizedpnl, realized
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      getStrategySignals(strategy_id, token).then((data) => {
+      getStrategySignals(id, token).then((data) => {
+        console.log(data)
         setSignals(data)
       });
     });
@@ -38,15 +40,15 @@ export default function StrategyBox({ strategy_id, name, unrealizedpnl, realized
       <div className="mx-8 grid grid-cols-12 py-4">
         <a
           className="col-span-7 text-3xl font-bold hover:underline"
-          href={`/algotrade/${1}`}
+          href={`/algotrade/${id}`}
         >
           {name}
         </a>
         <div className="col-span-5 flex flex-row justify-between">
-          <div className="text-red-400">{unrealizedpnl}</div>
-          <div>{realizedpnl}</div>
+          <div className="text-red-400">{(total_unrealised_pnl).toFixed(2)}</div>
+          <div>{(total_realised_pnl).toFixed(2)}</div>
           <div className="text-red-400 pr-2">
-            {realizedpnl + unrealizedpnl}
+            {(total_realised_pnl + total_unrealised_pnl).toFixed(2)}
           </div>
         </div>
       </div>
@@ -78,43 +80,28 @@ export default function StrategyBox({ strategy_id, name, unrealizedpnl, realized
                   <TableHeader>
                     <TableRow>
                       <TableHead className="">Time</TableHead>
-                      <TableHead>Signal ID</TableHead>
+                      <TableHead>Signal Type</TableHead>
                       <TableHead>Stock</TableHead>
                       <TableHead>Product Type</TableHead>
                       <TableHead>Order Type</TableHead>
                       <TableHead>Qty</TableHead>
                       <TableHead>Side</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
+                      <TableHead>Limit Price</TableHead>
+                      <TableHead>Stop Price</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {/* <TableRow> */}
-                    {/*   <TableCell className="font-medium"> */}
-                    {/*     18-Jul-2023 11:44:29 */}
-                    {/*   </TableCell> */}
-                    {/*   <TableCell>abcde-asd-asd</TableCell> */}
-                    {/*   <TableCell>NIFTY23JANFUT</TableCell> */}
-                    {/*   <TableCell>NRML</TableCell> */}
-                    {/*   <TableCell>MARKET ORDER</TableCell> */}
-                    {/*   <TableCell>23</TableCell> */}
-                    {/*   <TableCell>BUY</TableCell> */}
-                    {/*   <TableCell>PENDING</TableCell> */}
-                    {/*   <TableCell className="text-right">Rs 250.00</TableCell> */}
-                    {/* </TableRow> */}
-                    {/* <TableRow> */}
-                    {/*   <TableCell className="font-medium"> */}
-                    {/*     18-Jul-2023 11:44:29 */}
-                    {/*   </TableCell> */}
-                    {/*   <TableCell>abcde-asd-asd</TableCell> */}
-                    {/*   <TableCell>NIFTY23JANFUT</TableCell> */}
-                    {/*   <TableCell>NRML</TableCell> */}
-                    {/*   <TableCell>MARKET ORDER</TableCell> */}
-                    {/*   <TableCell>23</TableCell> */}
-                    {/*   <TableCell>BUY</TableCell> */}
-                    {/*   <TableCell>FILLED</TableCell> */}
-                    {/*   <TableCell className="text-right">Rs 250.00</TableCell> */}
-                    {/* </TableRow> */}
+                    {signals.map((signal) => (<TableRow>
+                      <TableCell>{moment(new Date(signal.created_at)).format("DD MMM hh:mm:ss")}</TableCell>
+                      <TableCell>{signal.signal_type}</TableCell>
+                      <TableCell>{signal.symbol ? `${signal.exchange}:${signal.symbol}-${signal.segment}` : ""}</TableCell>
+                      <TableCell>{signal.product_type}</TableCell>
+                      <TableCell>{signal.order_type}</TableCell>
+                      <TableCell>{signal.quantity == -1 ? "" : signal.quantity}</TableCell>
+                      <TableCell>{signal.side == 0 ? "" : signal.side == 1 ? "BUY" : "SELL"}</TableCell>
+                      <TableCell>{signal.limit_price}</TableCell>
+                      <TableCell>{signal.stop_price}</TableCell>
+                    </TableRow>))}
                   </TableBody>
                 </Table>
               </div>

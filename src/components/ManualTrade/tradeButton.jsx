@@ -4,6 +4,7 @@ import _ from "lodash";
 import { toast } from "sonner";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -42,7 +43,7 @@ const TradeButton = ({ rowSelection, data }) => {
     }
   }
   const [segment, setSegment] = useState("Equity");
-  const [orderType, setOrderType] = useState("MARKET_ORDER");
+  const [orderType, setOrderType] = useState("");
   const [limit_price, setLimitPrice] = useState(0.0);
   const [stop_price, setStopPrice] = useState(0.0);
   const [product_type, setProductType] = useState("INTRADAY");
@@ -118,10 +119,12 @@ const TradeButton = ({ rowSelection, data }) => {
     query === ""
       ? stocks.slice(0, 50)
       : stocks
-          .filter((stock) => {
-            return stock.symbol.toLowerCase().includes(query.toLowerCase());
-          })
-          .slice(0, 50);
+        .filter((stock) => {
+          return stock.symbol.toLowerCase().includes(query.toLowerCase());
+        })
+        .slice(0, 50);
+
+  const [carouselApi, setCarouselAPI] = useState()
 
   return (
     <Dialog>
@@ -132,14 +135,14 @@ const TradeButton = ({ rowSelection, data }) => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]">
-        <DialogHeader className="">
-          <DialogTitle>Trade</DialogTitle>
+        <DialogHeader>
+          <DialogTitle className="">Trade - {segment} | {selectedStock ? selectedStock.symbol : ""} | {orderType}</DialogTitle>
         </DialogHeader>
         <div className="px-6">
-          <Carousel className="max-w-[725px]">
+          <Carousel setApi={setCarouselAPI} className="max-w-[725px]">
             <CarouselContent>
               <CarouselItem>
-                <SegmentCarousel segment={segment} setSegment={setSegment} />
+                <SegmentCarousel segment={segment} setSegment={setSegment} carouselApi={carouselApi} />
               </CarouselItem>
               <CarouselItem>
                 <Card>
@@ -162,7 +165,7 @@ const TradeButton = ({ rowSelection, data }) => {
                               value={stock}
                               className=""
                             >
-                              <div className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl">
+                              <div className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl" onClick={() => carouselApi.scrollNext()}>
                                 {stock.fyers_ticker},
                                 {segment === "Futures" || segment === "Options"
                                   ? new Date(stock.expiry).toString()
@@ -185,6 +188,7 @@ const TradeButton = ({ rowSelection, data }) => {
                 <OrderTypeCarousel
                   orderType={orderType}
                   setOrderType={setOrderType}
+                  carouselApi={carouselApi}
                 />
               </CarouselItem>
               <CarouselItem>
@@ -206,10 +210,12 @@ const TradeButton = ({ rowSelection, data }) => {
             <CarouselNext />
           </Carousel>
         </div>
-        <DialogFooter>
-          <Button variant="addUser" type="submit" onClick={newTradeAPICall}>
-            Submit
-          </Button>
+        <DialogFooter onClick={newTradeAPICall}>
+          <DialogClose asChild>
+            <Button variant="addUser" type="submit" >
+              Submit
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -130,10 +131,12 @@ const addUserButton = () => {
             className="col-span-2"
           />
         </div>
-        <DialogFooter>
-          <Button variant="addUser" type="submit" onClick={createUserApiCall}>
-            Submit
-          </Button>
+        <DialogFooter onClick={createUserApiCall}>
+          <DialogClose asChild>
+            <Button variant="addUser" type="submit">
+              Submit
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

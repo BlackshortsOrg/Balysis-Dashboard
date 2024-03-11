@@ -2,6 +2,7 @@
 import "./Navbar.css";
 import Image from "next/image";
 import Link from "next/link";
+import { AiOutlineTeam, AiOutlineStock, AiFillCaretRight, AiFillSliders, AiFillFund, AiOutlineCodeSandbox } from "react-icons/ai"
 
 export default function Navbar() {
   function logout() {
@@ -21,24 +22,42 @@ export default function Navbar() {
       <Link href="/dashboard" className="">
         <h1 className="text-[22px] font-bold mb-9 pl-6">Dashboard</h1>
       </Link>
-      <div className="pl-9">
-        <Link href="/accounts">
-          <h1 className="text-[16px] font-medium mb-6">Accounts</h1>
+      <div className="">
+        <Link className="flex flex-row" href="/accounts">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiOutlineTeam className="mr-2 mt-1 scale-[1.50]" />
+            <p>Accounts</p>
+          </h1>
         </Link>
-        <Link href="/clientpositions">
-          <h1 className="text-[16px] font-medium mb-6">Client Positions</h1>
+        <Link className="flex flex-row" href="/clientpositions">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiOutlineStock className="mr-2 mt-1 scale-[1.50]" />
+            Client Positions
+          </h1>
         </Link>
-        <Link href="/manualtrade">
-          <h1 className="text-[16px] font-medium mb-6">Manual Trade</h1>
+        <Link className="flex flex-row" href="/manualtrade">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiFillCaretRight className="mr-2 mt-1 scale-[1.50]" />
+            Manual Trade
+          </h1>
         </Link>
-        <Link href="/algotrade">
-          <h1 className="text-[16px] font-medium mb-6">Algo Trade</h1>
+        <Link className="flex flex-row" href="/algotrade">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiFillSliders className="mr-2 mt-1 scale-[1.50]" />
+            Algo Trade
+          </h1>
         </Link>
-        <Link href="/transactionhistory">
-          <h1 className="text-[16px] font-medium mb-6">Transaction History</h1>
+        <Link className="flex flex-row" href="/transactionhistory">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiFillFund className="mr-2 mt-1 scale-[1.50]" />
+            Transaction History
+          </h1>
         </Link>
-        <Link href="/historicaldata">
-          <h1 className="text-[16px] font-medium mb-6">Historical data</h1>
+        <Link className="flex flex-row" href="/sets">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiOutlineCodeSandbox className="mr-2 mt-1 scale-[1.50]" />
+            Sets
+          </h1>
         </Link>
       </div>
       <h1
