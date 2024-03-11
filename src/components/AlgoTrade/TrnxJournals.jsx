@@ -63,7 +63,7 @@ function TrnxJournals({ columns, data }) {
   ];
 
   return (
-    <div>
+    <div className="relative">
       <div className="flex flex-row">
         <div className="">
           <Listbox
@@ -134,7 +134,7 @@ function TrnxJournals({ columns, data }) {
           />
         </div>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-y-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -357,7 +357,7 @@ const TrxJournals = () => {
   }, []);
 
   return (
-    <div className="h-screen w-full mx-8 overflow-auto">
+    <div className="h-full w-full">
       <TrnxJournals columns={columns} data={data} />
     </div>
   );

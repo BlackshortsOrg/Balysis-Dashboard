@@ -82,7 +82,7 @@ export default function algo() {
   };
 
   return (
-    <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto">
+    <div className="bg-[#F8FCFF] w-full h-[100vh] relative">
       <div className="flex flex-row w-full pt-10">
         <h1 className="pl-[50px] font-bold text-2xl">STR V1 50</h1>
       </div>
@@ -106,7 +106,7 @@ export default function algo() {
         />
         </div>
 
-        <div className="py-6 overflow-y-auto h-full">
+        <div className="py-6 w-full h-full">
 
         {/* Conditionally render content based on the active tab */}
         {activeTab === ALGO_CONFIG.MULTIPLIER && (
@@ -116,7 +116,7 @@ export default function algo() {
           <Variable/>
         )}
         {activeTab === ALGO_CONFIG.TRNX_JOURNALS && (
-         <TrxJournals/>
+         <TrxJournals/>    
         )}
         </div>
       </div>
