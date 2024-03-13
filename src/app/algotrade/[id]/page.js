@@ -2,15 +2,21 @@
 import { AlgoTradeTable } from "@/components/AlgoTrade/AlgoTradeTable";
 import TrxJournals, { TrnxJournals } from "@/components/AlgoTrade/TrnxJournals";
 import Variable from "@/components/AlgoTrade/Variable";
+import Breadcrumbs from "@/components/Breadcrumb";
+import SecurityCards from "@/components/Dashboard/SecurityCards";
 import { Tabs } from "@/components/Tab";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 export default function algo() {
-  const name = "STR-V5 50";
-  const unrealizedpnl = 123.3;
-  const realizedpnl = 12.3;
-  const numpositions = 3;
+  const [metrics, setMetrics] = useState({
+    totalpnl: 100000,
+    realizedpnl: 100000,
+    unrealizedpnl: 100000,
+    equitypnl: 100000,
+    dertivativepnl: 100000,
+    commoditypnl: 100000,
+  });
 
-  const [activeTab, setActiveTab] = useState('MULTIPLIER');
+  const [activeTab, setActiveTab] = useState("MULTIPLIER");
 
   const column = [
     {
@@ -76,48 +82,70 @@ export default function algo() {
   ];
 
   const ALGO_CONFIG = {
-    MULTIPLIER: 'MULTIPLIER',
-    VARIABLES: 'VARIABLES',
-    TRNX_JOURNALS: 'TRNX_JOURNALS'
+    MULTIPLIER: "MULTIPLIER",
+    VARIABLES: "VARIABLES",
+    TRNX_JOURNALS: "TRNX_JOURNALS",
   };
+
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      const tk = sessionStorage.getItem("token");
+      // setToken(tk);
+      return tk;
+    }
+  }
+  async function fetchCombinedStrategyMetrics(token) {
+    //* TODO: Add api
+    return;
+    // setMetrics(global_metrics);
+  }
+
+  useEffect(() => {
+    checkLogin().then((token) => {
+      fetchCombinedStrategyMetrics(token);
+    });
+  }, []);
 
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] relative">
       <div className="flex flex-row w-full pt-10">
-        <h1 className="pl-[50px] font-bold text-2xl">STR V1 50</h1>
+        <Breadcrumbs
+          crumbs={[
+            { text: "Algo Trade", path: "/algotrade" },
+            { text: "STR V1 50" },
+          ]}
+        />
       </div>
+      <SecurityCards metrics={metrics} />
       <div className="mx-12">
         {/* Tabs for Multiplier, Variables, and Transaction Journals */}
         <div className="py-6">
-        <Tabs
-          {...AlgoTabs[0]}
-          onClick={setActiveTab}
-          currentValue={activeTab}
-        />
-        <Tabs
-          {...AlgoTabs[1]}
-          onClick={setActiveTab}
-          currentValue={activeTab}
-        />
-        <Tabs
-          {...AlgoTabs[2]}
-          onClick={setActiveTab}
-          currentValue={activeTab}
-        />
+          <Tabs
+            {...AlgoTabs[0]}
+            onClick={setActiveTab}
+            currentValue={activeTab}
+          />
+          <Tabs
+            {...AlgoTabs[1]}
+            onClick={setActiveTab}
+            currentValue={activeTab}
+          />
+          <Tabs
+            {...AlgoTabs[2]}
+            onClick={setActiveTab}
+            currentValue={activeTab}
+          />
         </div>
 
         <div className="py-6 w-full h-full">
-
-        {/* Conditionally render content based on the active tab */}
-        {activeTab === ALGO_CONFIG.MULTIPLIER && (
-          <AlgoTradeTable columns={column} data={data} />
-        )}
-        {activeTab === ALGO_CONFIG.VARIABLES && (
-          <Variable/>
-        )}
-        {activeTab === ALGO_CONFIG.TRNX_JOURNALS && (
-         <TrxJournals/>    
-        )}
+          {/* Conditionally render content based on the active tab */}
+          {activeTab === ALGO_CONFIG.MULTIPLIER && (
+            <AlgoTradeTable columns={column} data={data} />
+          )}
+          {activeTab === ALGO_CONFIG.VARIABLES && <Variable />}
+          {activeTab === ALGO_CONFIG.TRNX_JOURNALS && <TrxJournals />}
         </div>
       </div>
     </div>
