@@ -77,7 +77,7 @@ const columns = [
       <div
         className="flex flex-row items-center hover:underline hover:cursor-pointer"
         onClick={(e) =>
-          (document.location.href = "/clientpositions/" + row.original.id)
+          (document.location.href = "/clientpositions/" + row.original.id + `?name=${cell.getValue()}`)
         }
       >
         <Image

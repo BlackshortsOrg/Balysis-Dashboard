@@ -6,7 +6,7 @@ export const cancelTradeAPI = async (org_signal, token) => {
     headers: { "Content-Type": "application/json", Authorization: token },
     body: JSON.stringify({
       signal_type: "CANCEL_ORDER",
-      ref_id: org_signal.signal_id,
+      ref_id: org_signal.id,
       exchange: org_signal.exchange,
       symbol: org_signal.symbol,
       product_type: org_signal.product_type,

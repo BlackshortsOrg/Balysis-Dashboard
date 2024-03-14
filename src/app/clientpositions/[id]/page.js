@@ -5,8 +5,11 @@ import SecurityCards from "@/components/Dashboard/SecurityCards";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getUserMetricAPI } from "@/api/getUserMetric";
+import { useSearchParams } from "next/navigation";
 
 export default function client({ params }) {
+  const searchParams = useSearchParams()
+  const name = searchParams.get("name")
   const [metrics, setMetrics] = useState({
     totalpnl: 100000,
     realizedpnl: 100000,
@@ -219,7 +222,7 @@ export default function client({ params }) {
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto">
       <div className="flex flex-row w-full pt-10">
-        <h1 className="pl-[50px] font-bold text-2xl">Nandini Arora</h1>
+        <h1 className="pl-[50px] font-bold text-2xl">{name}</h1>
         <div className="px-4">
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
