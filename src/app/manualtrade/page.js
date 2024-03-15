@@ -271,59 +271,6 @@ const accounts = () => {
       {/* <button className="px-4 border">Daily</button> */}
       {/* <button className="px-4 border">All Time</button> */}
       <OpenOrders />
-      <Table>
-        <TableCaption>All list of your recent manual signals</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Time</TableHead>
-            {/* <TableHead>Signal ID</TableHead> */}
-            <TableHead>Stock</TableHead>
-            <TableHead>Signal Type</TableHead>
-            <TableHead>Order Type</TableHead>
-            <TableHead>Limit Price</TableHead>
-            <TableHead>Stop Price</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Side</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {signals_data.map((signal) => (
-            <TableRow key={signal.signal_id}>
-              <TableCell className="">
-                {moment(new Date(signal.created_at)).format(
-                  "DD MMM hh:mm:ss A",
-                )}
-              </TableCell>
-              {/* <TableCell>{signal.signal_id}</TableCell> */}
-              <TableCell>{`${signal.exchange}:${signal.symbol}-${signal.segment}`}</TableCell>
-              <TableCell className="">{signal.signal_type}</TableCell>
-              <TableCell>{signal.order_type}</TableCell>
-              <TableCell>
-                {signal.limit_price == -1 ? "-" : signal.limit_price}
-              </TableCell>
-              <TableCell>
-                {signal.stop_price == -1 ? "-" : signal.stop_price}
-              </TableCell>
-              <TableCell>
-                {signal.quantity == -1 ? "-" : signal.quantity}
-              </TableCell>
-              <TableCell>{signal.side === 1 ? "BUY" : "SELL"}</TableCell>
-              <TableCell>
-                <Pencil2Icon />
-              </TableCell>
-              <TableCell>
-                <TrashIcon
-                  onClick={() =>
-                    cancelTradeAPI(signal, token).then((res) => {
-                      toast("Cancelled Order");
-                    })
-                  }
-                />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
     </div>
   );
 };
