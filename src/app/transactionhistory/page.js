@@ -8,6 +8,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import moment from "moment";
 
 const columns = [
   {
@@ -18,6 +19,12 @@ const columns = [
   {
     header: "Time",
     accessorKey: "created_at",
+    cell: ({ cell }) => {
+      const date = moment(new Date(cell.getValue())).format(
+        "DD/MM/YYYY hh:mm:ss A",
+      );
+      return <p className="w-40">{date}</p>;
+    },
   },
   {
     header: "Signal ID",

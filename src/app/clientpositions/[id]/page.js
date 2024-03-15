@@ -8,15 +8,15 @@ import { getUserMetricAPI } from "@/api/getUserMetric";
 import { useSearchParams } from "next/navigation";
 
 export default function client({ params }) {
-  const searchParams = useSearchParams()
-  const name = searchParams.get("name")
+  const searchParams = useSearchParams();
+  const name = searchParams.get("name");
   const [metrics, setMetrics] = useState({
-    totalpnl: 100000,
-    realizedpnl: 100000,
-    unrealizedpnl: 100000,
-    equitypnl: 100000,
-    dertivativepnl: 100000,
-    commoditypnl: 100000,
+    "Total P&L": 100000,
+    "Realized P&L": 100000,
+    "Unrealized P&L": 100000,
+    "Equity P&L": 100000,
+    "Derivative P&L": 100000,
+    "Commodity P&L": 100000,
   });
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
@@ -31,17 +31,17 @@ export default function client({ params }) {
   async function fetchStrategiesData(token) {
     const resp = await getUserMetricAPI(parseInt(params.id), token);
     const global_metrics = {
-      totalpnl: (
+      "Total P&L": (
         parseFloat(resp.total_realised_pnl) +
         parseFloat(resp.total_unrealised_pnl)
       ).toFixed(2),
-      realizedpnl: resp.total_realised_pnl.toFixed(2),
-      unrealizedpnl: resp.total_unrealised_pnl.toFixed(2),
-      equitypnl: resp.total_equity_pnl.toFixed(2),
-      dertivativepnl: (resp.total_futures_pnl + resp.total_options_pnl).toFixed(
-        2,
-      ),
-      commoditypnl: resp.total_commodity_pnl.toFixed(2),
+      "Realized P&L": resp.total_realised_pnl.toFixed(2),
+      "Unrealized P&L": resp.total_unrealised_pnl.toFixed(2),
+      "Equity P&L": resp.total_equity_pnl.toFixed(2),
+      "Derivative P&L": (
+        resp.total_futures_pnl + resp.total_options_pnl
+      ).toFixed(2),
+      "Commodity P&L": resp.total_commodity_pnl.toFixed(2),
     };
     setMetrics(global_metrics);
     let strategiesData = [];

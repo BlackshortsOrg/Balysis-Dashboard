@@ -12,6 +12,7 @@ import {
   GearIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
+import { AiOutlineCodeSandbox } from "react-icons/ai";
 import Image from "next/image";
 import {
   Menubar,
@@ -34,6 +35,8 @@ import {
 } from "@/components/ui/table";
 import { reverse } from "lodash";
 import { cancelTradeAPI } from "@/api/cancelOrder";
+import { Button } from "@/components/ui/button";
+import OpenOrders from "@/components/ManualTrade/OpenOrders";
 
 // const data = [
 //   {
@@ -246,8 +249,17 @@ const accounts = () => {
   return (
     <div className="h-screen w-full mx-8 overflow-auto">
       <h1 className="text-4xl font-semibold mt-10">Manual Trade</h1>
-      <div className="my-4">
-        <TradeButton rowSelection={rowSelection} data={data} />
+      <div className="flex">
+        <div className="my-4 inline-block">
+          <TradeButton rowSelection={rowSelection} data={data} />
+        </div>
+        <a
+          href="/sets"
+          className="flex my-4 bg-[#41AFFF] text-white py-1 px-4 rounded-lg ml-4"
+        >
+          <AiOutlineCodeSandbox className="mt-1" />
+          Sets
+        </a>
       </div>
       <UserTable
         columns={columns}
@@ -255,9 +267,10 @@ const accounts = () => {
         rowSelection={rowSelection}
         setRowSelection={setRowSelection}
       />
-      <h1 className="text-4xl font-semibold mt-10 mb-2">All Signals</h1>
-      <button className="px-4 border">Daily</button>
-      <button className="px-4 border">All Time</button>
+      <h1 className="text-4xl font-semibold mt-10 mb-2">Open Orders</h1>
+      {/* <button className="px-4 border">Daily</button> */}
+      {/* <button className="px-4 border">All Time</button> */}
+      <OpenOrders />
       <Table>
         <TableCaption>All list of your recent manual signals</TableCaption>
         <TableHeader>
@@ -300,9 +313,11 @@ const accounts = () => {
               </TableCell>
               <TableCell>
                 <TrashIcon
-                  onClick={() => cancelTradeAPI(signal, token).then((res) => {
-                    toast("Cancelled Order")
-                  })}
+                  onClick={() =>
+                    cancelTradeAPI(signal, token).then((res) => {
+                      toast("Cancelled Order");
+                    })
+                  }
                 />
               </TableCell>
             </TableRow>

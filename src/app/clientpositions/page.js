@@ -77,7 +77,8 @@ const columns = [
       <div
         className="flex flex-row items-center hover:underline hover:cursor-pointer"
         onClick={(e) =>
-          (document.location.href = "/clientpositions/" + row.original.id + `?name=${cell.getValue()}`)
+          (document.location.href =
+            "/clientpositions/" + row.original.id + `?name=${cell.getValue()}`)
         }
       >
         <Image
@@ -95,12 +96,24 @@ const columns = [
     accessorKey: "broker",
     cell: ({ cell }) => {
       const broker = cell.getValue();
-      if (broker === "Fyers") {
+      if (broker === "fyers") {
         return (
           <div>
             <Image
               className="rounded-full"
               src="/images/fyers.jpeg"
+              width={40}
+              height={40}
+            />
+          </div>
+        );
+      }
+      if (broker === "iifl") {
+        return (
+          <div>
+            <Image
+              className="rounded-full"
+              src="/images/iifllogo.jpeg"
               width={40}
               height={40}
             />
@@ -185,7 +198,7 @@ const clientpositions = () => {
     const tot = {
       total_realized_pnl: resp.totalMetrics.total_realised_pnl.toFixed(2),
       total_unrealized_pnl: resp.totalMetrics.total_unrealised_pnl.toFixed(2),
-      total_strategies: resp.totalMetrics.total_strategies,
+      total_strategies: resp.totalMetrics.total_strategies - 1,
       total_margin: 0,
     };
     let data = [];
@@ -195,11 +208,12 @@ const clientpositions = () => {
       data.push({
         id: x,
         name: obj.name,
-        broker: "Fyers",
+        // broker: "fyers",
+        broker: obj.broker,
         margin: parseFloat(obj.margin.total).toFixed(2),
         unrealized: parseFloat(obj.total_unrealised_pnl).toFixed(2),
         realized: parseFloat(obj.total_realised_pnl).toFixed(2),
-        no_strategies: obj.subscribed_strategies,
+        no_strategies: obj.subscribed_strategies - 1,
       });
       tot.total_margin += parseFloat(obj.margin.total);
     }
