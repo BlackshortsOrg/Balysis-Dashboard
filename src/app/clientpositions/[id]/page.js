@@ -6,8 +6,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getUserMetricAPI } from "@/api/getUserMetric";
 import { useSearchParams } from "next/navigation";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function client({ params }) {
+  const [daily, setDaily] = useState(true)
   const searchParams = useSearchParams();
   const name = searchParams.get("name");
   const [metrics, setMetrics] = useState({
@@ -29,7 +31,7 @@ export default function client({ params }) {
   }
   const [strategiesData, setStrategiesData] = useState([]);
   async function fetchStrategiesData(token) {
-    const resp = await getUserMetricAPI(parseInt(params.id), token);
+    const resp = await getUserMetricAPI(parseInt(params.id), token, daily);
     const global_metrics = {
       "Total P&L": (
         parseFloat(resp.total_realised_pnl) +
@@ -96,136 +98,22 @@ export default function client({ params }) {
     checkLogin().then((token) => {
       fetchStrategiesData(token);
     });
-  }, []);
-  // const strategiesData = [
-  //   {
-  //     name: "MANUAL",
-  //     realizedpnl: 0.0,
-  //     unrealizedpnl: -652.5,
-  //     holdings: {
-  //       "NSE:IDEA-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //       "NSE:ITC-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //     },
-  //     positions: {
-  //       "NSE:NIFTY28SEP2023": {
-  //         qty: 50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       }
-  //     }
-  //   },
-  //   {
-  //     name: "STR-915-v3",
-  //     realizedpnl: 0.0,
-  //     unrealizedpnl: -652.5,
-  //     holdings: {
-  //       "NSE:IDEA-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //       "NSE:ITC-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //     },
-  //     positions: {
-  //       "NSE:NIFTY28SEP2023": {
-  //         qty: 50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       }
-  //     }
-  //   },
-  //   {
-  //     name: "STR-915-v1",
-  //     realizedpnl: 0.0,
-  //     unrealizedpnl: -652.5,
-  //     holdings: {
-  //       "NSE:IDEA-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //       "NSE:ITC-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //     },
-  //     positions: {
-  //       "NSE:NIFTY28SEP2023": {
-  //         qty: 50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       }
-  //     }
-  //   },
-  //   {
-  //     name: "STR-915-v2",
-  //     realizedpnl: 0.0,
-  //     unrealizedpnl: -652.5,
-  //     holdings: {
-  //       "NSE:IDEA-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //       "NSE:ITC-EQ": {
-  //         qty: -50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       },
-  //     },
-  //     positions: {
-  //       "NSE:NIFTY28SEP2023": {
-  //         qty: 50,
-  //         ltp: 20.25,
-  //         realizedpnl: 652.25,
-  //         unrealizedpnl: 0,
-  //         avgprice: 23.4,
-  //       }
-  //     }
-  //   },
-  // ]
+  }, [daily]);
+
   return (
-    <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto">
-      <div className="flex flex-row w-full pt-10">
-        <h1 className="pl-[50px] font-bold text-2xl">{name}</h1>
+    <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto ">
+      <div className="pl-[50px] flex flex-row w-full pt-10">
+        <h1 className="font-bold text-2xl">{name}</h1>
         <div className="px-4">
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
+        <div className="basis-[100%]"></div>
+        <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="">
+          <TabsList>
+            <TabsTrigger value="daily">Daily</TabsTrigger>
+            <TabsTrigger value="alltime">All Time</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
       <SecurityCards metrics={metrics} />
       <StrategiesHeader />

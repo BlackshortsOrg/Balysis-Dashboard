@@ -12,36 +12,9 @@ import {
 import { ClientPositionsTable } from "@/components/ClientPositions/ClientPositionsTable";
 import ControlPanelButton from "@/components/ClientPositions/ControlPanelButton";
 import { activeClientPositionsAPI } from "@/api/activePositions";
-
-const data = [
-  {
-    id: 1,
-    name: "Esharky",
-    broker: "Fyers",
-    margin: 10000,
-    unrealized: 5000,
-    realized: 5000,
-    no_strategies: 2,
-  },
-  {
-    id: 2,
-    name: "Aadeesh",
-    broker: "Fyers",
-    margin: 10000,
-    unrealized: 5000,
-    realized: 5000,
-    no_strategies: 2,
-  },
-  {
-    id: 3,
-    name: "Abhishek",
-    broker: "Zerodha",
-    margin: 10000,
-    unrealized: 5000,
-    realized: 5000,
-    no_strategies: 8,
-  },
-];
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const columns = [
   // {
@@ -77,8 +50,8 @@ const columns = [
       <div
         className="flex flex-row items-center hover:underline hover:cursor-pointer"
         onClick={(e) =>
-          (document.location.href =
-            "/clientpositions/" + row.original.id + `?name=${cell.getValue()}`)
+        (document.location.href =
+          "/clientpositions/" + row.original.id + `?name=${cell.getValue()}`)
         }
       >
         <Image
@@ -185,6 +158,7 @@ const columns = [
 ];
 
 const clientpositions = () => {
+  const [daily, setDaily] = useState(true)
   const [table_data, setTableData] = useState([]);
   const [total_data, setTotalData] = useState({
     total_realized_pnl: 0,
@@ -193,7 +167,7 @@ const clientpositions = () => {
     total_margin: 0,
   });
   async function callAPI(token) {
-    const resp = await activeClientPositionsAPI(token);
+    const resp = await activeClientPositionsAPI(token, daily);
     console.log(resp);
     const tot = {
       total_realized_pnl: resp.totalMetrics.total_realised_pnl.toFixed(2),
@@ -232,7 +206,7 @@ const clientpositions = () => {
     checkLogin().then((token) => {
       callAPI(token);
     });
-  }, []);
+  }, [daily]);
 
   return (
     <div className="h-screen w-full mx-8">
@@ -255,6 +229,16 @@ const clientpositions = () => {
         <div className="pt-1 mx-4 text-green-400">
           {total_data.total_strategies}
         </div>
+      </div>
+      <div>
+        <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="w-[400px]">
+          <TabsList>
+            <TabsTrigger value="daily">Daily</TabsTrigger>
+            <TabsTrigger value="alltime">All Time</TabsTrigger>
+          </TabsList>
+          {/* <TabsContent value="account">Make changes to your account here.</TabsContent> */}
+          {/* <TabsContent value="password">Change your password here.</TabsContent> */}
+        </Tabs>
       </div>
       <ClientPositionsTable columns={columns} data={table_data} />
     </div>

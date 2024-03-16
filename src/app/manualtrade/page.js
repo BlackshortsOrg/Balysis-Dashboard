@@ -2,16 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { UserTable } from "@/components/ManualTrade/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import moment from "moment";
-import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { activeClientPositionsAPI } from "@/api/activePositions";
 import { getManualSignals } from "@/api/getManualSignals";
-import {
-  PlusIcon,
-  Pencil2Icon,
-  GearIcon,
-  TrashIcon,
-} from "@radix-ui/react-icons";
 import { AiOutlineCodeSandbox } from "react-icons/ai";
 import Image from "next/image";
 import {
@@ -24,49 +17,8 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import TradeButton from "@/components/ManualTrade/tradeButton";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { reverse } from "lodash";
-import { cancelTradeAPI } from "@/api/cancelOrder";
-import { Button } from "@/components/ui/button";
 import OpenOrders from "@/components/ManualTrade/OpenOrders";
-
-// const data = [
-//   {
-//     id: 1,
-//     name: "Esharky",
-//     broker: "Fyers",
-//     margin: 10000,
-//     unrealized: 5000,
-//     realized: 5000,
-//     no_strategies: 2,
-//   },
-//   {
-//     id: 2,
-//     name: "Aadeesh",
-//     broker: "Fyers",
-//     margin: 10000,
-//     unrealized: 5000,
-//     realized: 5000,
-//     no_strategies: 2,
-//   },
-//   {
-//     id: 3,
-//     name: "Abhishek",
-//     broker: "Zerodha",
-//     margin: 10000,
-//     unrealized: 5000,
-//     realized: 5000,
-//     no_strategies: 8,
-//   },
-// ];
 
 const columns = [
   {
@@ -120,12 +72,24 @@ const columns = [
     accessorKey: "broker",
     cell: ({ cell }) => {
       const broker = cell.getValue();
-      if (broker === "Fyers") {
+      if (broker === "fyers") {
         return (
           <div>
             <Image
               className="rounded-full"
               src="/images/fyers.jpeg"
+              width={40}
+              height={40}
+            />
+          </div>
+        );
+      }
+      if (broker === "iifl") {
+        return (
+          <div>
+            <Image
+              className="rounded-full"
+              src="/images/iifllogo.jpeg"
               width={40}
               height={40}
             />
@@ -200,6 +164,7 @@ const columns = [
 ];
 
 const accounts = () => {
+  const [daily, setDaily] = useState(true)
   const [signals_data, setSignalsData] = useState([]);
   const [rowSelection, setRowSelection] = React.useState([]);
   const [data, setData] = useState([]);
@@ -212,7 +177,7 @@ const accounts = () => {
   }
 
   async function callAPI(token) {
-    const resp = await activeClientPositionsAPI(token);
+    const resp = await activeClientPositionsAPI(token, daily);
     console.log(resp);
     let data = [];
 
@@ -221,7 +186,7 @@ const accounts = () => {
       data.push({
         id: x,
         name: obj.name,
-        broker: "Fyers",
+        broker: obj.broker,
         margin: parseFloat(obj.margin.total).toFixed(2),
         unrealized: parseFloat(obj.total_unrealised_pnl).toFixed(2),
         realized: parseFloat(obj.total_realised_pnl).toFixed(2),
@@ -244,7 +209,7 @@ const accounts = () => {
       fetchSignals(token);
       callAPI(token);
     });
-  }, []);
+  }, [daily]);
 
   return (
     <div className="h-screen w-full mx-8 overflow-auto">
@@ -261,6 +226,16 @@ const accounts = () => {
           Sets
         </a>
       </div>
+      <div>
+        <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="w-[400px]">
+          <TabsList>
+            <TabsTrigger value="daily">Daily</TabsTrigger>
+            <TabsTrigger value="alltime">All Time</TabsTrigger>
+          </TabsList>
+          {/* <TabsContent value="account">Make changes to your account here.</TabsContent> */}
+          {/* <TabsContent value="password">Change your password here.</TabsContent> */}
+        </Tabs>
+      </div>
       <UserTable
         columns={columns}
         data={data}
@@ -268,8 +243,6 @@ const accounts = () => {
         setRowSelection={setRowSelection}
       />
       <h1 className="text-4xl font-semibold mt-10 mb-2">Open Orders</h1>
-      {/* <button className="px-4 border">Daily</button> */}
-      {/* <button className="px-4 border">All Time</button> */}
       <OpenOrders />
     </div>
   );
