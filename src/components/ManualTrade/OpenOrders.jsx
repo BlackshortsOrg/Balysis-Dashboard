@@ -13,6 +13,8 @@ import {
 import { getOpenOrders } from "@/api/getOpenOrders";
 import moment from "moment";
 import { Pencil2Icon, TrashIcon } from "@radix-ui/react-icons";
+import { cancelTradeAPI } from "@/api/cancelOrder";
+import { toast } from "sonner";
 
 export default function OpenOrders() {
   const [activeTab, setActiveTab] = useState(0);
@@ -62,7 +64,7 @@ export default function OpenOrders() {
         <TabsContent value="">-</TabsContent>
         {users.map((user) => {
           return (
-            <TabsContent value={user.id}>
+            <TabsContent key={user.id} value={user.id}>
               <Table>
                 <TableCaption>
                   All list of your recent manual signals
@@ -71,7 +73,7 @@ export default function OpenOrders() {
                   <TableRow>
                     <TableHead>Time</TableHead>
                     <TableHead>Stock</TableHead>
-                    <TableHead>Signal Type</TableHead>
+                    {/* <TableHead>Signal Type</TableHead> */}
                     <TableHead>Order Type</TableHead>
                     <TableHead>Limit Price</TableHead>
                     <TableHead>Stop Price</TableHead>
@@ -89,7 +91,7 @@ export default function OpenOrders() {
                           )}
                         </TableCell>
                         <TableCell>{`${signal.exchange}:${signal.symbol}-${signal.segment}`}</TableCell>
-                        <TableCell className="">{signal.signal_type}</TableCell>
+                        {/* <TableCell className="">{signal.signal_type}</TableCell> */}
                         <TableCell>{signal.order_type}</TableCell>
                         <TableCell>
                           {signal.limit_price == -1 ? "-" : signal.limit_price}

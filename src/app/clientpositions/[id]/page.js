@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function client({ params }) {
   const [daily, setDaily] = useState(true)
+  const [ltps, setLTPs] = useState({})
   const searchParams = useSearchParams();
   const name = searchParams.get("name");
   const [metrics, setMetrics] = useState({
@@ -32,6 +33,9 @@ export default function client({ params }) {
   const [strategiesData, setStrategiesData] = useState([]);
   async function fetchStrategiesData(token) {
     const resp = await getUserMetricAPI(parseInt(params.id), token, daily);
+    console.log(resp.ltps)
+    setLTPs(resp.ltps)
+    console.log(resp)
     const global_metrics = {
       "Total P&L": (
         parseFloat(resp.total_realised_pnl) +
@@ -58,10 +62,14 @@ export default function client({ params }) {
         ).toFixed(2),
         holdings: {},
         positions: {},
+        active: resp.strategies[strat].active,
+        subscribed: resp.strategies[strat].subscribed,
+        id: resp.strategies[strat].id
       };
       for (const symbol in resp.strategies[strat].symbols) {
         if (symbol.endsWith("CNC")) {
           data.holdings[symbol] = {
+            name: resp.strategies[strat].symbols[symbol].name,
             buyqty: resp.strategies[strat].symbols[symbol].buyqty,
             sellqty: resp.strategies[strat].symbols[symbol].sellqty,
             netqty: resp.strategies[strat].symbols[symbol].netqty,
@@ -76,6 +84,7 @@ export default function client({ params }) {
           };
         } else {
           data.positions[symbol] = {
+            name: resp.strategies[strat].symbols[symbol].name,
             buyqty: resp.strategies[strat].symbols[symbol].buyqty,
             sellqty: resp.strategies[strat].symbols[symbol].sellqty,
             netqty: resp.strategies[strat].symbols[symbol].netqty,
@@ -107,7 +116,7 @@ export default function client({ params }) {
         <div className="px-4">
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
-        <div className="basis-[100%]"></div>
+        <div className="basis-[75%]"></div>
         <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="">
           <TabsList>
             <TabsTrigger value="daily">Daily</TabsTrigger>
@@ -118,7 +127,7 @@ export default function client({ params }) {
       <SecurityCards metrics={metrics} />
       <StrategiesHeader />
       {strategiesData.map((strategy) => (
-        <StrategyCard strategy={strategy} />
+        <StrategyCard key={strategy.id} strategy={strategy} user_id={params.id} daily={daily} ltps={ltps} />
       ))}
     </div>
   );

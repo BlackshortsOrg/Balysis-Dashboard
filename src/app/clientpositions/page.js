@@ -213,20 +213,20 @@ const clientpositions = () => {
       <h1 className="text-4xl font-semibold mt-10">Active Client Positions</h1>
       <div className="my-4 flex flex-row">
         <ControlPanelButton />
-        <div className="pt-1 mx-4">Relaized P/L</div>
-        <div className="pt-1 mx-4 text-green-400">
+        <div className="pt-1 mx-4">Relaized P/L:</div>
+        <div className={"pt-1 mx-4 font-semibold " + (total_data.total_realized_pnl < 0 ? "text-red-500" : "text-green-500")}>
           Rs {total_data.total_realized_pnl}
         </div>
-        <div className="pt-1 mx-4">Unrelaized P/L</div>
-        <div className="pt-1 mx-4 text-green-400">
+        <div className="pt-1 mx-4">Unrelaized P/L:</div>
+        <div className={"pt-1 mx-4 font-semibold " + (total_data.total_unrealized_pnl < 0 ? "text-red-500" : "text-green-500")}>
           Rs {total_data.total_unrealized_pnl}
         </div>
-        <div className="pt-1 mx-4">Total Available Margin</div>
-        <div className="pt-1 mx-4 text-green-400">
+        <div className="pt-1 mx-4">Total Available Margin:</div>
+        <div className="pt-1 mx-4 text-green-500 font-semibold">
           {total_data.total_margin}
         </div>
-        <div className="pt-1 mx-4">Total Strategies</div>
-        <div className="pt-1 mx-4 text-green-400">
+        <div className="pt-1 mx-4">Total Strategies:</div>
+        <div className="pt-1 mx-4 text-green-400 font-semibold">
           {total_data.total_strategies}
         </div>
       </div>
@@ -241,7 +241,7 @@ const clientpositions = () => {
         </Tabs>
       </div>
       <ClientPositionsTable columns={columns} data={table_data} />
-    </div>
+    </div >
   );
 };
 

@@ -19,6 +19,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useEffect, useState } from "react";
+import { getMultiplierUserStrategy } from "@/api/getMultiplierUserStrategy";
+import { subscribeStrategyAPI } from "@/api/subscribeStrategy";
+import { squareOffStrategyForUserAPI } from "@/api/squareOffStrategy";
+import { toast } from "sonner";
 
 export default function StrategyCardHeader({
   name,
@@ -27,55 +32,103 @@ export default function StrategyCardHeader({
   realizedpnl,
   unrealizedpnl,
   numpositions,
+  active,
+  subscribed,
+  user_id,
+  strategy_id,
+  daily
 }) {
+  const [token, setToken] = useState("")
+  const [multiplier, setMultiplier] = useState(1)
+  async function changeSubscription() {
+    await subscribeStrategyAPI(token, [user_id], strategy_id, [multiplier], name)
+  }
+  async function checkLogin() {
+    if (sessionStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      const tk = sessionStorage.getItem("token");
+      setToken(tk);
+      return tk;
+    }
+  }
+  useEffect(() => {
+    if (!subscribed) return;
+    checkLogin().then((token) => {
+      getMultiplierUserStrategy(token, user_id, strategy_id).then((res) => {
+        console.log([user_id, strategy_id, res[0].multiplier])
+        setMultiplier(res[0].multiplier)
+      })
+    })
+  }, [daily])
+  async function squareOffToday() {
+    squareOffStrategyForUserAPI(token, user_id, strategy_id, false).then((resp) => {
+      toast("Squared off Strategy for Today")
+    })
+  }
+  async function shutdown() {
+    squareOffStrategyForUserAPI(token, user_id, strategy_id, true).then((resp) => {
+      toast("Shutdown Strategy")
+    })
+  }
+  const totalpnl = parseFloat(realizedpnl) + parseFloat(unrealizedpnl)
   return (
     <div className="mx-12 bg-white mt-8 rounded-md shadow-md">
       <div className="mx-8 grid grid-cols-12 py-4">
-        <div className="col-span-7 text-3xl font-bold">{name}</div>
+        <div className="col-span-7 text-3xl font-bold">
+          <span>{name}</span>
+          {!active && <span className="text-sm text-red-600 border-1 border border-red-600 ml-2">DISABLED TODAY</span>}
+          {!subscribed && <span className="text-sm text-red-600 border-1 border border-red-600 ml-2">UNSUBSCRIBED</span>}
+        </div>
         <div className="col-span-5 flex flex-row justify-between">
-          <div className="text-red-400">{unrealizedpnl}</div>
-          <div>{realizedpnl}</div>
-          <div className="text-red-400 pr-2">
+          <div></div>
+          <div className={unrealizedpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>{unrealizedpnl}</div>
+          <div className={realizedpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>{realizedpnl}</div>
+          <div className={totalpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>
             {parseFloat(realizedpnl) + parseFloat(unrealizedpnl)}
           </div>
         </div>
       </div>
-      <div className="mx-8 flex flex-row pb-4">
-        <div className="basis-5/6 flex flex-row">
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
-                Multiplier
-              </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Edit Multiplier</DialogTitle>
-                <DialogDescription>
-                  Make changes to your multiplier for this strategy here. Click
-                  save when you're done.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    type="number"
-                    placeholder={4}
-                    id="name"
-                    className="col-span-3"
-                  />
+      <div className="ml-4 flex flex-row pb-4">
+        <div className="basis-[95%] flex flex-row">
+          {subscribed &&
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
+                  Multiplier
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit Multiplier</DialogTitle>
+                  <DialogDescription>
+                    NOTE - This is brought to effect immediately
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="multiplier" className="text-right">
+                      Multiplier
+                    </Label>
+                    <Input
+                      type="number"
+                      value={multiplier}
+                      onChange={(e) => {
+                        setMultiplier(e.target.value)
+                      }}
+                      id="multiplier"
+                      className="col-span-3"
+                    />
+                  </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button variant="addUser" type="submit">
-                  Save changes
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button variant="addUser" type="submit" onClick={changeSubscription}>
+                    Save changes
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          }
           <Dialog>
             <DialogTrigger asChild>
               <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
@@ -147,11 +200,14 @@ export default function StrategyCardHeader({
               {/* </DialogFooter> */}
             </DialogContent>
           </Dialog>
-          <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
-            Exit({numpositions})
-          </button>
+          {active && <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md" onClick={squareOffToday}>
+            Square Off Today({numpositions})
+          </button>}
+          {subscribed && <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md" onClick={shutdown}>
+            Shutdown
+          </button>}
         </div>
-        <div className="basis-1/6">
+        <div className="basis-[15%]">
           <button
             className="flex flex-row border border-[#41AFFF] text-[#41AFFF] px-8 py-2"
             onClick={() => setShow(!show)}
