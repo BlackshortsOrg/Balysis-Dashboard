@@ -37,6 +37,8 @@ export function TxTable({ columns, data }) {
   const table = useReactTable({
     data,
     columns,
+    columnResizeMode: "onChange",
+    columnResizeDirection: "ltr",
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
     getPaginationRowModel: getPaginationRowModel(),

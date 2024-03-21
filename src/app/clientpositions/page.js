@@ -166,7 +166,7 @@ const clientpositions = () => {
     total_strategies: 0,
     total_margin: 0,
   });
-  async function callAPI(token) {
+  async function callAPI(token, daily) {
     const resp = await activeClientPositionsAPI(token, daily);
     console.log(resp);
     const tot = {
@@ -204,8 +204,16 @@ const clientpositions = () => {
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      callAPI(token);
+      callAPI(token, daily);
     });
+    const interval = setInterval(() => {
+      checkLogin().then((token) => {
+        callAPI(token, daily);
+      });
+    }, 3000)
+    return () => {
+      clearInterval(interval)
+    }
   }, [daily]);
 
   return (

@@ -28,7 +28,7 @@ const columns = [
           width={40}
           height={40}
         />
-        <p className="ml-2">{cell.getValue()}</p>
+        <p className="ml-2 font-medium">{cell.getValue()}</p>
       </div>
     ),
   },

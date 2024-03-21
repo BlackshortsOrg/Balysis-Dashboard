@@ -165,16 +165,16 @@ const columns = [
 
 const accounts = () => {
   const [daily, setDaily] = useState(true)
-  const [signals_data, setSignalsData] = useState([]);
+  // const [signals_data, setSignalsData] = useState([]);
   const [rowSelection, setRowSelection] = React.useState([]);
   const [data, setData] = useState([]);
   const [token, setToken] = useState("");
 
-  async function fetchSignals(token) {
-    const resp = await getManualSignals(token);
-    console.log(resp);
-    setSignalsData(reverse(resp));
-  }
+  // async function fetchSignals(token) {
+  //   const resp = await getManualSignals(token);
+  //   console.log(resp);
+  //   setSignalsData(reverse(resp));
+  // }
 
   async function callAPI(token) {
     const resp = await activeClientPositionsAPI(token, daily);
@@ -206,7 +206,7 @@ const accounts = () => {
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      fetchSignals(token);
+      // fetchSignals(token);
       callAPI(token);
     });
   }, [daily]);

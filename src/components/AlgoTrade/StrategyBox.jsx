@@ -51,7 +51,7 @@ export default function StrategyBox({
           {name}
           {disabled ? (
             <span className="ml-2 border-red-900 text-sm text-red-500">
-              DISABLED
+              INACTIVE
             </span>
           ) : (
             ""

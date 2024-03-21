@@ -31,7 +31,7 @@ export default function client({ params }) {
     }
   }
   const [strategiesData, setStrategiesData] = useState([]);
-  async function fetchStrategiesData(token) {
+  async function fetchStrategiesData(token, daily) {
     const resp = await getUserMetricAPI(parseInt(params.id), token, daily);
     console.log(resp.ltps)
     setLTPs(resp.ltps)
@@ -104,9 +104,25 @@ export default function client({ params }) {
     setStrategiesData(strategiesData);
   }
   useEffect(() => {
+    // const interval = setInterval(() => {
+    //   checkLogin().then((token) => {
+    //     fetchStrategiesData(token);
+    //   });
+    // }
+    // return () => {
+    //   clearInterval(interval)
+    // })
     checkLogin().then((token) => {
-      fetchStrategiesData(token);
-    });
+      fetchStrategiesData(token, daily)
+    })
+    const interval = setInterval(() => {
+      checkLogin().then((token) => {
+        fetchStrategiesData(token, daily)
+      })
+    }, 3000)
+    return () => {
+      clearInterval(interval)
+    }
   }, [daily]);
 
   return (

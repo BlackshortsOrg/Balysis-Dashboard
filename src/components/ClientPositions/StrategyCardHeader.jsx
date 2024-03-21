@@ -85,7 +85,7 @@ export default function StrategyCardHeader({
           <div className={unrealizedpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>{unrealizedpnl}</div>
           <div className={realizedpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>{realizedpnl}</div>
           <div className={totalpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>
-            {parseFloat(realizedpnl) + parseFloat(unrealizedpnl)}
+            {(parseFloat(realizedpnl) + parseFloat(unrealizedpnl)).toFixed(2)}
           </div>
         </div>
       </div>
