@@ -7,7 +7,7 @@ import Mail from "../../public/profileScreenSvgs/mail.svg";
 import Cake from "../../public/profileScreenSvgs/cake.svg";
 import Phone from "../../public/profileScreenSvgs/Call.svg";
 
-const ProfileCard = () => {
+const ProfileCard = ({ id, data }) => {
   return (
     <>
       <div className="w-[75vw] h-[35vh] ml-[3.5vw] mt-[10vh] relative bg-stone-300 rounded-[5px]">

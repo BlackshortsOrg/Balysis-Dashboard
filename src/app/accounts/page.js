@@ -11,6 +11,15 @@ import { listUsersAPI } from "@/api/listUsers";
 import deleteUserAPI from "@/api/deleteUser";
 import { loginIIFLAPI } from "@/api/iifllogin";
 import moment from "moment";
+import { ToggleButton, EyeIcon } from "@/components/Accounts/fontAwesomeUtill";
+
+const change = (key) => {
+  let s = "";
+  for (let i = 0; i < key.length; i++) {
+    s += "*";
+  }
+  return s;
+};
 
 const columns = [
   {
@@ -21,13 +30,19 @@ const columns = [
     header: "Name",
     accessorKey: "name",
     cell: ({ cell }) => (
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center relative">
+        <div
+          className={`${
+            cell.getValue() ? "bg-green-400" : "bg-red-500"
+          } h-3 w-3  border-2 border-white z-10 rounded-full absolute bottom-0 left-0`}
+        ></div>
         <Image
           className="rounded-full"
           src="/images/dummy.png"
           width={40}
           height={40}
         />
+
         <p className="ml-2 font-medium">{cell.getValue()}</p>
       </div>
     ),
@@ -76,6 +91,16 @@ const columns = [
   {
     header: "Secret ID",
     accessorKey: "secret_id",
+    cell: ({ cell }) => {
+      const [isVisible, setIsVisible] = React.useState(false);
+
+      return (
+        <div className="flex justify-around">
+          <div>{isVisible ? cell.getValue() : change(cell.getValue())}</div>
+          <EyeIcon isVisible={isVisible} setIsVisible={setIsVisible} />
+        </div>
+      );
+    },
   },
   {
     header: "Last Login",
@@ -87,19 +112,10 @@ const columns = [
   },
   {
     header: "Active",
-    accessorKey: "active",
+    accessorKey: "isactive",
     cell: ({ cell }) => {
-      return cell.getValue() ? (
-        <div>
-          <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 border w-20 pl-2 rounded-sm">
-            ENABLED
-          </p>
-        </div>
-      ) : (
-        <p className="bg-red-200 text-red-600 font-semibold text-xs border-red-600 border w-20 pl-2 rounded-sm">
-          DISABLED
-        </p>
-      );
+      let status = cell.getValue() ? true : false;
+      return <ToggleButton status={status} />;
     },
   },
   {
