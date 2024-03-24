@@ -9,12 +9,11 @@
 - [ ] Get Actual Data First
 
 ### Accounts
-- [ ] Delete User Button Implement Time Based
+- [ ] Delete User Button Implement Time Based (i.e Show Delete button only after 3:30pm)
 - [x] Show alert after logging in token
-- [ ] Active Status API
-- [ ] Active Status Switch
-- [ ] Add User More Fields
-- [ ] IIFL Autologin - Disable Refresh button
+- [ ] Integrate Active Status API
+- [ ] Create Active Status Switch
+- [ ] IIFL has Autologin - Disable Refresh button and mention that it has autologin
 
 ### Sets
 - [x] Delete Set
