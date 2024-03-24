@@ -146,10 +146,10 @@ const columns = [
 
 const transactionhistory = () => {
   async function checkLogin() {
-    if (sessionStorage.getItem("token") === null) {
+    if (localStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      return sessionStorage.getItem("token");
+      return localStorage.getItem("token");
     }
   }
 

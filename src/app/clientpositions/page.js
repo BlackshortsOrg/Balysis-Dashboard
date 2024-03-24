@@ -196,10 +196,10 @@ const clientpositions = () => {
     setTotalData(tot);
   }
   async function checkLogin() {
-    if (sessionStorage.getItem("token") === null) {
+    if (localStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      return sessionStorage.getItem("token");
+      return localStorage.getItem("token");
     }
   }
   useEffect(() => {
@@ -218,7 +218,7 @@ const clientpositions = () => {
 
   return (
     <div className="h-screen w-full mx-8">
-      <h1 className="text-4xl font-semibold mt-10">Active Client Positions</h1>
+      <h1 className="text-4xl font-semibold mt-10">Active Positions</h1>
       <div className="my-4 flex flex-row">
         <ControlPanelButton />
         <div className="pt-1 mx-4">Relaized P/L:</div>

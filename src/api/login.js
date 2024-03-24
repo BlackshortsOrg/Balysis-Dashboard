@@ -9,5 +9,11 @@ export const loginAPI = async (username, password) => {
       password,
     }),
   });
-  return await response.json();
+  const data = await response.json();
+  if (response.ok) {
+    const token = data.token;
+    localStorage.setItem("token", token);
+  }
+
+  return data;
 };

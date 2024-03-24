@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { UserTable } from "@/components/ManualTrade/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { activeClientPositionsAPI } from "@/api/activePositions";
 import { getManualSignals } from "@/api/getManualSignals";
 import { AiOutlineCodeSandbox } from "react-icons/ai";
@@ -164,7 +164,7 @@ const columns = [
 ];
 
 const accounts = () => {
-  const [daily, setDaily] = useState(true)
+  const [daily, setDaily] = useState(true);
   // const [signals_data, setSignalsData] = useState([]);
   const [rowSelection, setRowSelection] = React.useState([]);
   const [data, setData] = useState([]);
@@ -196,10 +196,12 @@ const accounts = () => {
     setData(data);
   }
   async function checkLogin() {
-    if (sessionStorage.getItem("token") === null) {
+    if (localStorage.getItem("token") === null) {
+      console.log("No token found");
       window.location.href = "/login";
     } else {
-      const tk = sessionStorage.getItem("token");
+      console.log("token found");
+      const tk = localStorage.getItem("token");
       setToken(tk);
       return tk;
     }
@@ -227,7 +229,14 @@ const accounts = () => {
         </a>
       </div>
       <div>
-        <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="w-[400px]">
+        <Tabs
+          defaultValue="daily"
+          value={daily ? "daily" : "alltime"}
+          onValueChange={(e) => {
+            setDaily(e === "daily");
+          }}
+          className="w-[400px]"
+        >
           <TabsList>
             <TabsTrigger value="daily">Daily</TabsTrigger>
             <TabsTrigger value="alltime">All Time</TabsTrigger>

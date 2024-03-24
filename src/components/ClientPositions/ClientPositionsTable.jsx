@@ -36,13 +36,13 @@ export function ClientPositionsTable({ columns, data }) {
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead className="text-center" key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 );
               })}
@@ -53,6 +53,7 @@ export function ClientPositionsTable({ columns, data }) {
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
+                className="text-center"
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
               >

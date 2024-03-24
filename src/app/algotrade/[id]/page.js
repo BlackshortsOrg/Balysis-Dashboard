@@ -154,10 +154,10 @@ export default function algo() {
   };
 
   async function checkLogin() {
-    if (sessionStorage.getItem("token") === null) {
+    if (localStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      const tk = sessionStorage.getItem("token");
+      const tk = localStorage.getItem("token");
       // setToken(tk);
       return tk;
     }

@@ -1,4 +1,4 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
 import Image from "next/image";
 import ProfilePic from "../../public/profileScreenSvgs/profilePic.svg";
 import Location from "../../public/profileScreenSvgs/Location.svg";
@@ -6,8 +6,29 @@ import Person from "../../public/profileScreenSvgs/person.svg";
 import Mail from "../../public/profileScreenSvgs/mail.svg";
 import Cake from "../../public/profileScreenSvgs/cake.svg";
 import Phone from "../../public/profileScreenSvgs/Call.svg";
+import { getUserDetails } from "@/api/getUserDetails";
+import { get } from "lodash";
 
-const ProfileCard = ({ id, data }) => {
+const ProfileCard = ({ param }) => {
+  async function checkLogin() {
+    if (localStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      const token = localStorage.getItem("token");
+      return token;
+    }
+  }
+  useEffect(() => {
+    checkLogin().then((token) => {
+      fetchData(token);
+    });
+  }, []);
+  const [userDetails, setUserDetails] = useState(null);
+  async function fetchData(token) {
+    const data = await getUserDetails(get(param, "id"), token);
+    setUserDetails(data);
+    console.log(data, userDetails);
+  }
   return (
     <>
       <div className="w-[75vw] h-[35vh] ml-[3.5vw] mt-[10vh] relative bg-stone-300 rounded-[5px]">
@@ -20,10 +41,10 @@ const ProfileCard = ({ id, data }) => {
             alt="Profile Picture"
           />
           <div className="w-[15rem] h-[2.5rem] relative ml-[15vw] text-sky-400 text-3xl font-bold font-['Montserrat']">
-            Charles Deo
+            {userDetails && userDetails[0].name}
           </div>
           <div className="w-[11rem] h-[1.6rem] relative ml-[15vw] opacity-70 text-sky-400 text-base font-normal font-['Montserrat']">
-            UI/UX Designer
+            {userDetails && userDetails[0].description}
           </div>
         </div>
         <div className="flex row-span-2 w-[60vw] justify-between">
@@ -38,7 +59,7 @@ const ProfileCard = ({ id, data }) => {
               src={Location}
               alt="location"
             />
-            2239 Hog Camp Road<br></br>Schaumburg
+            {userDetails && userDetails[0].aadhar}
           </div>
         </div>
         <div className="flex row-span-2 w-[60vw] justify-between">
@@ -50,7 +71,7 @@ const ProfileCard = ({ id, data }) => {
               src={Person}
               alt="gender"
             />
-            Male
+            {userDetails && userDetails[0].pan}
           </div>
           <div className="w-[14rem] h-15 mt-[2vh] flex row-auto justify-start opacity-70 text-black text-base font-normal font-['Montserrat']">
             <Image
@@ -60,7 +81,7 @@ const ProfileCard = ({ id, data }) => {
               src={Mail}
               alt="mail"
             />
-            charles5182@ummoh.com
+            {userDetails && userDetails[0].email}
           </div>
         </div>
         <div className="flex row-span-2 w-[60vw] justify-between">
@@ -76,7 +97,7 @@ const ProfileCard = ({ id, data }) => {
               src={Cake}
               alt="birth date"
             />
-            Born June 26, 1980
+            {userDetails && userDetails[0].broker}
           </div>
           <div className="w-[14rem] h-15 mt-[2vh] flex row-auto justify-start opacity-70 text-black text-base font-normal font-['Montserrat']">
             <Image
@@ -86,7 +107,7 @@ const ProfileCard = ({ id, data }) => {
               src={Phone}
               alt="Phone Number"
             />
-            33757005467
+            {userDetails && userDetails[0].phone}
           </div>
         </div>
       </div>

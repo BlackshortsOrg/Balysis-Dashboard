@@ -3,16 +3,18 @@ import { getAllStrategyMetrics } from "@/api/getAllStrategyMetrics";
 import StrategiesHeader from "@/components/AlgoTrade/StrategiesHeader";
 import StrategyBox from "@/components/AlgoTrade/StrategyBox";
 import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function algotrade() {
-  const [daily, setDaily] = useState(true)
+  const [daily, setDaily] = useState(true);
   const [strategies_data, setStrategiesData] = useState({});
   async function checkLogin() {
-    if (sessionStorage.getItem("token") === null) {
+    if (localStorage.getItem("token") === null) {
+      console.log("No token found");
       window.location.href = "/login";
     } else {
-      return sessionStorage.getItem("token");
+      console.log("token found");
+      return localStorage.getItem("token");
     }
   }
   useEffect(() => {
@@ -29,7 +31,14 @@ export default function algotrade() {
       <div className="flex flex-row w-full pt-10">
         <h1 className="pl-[50px] font-bold text-2xl">Algo Trade</h1>
         <div className="basis-[70%]"></div>
-        <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="">
+        <Tabs
+          defaultValue="daily"
+          value={daily ? "daily" : "alltime"}
+          onValueChange={(e) => {
+            setDaily(e === "daily");
+          }}
+          className=""
+        >
           <TabsList>
             <TabsTrigger value="daily">Daily</TabsTrigger>
             <TabsTrigger value="alltime">All Time</TabsTrigger>
@@ -37,16 +46,18 @@ export default function algotrade() {
         </Tabs>
       </div>
       <StrategiesHeader />
-      {Object.keys(strategies_data).filter((k) => k != "manual").map((k) => (
-        <StrategyBox
-          key={strategies_data[k].id}
-          id={strategies_data[k].id}
-          name={k}
-          total_realised_pnl={strategies_data[k].total_realised_pnl}
-          total_unrealised_pnl={strategies_data[k].total_unrealised_pnl}
-          disabled={!strategies_data[k].active}
-        />
-      ))}
+      {Object.keys(strategies_data)
+        .filter((k) => k != "manual")
+        .map((k) => (
+          <StrategyBox
+            key={strategies_data[k].id}
+            id={strategies_data[k].id}
+            name={k}
+            total_realised_pnl={strategies_data[k].total_realised_pnl}
+            total_unrealised_pnl={strategies_data[k].total_unrealised_pnl}
+            disabled={!strategies_data[k].active}
+          />
+        ))}
     </div>
   );
 }
