@@ -13,7 +13,7 @@ import {
 
 export default function Navbar() {
   function logout() {
-    window.sessionStorage.removeItem("token");
+    window.localStorage.removeItem("token");
     window.location.href = "/login";
   }
   return (
