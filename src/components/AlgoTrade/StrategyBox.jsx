@@ -46,7 +46,7 @@ export default function StrategyBox({
       <div className="mx-8 grid grid-cols-12 py-4">
         <a
           className="col-span-7 text-3xl font-bold hover:underline"
-          href={`/algotrade/${id}`}
+          href={`/algotrade/${id}?strategy_name=${name}`}
         >
           {name}
           {disabled ? (
