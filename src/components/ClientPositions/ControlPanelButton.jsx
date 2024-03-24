@@ -2,15 +2,34 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PlusIcon, Pencil2Icon, GearIcon } from "@radix-ui/react-icons";
+import { GearIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
+import { useState } from "react";
+import { squareOffAll } from "@/api/squareOffAll";
+import { toast } from "sonner";
 
-export default function ControlPanelButton() {
+export default function ControlPanelButton({ token }) {
+  async function squareofftoday() {
+    squareOffAll(token, otp, false).then(() => {
+      toast("Squared Off Today For All")
+    })
+  }
+  async function shutdown() {
+    squareOffAll(token, otp, true).then(() => {
+      toast("Fundhouse Shutdown")
+    })
+  }
+  const [otp, setOTP] = useState()
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -27,15 +46,58 @@ export default function ControlPanelButton() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-12 text-center">
-          <div className="col-span-4 border font-semibold hover:text-white hover:cursor-pointer hover:bg-[#FF2241] hover:border-black border-[#FF2241] mx-2 py-4 rounded-lg">
-            Square Off All Positions
-          </div>
-          <div className="col-span-4 border font-semibold hover:text-white hover:cursor-pointer hover:bg-[#FF2241] hover:border-black border-[#FF2241] mx-2 py-4 rounded-lg">
-            Convert NRML to MIS
-          </div>
-          <div className="col-span-4 border font-semibold hover:text-white hover:cursor-pointer hover:bg-[#FF2241] hover:border-black border-[#FF2241] mx-2 py-4 rounded-lg">
-            Convert MIS to NRML
-          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="col-span-6 border font-semibold hover:text-white hover:cursor-pointer hover:bg-[#FF2241] hover:border-black border-[#FF2241] mx-2 py-4 rounded-lg">
+                Square Off All Positions Today
+              </div>
+            </DialogTrigger>
+            <DialogContent className="w-full">
+              <DialogTitle>Enter PIN For Squareoff All Today</DialogTitle>
+              <DialogDescription className="mx-auto">
+                <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </DialogDescription>
+              <Button variant="addUser" onClick={squareofftoday}>Submit</Button>
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="col-span-6 border font-semibold hover:text-white hover:cursor-pointer hover:bg-[#FF2241] hover:border-black border-[#FF2241] mx-2 py-4 rounded-lg">
+                Shutdown Fundhouse
+              </div>
+            </DialogTrigger>
+            <DialogContent className="w-full">
+              <DialogTitle>Enter PIN For Fundhouse Shutdown</DialogTitle>
+              <DialogDescription className="mx-auto">
+                <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </DialogDescription>
+              <Button variant="addUser" onClick={shutdown}>Submit</Button>
+            </DialogContent>
+          </Dialog>
         </div>
       </DialogContent>
     </Dialog>

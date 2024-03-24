@@ -23,7 +23,7 @@ export default function StrategyBox({
   name,
   total_unrealised_pnl,
   total_realised_pnl,
-  disabled,
+  active,
 }) {
   const [signals, setSignals] = useState([]);
   async function checkLogin() {
@@ -49,12 +49,14 @@ export default function StrategyBox({
           href={`/algotrade/${id}?strategy_name=${name}`}
         >
           {name}
-          {disabled ? (
+          {active == 0 ? (
             <span className="ml-2 border-red-900 text-sm text-red-500">
               INACTIVE
             </span>
           ) : (
-            ""
+            <span className="ml-2 text-sm text-green-500">
+              Active Users = {active}
+            </span>
           )}
         </a>
         <div className="col-span-5 flex flex-row justify-between">

@@ -101,17 +101,10 @@ export default function client({ params }) {
       }
       strategiesData.push(data);
     }
+    strategiesData.sort((a, b) => a.name.localeCompare(b.name))
     setStrategiesData(strategiesData);
   }
   useEffect(() => {
-    // const interval = setInterval(() => {
-    //   checkLogin().then((token) => {
-    //     fetchStrategiesData(token);
-    //   });
-    // }
-    // return () => {
-    //   clearInterval(interval)
-    // })
     checkLogin().then((token) => {
       fetchStrategiesData(token, daily)
     })

@@ -31,10 +31,10 @@ export default function StrategyHoldings({ stock, data, ltp }) {
         </div>
         <div className="col-span-5 flex flex-row justify-between">
           <div>{ltp || 0.0}</div>
-          <div className={unrealizedpnl < 0 ? "text-red-500 font-semibold" : " text-green-500 font-semibold"}>{data.unrealizedpnl}</div>
-          <div className={realizedpnl < 0 ? "text-red-500 font-semibold" : " text-green-500 font-semibold"}>{data.realizedpnl}</div>
+          <div className={unrealizedpnl < 0 ? "text-red-500 font-semibold" : " text-green-500 font-semibold"}>{unrealizedpnl.toFixed(2)}</div>
+          <div className={realizedpnl < 0 ? "text-red-500 font-semibold" : " text-green-500 font-semibold"}>{realizedpnl.toFixed(2)}</div>
           <div className={totalpnl < 0 ? "text-red-500 font-semibold" : " text-green-500 font-semibold"}>
-            {totalpnl}
+            {totalpnl.toFixed(2)}
           </div>
         </div>
       </div>

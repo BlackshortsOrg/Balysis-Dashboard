@@ -77,7 +77,7 @@ export default function StrategyCardHeader({
       <div className="mx-8 grid grid-cols-12 py-4">
         <div className="col-span-7 text-3xl font-bold">
           <span>{name}</span>
-          {!active && <span className="text-sm text-red-600 border-1 border border-red-600 ml-2">DISABLED TODAY</span>}
+          {subscribed && !active && <span className="text-sm text-red-600 border-1 border border-red-600 ml-2">DISABLED TODAY</span>}
           {!subscribed && <span className="text-sm text-red-600 border-1 border border-red-600 ml-2">UNSUBSCRIBED</span>}
         </div>
         <div className="col-span-5 flex flex-row justify-between">
@@ -200,10 +200,10 @@ export default function StrategyCardHeader({
               {/* </DialogFooter> */}
             </DialogContent>
           </Dialog>
-          {active && <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md" onClick={squareOffToday}>
+          {active && <button className="bg-[#E01133] text-white shadow-sm py-2 px-6 mx-2 rounded-md" onClick={squareOffToday}>
             Square Off Today({numpositions})
           </button>}
-          {subscribed && <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md" onClick={shutdown}>
+          {name !== "manual" && subscribed && <button className="bg-[#E01133] text-white shadow-sm py-2 px-6 mx-2 rounded-md" onClick={shutdown}>
             Shutdown
           </button>}
         </div>

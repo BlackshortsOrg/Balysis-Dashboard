@@ -45,6 +45,7 @@ const sets = () => {
   const [presets, setPresets] = useState({});
   const [new_name, setNewName] = useState("BNF2");
   const [token, setToken] = useState("");
+  const [refresh, setRefresh] = useState(true)
 
   useEffect(() => {
     checkLogin().then((token) => {
@@ -72,7 +73,7 @@ const sets = () => {
         });
       });
     });
-  }, []);
+  }, [refresh]);
   async function updateSet(preset_name) {
     const preset_obj = presets[preset_name];
     const new_presets = {
@@ -120,6 +121,13 @@ const sets = () => {
     //   description: "Set Updated",
     // });
     toast("Set Updated");
+    setRefresh(!refresh)
+  }
+  async function deleteWholeSet(preset_name) {
+    deletePresetsAPI(token, preset_name, null).then(() => {
+      toast("Deleted Set")
+      setRefresh(!refresh)
+    })
   }
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto">
@@ -249,6 +257,14 @@ const sets = () => {
                     }}
                   >
                     Save
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      deleteWholeSet(preset_name);
+                    }}
+                  >
+                    Delete
                   </Button>
                 </Disclosure.Panel>
               </Disclosure>

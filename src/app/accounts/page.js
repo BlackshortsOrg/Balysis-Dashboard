@@ -224,6 +224,7 @@ const columns = [
 ];
 
 const accounts = () => {
+  const [refresh, setRefresh] = React.useState(true)
   const [data, setData] = React.useState([]);
   async function checkLogin() {
     if (localStorage.getItem("token") === null) {
@@ -245,12 +246,12 @@ const accounts = () => {
     checkLogin().then((token) => {
       listUsers(token);
     });
-  }, []);
+  }, [refresh]);
   return (
     <div className="h-screen w-full mx-8">
       <h1 className="text-4xl my-4 font-semibold">All Accounts</h1>
       <div className="my-2">
-        <AddUserButton />
+        <AddUserButton refresh={refresh} setRefresh={setRefresh} />
       </div>
       <UserTable columns={columns} data={data} />
     </div>

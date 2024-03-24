@@ -17,13 +17,13 @@
 - [ ] IIFL Autologin - Disable Refresh button
 
 ### Sets
-- [ ] Delete Set
+- [x] Delete Set
 
 ### Client Positions
-- [ ] Control Panel Change Buttons, call API
+- [x] Control Panel Change Buttons, call API
 - [ ] 3 Dot menu Squareoff API Call
 - [ ] Orderbook API Call for each client
-- [ ] Round 2 decimal for each position
+- [x] Round 2 decimal for each position
 - [ ] Re-enable strategy button
  
 ### Manual Trade

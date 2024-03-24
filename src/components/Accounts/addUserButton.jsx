@@ -16,7 +16,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createUserAPI } from "@/api/createUser";
 
-const addUserButton = () => {
+const addUserButton = ({ refresh, setRefresh }) => {
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
@@ -41,6 +41,7 @@ const addUserButton = () => {
       token,
     );
     console.log(res);
+    setRefresh(!refresh)
   };
 
   return (

@@ -46,18 +46,16 @@ export default function algotrade() {
         </Tabs>
       </div>
       <StrategiesHeader />
-      {Object.keys(strategies_data)
-        .filter((k) => k != "manual")
-        .map((k) => (
-          <StrategyBox
-            key={strategies_data[k].id}
-            id={strategies_data[k].id}
-            name={k}
-            total_realised_pnl={strategies_data[k].total_realised_pnl}
-            total_unrealised_pnl={strategies_data[k].total_unrealised_pnl}
-            disabled={!strategies_data[k].active}
-          />
-        ))}
+      {Object.keys(strategies_data).filter((k) => k != "manual").map((k) => (
+        <StrategyBox
+          key={strategies_data[k].id}
+          id={strategies_data[k].id}
+          name={k}
+          total_realised_pnl={strategies_data[k].total_realised_pnl}
+          total_unrealised_pnl={strategies_data[k].total_unrealised_pnl}
+          active={strategies_data[k].active}
+        />
+      ))}
     </div>
   );
 }
