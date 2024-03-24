@@ -19,15 +19,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Listbox } from "@headlessui/react";
 
 import Image from "next/image";
 import { getTransactionHistoryAPI } from "@/api/getTransactionHistory";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { useSearchParams } from "next/navigation";
+import { capitalize, filter, get, join, map, split } from "lodash";
+import moment from "moment";
 
 const status_options = ["PENDING", "TRADED", "REJECTED", "FAILED", ""];
 
@@ -64,76 +61,6 @@ function TrnxJournals({ columns, data }) {
 
   return (
     <div className="relative">
-      <div className="flex flex-row">
-        <div className="">
-          <Listbox
-            value={table.getColumn("strategy_name")?.getFilterValue() ?? ""}
-            onChange={(value) => {
-              table.getColumn("strategy_name")?.setFilterValue(value);
-            }}
-          >
-            <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
-              Filter Strategies{" "}
-              {table.getColumn("strategy_name")?.getFilterValue() ?? " "}
-            </Listbox.Button>
-            <Listbox.Options>
-              {all_strategies.map((option) => (
-                <Listbox.Option key={option} value={option}>
-                  {option ? option : "None"}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Listbox>
-        </div>
-        <div className="">
-          <Listbox
-            value={table.getColumn("status")?.getFilterValue() ?? ""}
-            onChange={(value) => {
-              table.getColumn("status")?.setFilterValue(value);
-            }}
-          >
-            <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
-              Filter Status {table.getColumn("status")?.getFilterValue() ?? " "}
-            </Listbox.Button>
-            <Listbox.Options>
-              {status_options.map((option) => (
-                <Listbox.Option key={option} value={option}>
-                  {option ? option : "None"}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Listbox>
-        </div>
-        <div className="">
-          <Listbox
-            value={table.getColumn("name")?.getFilterValue() ?? ""}
-            onChange={(value) => {
-              table.getColumn("name")?.setFilterValue(value);
-            }}
-          >
-            <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
-              Filter Name {table.getColumn("name")?.getFilterValue() ?? " "}
-            </Listbox.Button>
-            <Listbox.Options>
-              {all_users.map((option) => (
-                <Listbox.Option key={option} value={option}>
-                  {option ? option : "None"}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Listbox>
-        </div>
-        <div className="">
-          <Input
-            placeholder="Filter messages..."
-            value={table.getColumn("message")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("message")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
-        </div>
-      </div>
       <div className="rounded-md border overflow-y-auto">
         <Table>
           <TableHeader>
@@ -209,41 +136,10 @@ function TrnxJournals({ columns, data }) {
 
 const columns = [
   {
-    header: "Transaction ID",
-    accessorKey: "transaction_id",
-    width: "auto",
-  },
-  {
     header: "Time",
     accessorKey: "created_at",
-  },
-  {
-    header: "Signal ID",
-    accessorKey: "id",
-    cell: ({ cell, row }) => {
-      console.log(row);
-      return (
-        <HoverCard>
-          <HoverCardTrigger>
-            <p className="text-blue-500 cursor-pointer">{cell.getValue()}</p>
-          </HoverCardTrigger>
-          <HoverCardContent>
-            <div className="flex flex-col">
-              <p className="text-xs font-semibold">
-                Signal Type: {row.original.signal_type}
-              </p>
-              <p className="text-xs">Order Type: {row.original.order_type}</p>
-              <p className="text-xs">Ref ID: {row.original.ref_id}</p>
-              <p className="text-xs">
-                Ticker:{" "}
-                {`${row.original.exchange}:${row.original.symbol}-${row.original.exchange}-${row.original.product_type}`}
-              </p>
-              <p className="text-xs">Limit Price: {row.original.limit_price}</p>
-              <p className="text-xs">Stop Price: {row.original.stop_price}</p>
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      );
+    cell: ({ cell }) => {
+      return moment(cell.getValue()).format("MMM DD, hh:mm A");
     },
   },
   {
@@ -260,10 +156,6 @@ const columns = [
         <p className="ml-2">{cell.getValue()}</p>
       </div>
     ),
-  },
-  {
-    header: "Strategy",
-    accessorKey: "strategy_name",
   },
   {
     header: "Status",
@@ -324,10 +216,31 @@ const columns = [
   {
     header: "Traded Price",
     accessorKey: "traded_price",
+    cell: ({ cell, row }) => {
+      if (cell.getValue() < 0) return get(row, "original.limit_price", 0);
+      return cell.getValue();
+    },
   },
   {
     header: "Traded Qty",
     accessorKey: "filledqty",
+    cell: ({ cell }) => (cell.getValue() < 0 ? "--" : cell.getValue()),
+  },
+  {
+    header: "Order Type",
+    accessorKey: "order_type",
+    cell: ({ cell }) => {
+      const splitInput = split(cell.getValue(), "_");
+      const formattedString = join(map(splitInput, capitalize), " ");
+      return formattedString;
+    },
+  },
+  {
+    header: "Ticker",
+    accessorKey: "ticker",
+    cell: ({ row }) => {
+      return `${row.original.exchange} | ${row.original.symbol} | ${row.original.product_type}`;
+    },
   },
   {
     header: "Message",
@@ -336,6 +249,8 @@ const columns = [
 ];
 
 const TrxJournals = () => {
+  const searchParams = useSearchParams();
+  const strategy = searchParams.get("strategy_name");
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
@@ -346,8 +261,13 @@ const TrxJournals = () => {
 
   const [data, setData] = useState([]);
   async function callAPI(token) {
-    const data = await getTransactionHistoryAPI(token);
-    setData(data);
+    const rawData = await getTransactionHistoryAPI(token);
+    //* Sanitize the data based on Strategy suggested
+    const sanitizedData = filter(
+      rawData,
+      (data) => get(data, "strategy_name") === strategy
+    );
+    setData(sanitizedData);
   }
 
   useEffect(() => {

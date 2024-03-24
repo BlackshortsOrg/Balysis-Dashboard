@@ -27,6 +27,7 @@ export function AlgoTradeTable({ columns, data }) {
   });
 
   return (
+    <div className="h-full w-full gap-5 flex flex-col">
     <div className="rounded-md border">
       <Table>
         <TableHeader>
@@ -70,6 +71,15 @@ export function AlgoTradeTable({ columns, data }) {
           )}
         </TableBody>
       </Table>
+    </div>
+    <div className="flex justify-end">
+    <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md w-36 "
+        >
+          Save
+        </button>
+        </div>
     </div>
   );
 }
