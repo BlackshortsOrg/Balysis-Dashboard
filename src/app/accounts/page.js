@@ -29,11 +29,11 @@ const columns = [
   {
     header: "Name",
     accessorKey: "name",
-    cell: ({ cell }) => (
+    cell: ({ cell, row }) => (
       <div className="flex flex-row items-center relative">
         <div
           className={`${
-            cell.getValue() ? "bg-green-400" : "bg-red-500"
+            row.original.isactive ? "bg-green-400" : "bg-red-500"
           } h-3 w-3  border-2 border-white z-10 rounded-full absolute bottom-0 left-0`}
         ></div>
         <Image

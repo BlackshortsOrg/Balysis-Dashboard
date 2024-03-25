@@ -12,7 +12,7 @@ export const EyeIcon = ({ isVisible, setIsVisible }) => {
   console.log(isVisible);
   const toggleSwitch = () => {
     setIsEyeVisible(!isEyeVisible);
-    setIsVisible(!isVisible)
+    setIsVisible(!isVisible);
   };
   return (
     <div>
@@ -24,7 +24,6 @@ export const EyeIcon = ({ isVisible, setIsVisible }) => {
 };
 
 export const ToggleButton = (props) => {
-  console.log(props.status, "hel");
   const [isToggled, setIsToggled] = useState(props.status);
 
   const toggleSwitch = () => {

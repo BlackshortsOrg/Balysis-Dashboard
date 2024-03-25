@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -18,6 +19,7 @@ import {
 import { useEffect, useState } from "react";
 import { getStrategySignals } from "@/api/getStrategySignals";
 import moment from "moment";
+import _ from "lodash";
 export default function StrategyBox({
   id,
   name,
@@ -26,6 +28,7 @@ export default function StrategyBox({
   active,
 }) {
   const [signals, setSignals] = useState([]);
+  const [daily, setDaily] = useState(true);
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
@@ -35,12 +38,12 @@ export default function StrategyBox({
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      getStrategySignals(id, token).then((data) => {
+      getStrategySignals(id, token, daily).then((data) => {
         console.log(data);
         setSignals(data);
       });
     });
-  }, []);
+  }, [daily]);
   return (
     <div className="mx-12 bg-white mt-8 rounded-md shadow-md">
       <div className="mx-8 grid grid-cols-12 py-4">
@@ -72,21 +75,34 @@ export default function StrategyBox({
           <Dialog>
             <DialogTrigger asChild>
               <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
-                Orderbook
+                Signals
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[1025px] max-h-[800px] overflow-auto">
+            <DialogContent className="sm:max-w-[1225px] max-h-[800px] overflow-auto">
               <DialogHeader>
                 <DialogTitle>Orderbook</DialogTitle>
               </DialogHeader>
               <div className="">
                 <div>
-                  <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">
-                    All Time
-                  </button>
-                  <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">
-                    Daily
-                  </button>
+                  <Tabs
+                    defaultValue="daily"
+                    value={daily ? "daily" : "alltime"}
+                    onValueChange={(e) => {
+                      setDaily(e === "daily");
+                    }}
+                    className=""
+                  >
+                    <TabsList>
+                      <TabsTrigger value="daily">Daily</TabsTrigger>
+                      <TabsTrigger value="alltime">All Time</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  {/* <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1"> */}
+                  {/*   All Time */}
+                  {/* </button> */}
+                  {/* <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1"> */}
+                  {/*   Daily */}
+                  {/* </button> */}
                 </div>
                 <Table>
                   <TableCaption>
