@@ -11,11 +11,11 @@ import {
 import moment from "moment";
 
 const columns = [
-  {
-    header: "Transaction ID",
-    accessorKey: "transaction_id",
-    width: "auto",
-  },
+  // {
+  //   header: "Transaction ID",
+  //   accessorKey: "transaction_id",
+  //   width: "auto",
+  // },
   {
     header: "Time",
     accessorKey: "created_at",
@@ -23,43 +23,83 @@ const columns = [
       const date = moment(new Date(cell.getValue())).format(
         "DD/MM/YYYY hh:mm:ss A",
       );
-      return <p className="w-40">{date}</p>;
+      return <p className="">{date}</p>;
     },
   },
   {
-    header: "Signal ID",
-    accessorKey: "id",
-    cell: ({ cell, row }) => {
-      console.log(row);
-      return (
-        <HoverCard>
-          <HoverCardTrigger>
-            <p className="text-blue-500 cursor-pointer">{cell.getValue()}</p>
-          </HoverCardTrigger>
-          <HoverCardContent>
-            <div className="flex flex-col">
-              <p className="text-xs font-semibold">
-                Signal Type: {row.original.signal_type}
-              </p>
-              <p className="text-xs">Order Type: {row.original.order_type}</p>
-              <p className="text-xs">Ref ID: {row.original.ref_id}</p>
-              <p className="text-xs">
-                Ticker:{" "}
-                {`${row.original.exchange}:${row.original.symbol}-${row.original.exchange}-${row.original.product_type}`}
-              </p>
-              <p className="text-xs">Limit Price: {row.original.limit_price}</p>
-              <p className="text-xs">Stop Price: {row.original.stop_price}</p>
-            </div>
-          </HoverCardContent>
-        </HoverCard>
-      );
-    },
+    header: "Symbol",
+    cell: ({ cell, row }) => (
+      <div>
+        {`${row.original.symbol}-${row.original.segment}-${row.original.product_type}`}
+      </div>
+    )
   },
+  {
+    header: "Order Type",
+    cell: ({ cell, row }) => (
+      <div>
+        {row.original.order_type}
+      </div>
+    )
+  },
+  {
+    header: "Limit Price",
+    accessorKey: "limit_price",
+    cell: ({ cell }) => {
+      const val = cell.getValue()
+      return (
+        <div>
+          {(val == -1 || val == 0) ? "--" : val}
+        </div>
+      )
+    }
+  },
+  {
+    header: "Stop Price",
+    accessorKey: "stop_price",
+    cell: ({ cell }) => {
+      const val = cell.getValue()
+      return (
+        <div>
+          {(val == -1 || val == 0) ? "--" : val}
+        </div>
+      )
+    }
+  },
+  // {
+  //   header: "Signal ID",
+  //   accessorKey: "id",
+  //   cell: ({ cell, row }) => {
+  //     console.log(row);
+  //     return (
+  //       <HoverCard>
+  //         <HoverCardTrigger>
+  //           <p className="text-blue-500 cursor-pointer">{cell.getValue()}</p>
+  //         </HoverCardTrigger>
+  //         <HoverCardContent>
+  //           <div className="flex flex-col">
+  //             <p className="text-xs font-semibold">
+  //               Signal Type: {row.original.signal_type}
+  //             </p>
+  //             <p className="text-xs">Order Type: {row.original.order_type}</p>
+  //             <p className="text-xs">Ref ID: {row.original.ref_id}</p>
+  //             <p className="text-xs">
+  //               Ticker:{" "}
+  //               {`${row.original.exchange}:${row.original.symbol}-${row.original.exchange}-${row.original.product_type}`}
+  //             </p>
+  //             <p className="text-xs">Limit Price: {row.original.limit_price}</p>
+  //             <p className="text-xs">Stop Price: {row.original.stop_price}</p>
+  //           </div>
+  //         </HoverCardContent>
+  //       </HoverCard>
+  //     );
+  //   },
+  // },
   {
     header: "Name",
     accessorKey: "name",
     cell: ({ cell }) => (
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center mx-1">
         <Image
           className="rounded-full"
           src="/images/dummy.png"
@@ -106,7 +146,7 @@ const columns = [
         case "REJECTED":
           return (
             <div>
-              <p className="bg-green-200 text-green-600 font-semibold text-xs border-green-600 py-1 border text-center rounded-sm">
+              <p className="bg-red-200 text-red-600 font-semibold text-xs border-red-600 py-1 border text-center rounded-sm">
                 REJECTED
               </p>
             </div>
@@ -133,10 +173,27 @@ const columns = [
   {
     header: "Traded Price",
     accessorKey: "traded_price",
+    cell: ({ cell }) => {
+      const val = cell.getValue()
+      return (
+        <div>
+          {(val == -1 || val == 0) ? "--" : val}
+        </div>
+      )
+    }
+
   },
   {
     header: "Traded Qty",
     accessorKey: "filledqty",
+    cell: ({ cell }) => {
+      const val = cell.getValue()
+      return (
+        <div>
+          {(val == -1 || val == 0) ? "--" : val}
+        </div>
+      )
+    }
   },
   {
     header: "Message",

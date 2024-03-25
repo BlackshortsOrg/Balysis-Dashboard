@@ -30,6 +30,7 @@ import {
 } from "@/api/getTickers";
 import OrderTypeCarousel from "./orderTypeCarousel";
 import PlaceOrderCarousel from "./placeOrderCarousel";
+import { getAllPresets } from "@/api/getAllPresets";
 
 const TradeButton = ({ rowSelection, data }) => {
   const [token, setToken] = useState("");
@@ -50,6 +51,9 @@ const TradeButton = ({ rowSelection, data }) => {
   const [qty, setQty] = useState(0);
   const [side, setSide] = useState(1);
   const [stocks, setStocks] = useState([]);
+
+  const [presets, setPresets] = useState(["None"])
+  const [presetObj, setPresetObj] = useState({})
 
   async function setEquityData(token) {
     const data = await getEquityTickersAPI(token);
@@ -82,10 +86,19 @@ const TradeButton = ({ rowSelection, data }) => {
         default:
           break;
       }
+      getAllPresets(token).then((resp) => {
+        setPresetObj(resp)
+        console.log(resp)
+        setPresets([...Object.keys(resp), "None"])
+      })
     });
   }, [segment]);
 
   const newTradeAPICall = (e) => {
+    if (!selectedStock) {
+      toast("Please select a valid stock", { dismissible: true })
+      return
+    }
     console.log(rowSelection);
     var selectedIds = [];
     for (const [rownum, state] of Object.entries(rowSelection)) {
@@ -93,27 +106,65 @@ const TradeButton = ({ rowSelection, data }) => {
     }
     console.log(selectedIds);
     e.preventDefault();
-    const tradeData = {
-      exchange: selectedStock.exchange,
-      symbol: selectedStock.symbol,
-      segment: selectedStock.segment,
-      signal_type: "NEW_ORDER",
-      product_type: product_type,
-      order_type: orderType,
-      limit_price: parseFloat(limit_price),
-      stop_price: parseFloat(stop_price),
-      users: selectedIds,
-      quantity: qty,
-      side: side,
-    };
-    console.log(tradeData);
-    placeTradeAPI(tradeData, token).then((resp) => {
-      toast("Trade placed successfully");
-    });
+    if (selectedSet === "None") {
+      const tradeData = {
+        exchange: selectedStock.exchange,
+        symbol: selectedStock.symbol,
+        segment: selectedStock.segment,
+        signal_type: "NEW_ORDER",
+        product_type: product_type,
+        order_type: orderType,
+        limit_price: parseFloat(limit_price),
+        stop_price: parseFloat(stop_price),
+        users: selectedIds,
+        quantity: qty,
+        side: side,
+      };
+      console.log(tradeData);
+      if (selectedIds.length === 0) {
+        toast("Please select users or set")
+        return
+      }
+      placeTradeAPI(tradeData, token).then((resp) => {
+        toast("Trade placed successfully");
+      });
+    } else {
+      console.log(selectedSet, presetObj, presetObj[selectedSet])
+      for (const user of presetObj[selectedSet]) {
+        console.log(user)
+        const tradeData = {
+          exchange: selectedStock.exchange,
+          symbol: selectedStock.symbol,
+          segment: selectedStock.segment,
+          signal_type: "NEW_ORDER",
+          product_type: product_type,
+          order_type: orderType,
+          limit_price: parseFloat(limit_price),
+          stop_price: parseFloat(stop_price),
+          users: [user.user_id],
+          quantity: qty * user.multiplier,
+          side: side,
+        };
+        placeTradeAPI(tradeData, token).then((resp) => {
+          toast("Trade placed successfully");
+        });
+      }
+    }
   };
 
   const [selectedStock, setSelectedStock] = useState(stocks[0]);
+  const [selectedSet, setSelectedSet] = useState()
   const [query, setQuery] = useState("");
+  const [setsQuery, setSetsQuery] = useState("")
+
+  const filteredSets =
+    setsQuery === ""
+      ? presets.slice(0, 50)
+      : presets
+        .filter((preset) => {
+          return preset.toLowerCase().includes(query.toLowerCase());
+        })
+        .slice(0, 50);
 
   const filteredStocks =
     query === ""
@@ -204,6 +255,49 @@ const TradeButton = ({ rowSelection, data }) => {
                   qty={qty}
                   setQty={setQty}
                 />
+              </CarouselItem>
+              <CarouselItem>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      Chose Set
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Combobox
+                      value={selectedSet}
+                      onChange={setSelectedSet}
+                    >
+                      <Combobox.Input
+                        onChange={(event) => setSetsQuery(event.target.value)}
+                        displayValue={(set) => set}
+                        className="w-full bg-slate-50 border-slate-200 border rounded-xl px-4 py-2 mt-4"
+                      />
+                      <Combobox.Options className="bg-slate-50 py-1 rounded-xl mt-2 overflow-auto h-[200px]">
+                        {filteredSets.map((set) => (
+                          <Combobox.Option
+                            key={set}
+                            value={set}
+                            className=""
+                          >
+                            <div className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl" onClick={() => carouselApi.scrollNext()}>
+                              {set}
+                              {/* {stock.fyers_ticker}, */}
+                              {/* {segment === "Futures" || segment === "Options" */}
+                              {/*   ? new Date(stock.expiry).toString() */}
+                              {/*   : ""}{" "} */}
+                              {/* , */}
+                              {/* {segment === "Futures" || segment === "Options" */}
+                              {/*   ? stock.lotsize */}
+                              {/*   : ""}{" "} */}
+                              {/* ,{stock.name},{" "} */}
+                            </div>
+                          </Combobox.Option>
+                        ))}
+                      </Combobox.Options>
+                    </Combobox>
+                  </CardContent>
+                </Card>
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious />

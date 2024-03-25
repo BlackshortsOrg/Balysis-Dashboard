@@ -23,7 +23,7 @@ import { Listbox } from "@headlessui/react";
 
 const status_options = [
   "PENDING",
-  "TRADED",
+  "FILLED",
   "REJECTED",
   "FAILED",
   ""

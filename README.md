@@ -26,7 +26,8 @@
 - [ ] Re-enable strategy button
  
 ### Manual Trade
-- [ ] Add Set to Manual Trade
+- [x] Add Set to Manual Trade
+- [ ] Fix Filter for Sets
 - [ ] Modify Order Popup
 - [ ] Cancel Order Highlight and change colour
 
@@ -37,5 +38,5 @@
 - [ ] Notes API
 
 ### Transaction History
-- [ ] Show Signals as well
-- [ ] Replace -1 with dash
+- [x] Show Signals as well
+- [x] Replace -1 with dash
