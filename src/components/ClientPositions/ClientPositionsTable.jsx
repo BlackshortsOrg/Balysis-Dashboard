@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export function ClientPositionsTable({ columns, data }) {
+export function ClientPositionsTable({ columns, data, daily }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
     data,
@@ -24,6 +24,7 @@ export function ClientPositionsTable({ columns, data }) {
     onRowSelectionChange: setRowSelection,
     state: {
       rowSelection,
+      dailyState: daily
     },
     enableRowSelection: true,
   });
@@ -40,9 +41,9 @@ export function ClientPositionsTable({ columns, data }) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 );
               })}
