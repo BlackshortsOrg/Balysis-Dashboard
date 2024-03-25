@@ -150,17 +150,36 @@ const clientpositions = () => {
                   ></path>
                 </svg>
               </MenubarTrigger>
-              <MenubarContent>
-                <MenubarItem>
-                  New Trade <MenubarShortcut>⌘T</MenubarShortcut>
-                </MenubarItem>
-                <MenubarItem>Square Off</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Reduce QTY by Half</MenubarItem>
-                <MenubarSeparator />
-                <MenubarItem>Convert all Position to MIS</MenubarItem>
-                <MenubarItem>Convert all Position to NRML</MenubarItem>
-              </MenubarContent>
+              {/* <MenubarItem>Square Off</MenubarItem> */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  {/* <div className="col-span-6 border font-semibold hover:text-white hover:cursor-pointer hover:bg-[#FF2241] hover:border-black border-[#FF2241] mx-2 py-4 rounded-lg"> */}
+                  {/*   Square Off All Positions Today */}
+                  {/* </div> */}
+                  <MenubarContent>
+                    <MenubarItem>Square Off</MenubarItem>
+                  </MenubarContent>
+                </DialogTrigger>
+                <DialogContent className="w-full">
+                  <DialogTitle>Enter PIN For Disabling User</DialogTitle>
+                  <DialogDescription className="mx-auto">
+                    <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </DialogDescription>
+                  <Button variant="addUser" onClick>Confirm</Button>
+                </DialogContent>
+              </Dialog>
             </MenubarMenu>
           </Menubar>
         </div>
@@ -218,14 +237,14 @@ const clientpositions = () => {
     checkLogin().then((token) => {
       callAPI(token, daily);
     });
-    const interval = setInterval(() => {
-      checkLogin().then((token) => {
-        callAPI(token, daily);
-      });
-    }, 3000)
-    return () => {
-      clearInterval(interval)
-    }
+    // const interval = setInterval(() => {
+    //   checkLogin().then((token) => {
+    //     callAPI(token, daily);
+    //   });
+    // }, 3000)
+    // return () => {
+    //   clearInterval(interval)
+    // }
   }, [daily]);
 
   return (
