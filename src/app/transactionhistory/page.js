@@ -43,7 +43,9 @@ const columns = [
     accessorKey: "limit_price",
     cell: ({ cell }) => {
       const val = cell.getValue();
-      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+      return (
+        <div className="text-center">{val == -1 || val == 0 ? "--" : val}</div>
+      );
     },
   },
   {
@@ -51,7 +53,9 @@ const columns = [
     accessorKey: "stop_price",
     cell: ({ cell }) => {
       const val = cell.getValue();
-      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+      return (
+        <div className="text-center">{val == -1 || val == 0 ? "--" : val}</div>
+      );
     },
   },
   {
@@ -170,7 +174,9 @@ const columns = [
     accessorKey: "traded_price",
     cell: ({ cell }) => {
       const val = cell.getValue();
-      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+      return (
+        <div className="text-center">{val == -1 || val == 0 ? "--" : val}</div>
+      );
     },
   },
   {
@@ -178,12 +184,23 @@ const columns = [
     accessorKey: "filledqty",
     cell: ({ cell }) => {
       const val = cell.getValue();
-      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+      return (
+        <div className="text-center">{val == -1 || val == 0 ? "--" : val}</div>
+      );
     },
   },
   {
     header: "Message",
     accessorKey: "message",
+    maxWidth: "20px",
+    overflow: "auto",
+    cell: ({ cell }) => {
+      return (
+        <div className="max-w-[100px] max-h-[40px] overflow-auto">
+          {cell.getValue()}
+        </div>
+      );
+    },
   },
 ];
 
