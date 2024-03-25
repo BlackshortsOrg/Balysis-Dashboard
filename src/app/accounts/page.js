@@ -81,6 +81,15 @@ const columns = [
             height={40}
           />
         );
+      } else if (broker === "jmfinancials") {
+        return (
+          <Image
+            className="rounded-full"
+            src="/images/jmfinancial.png"
+            width={40}
+            height={40}
+          />
+        );
       }
     },
   },
@@ -224,7 +233,7 @@ const columns = [
 ];
 
 const accounts = () => {
-  const [refresh, setRefresh] = React.useState(true)
+  const [refresh, setRefresh] = React.useState(true);
   const [data, setData] = React.useState([]);
   async function checkLogin() {
     if (localStorage.getItem("token") === null) {

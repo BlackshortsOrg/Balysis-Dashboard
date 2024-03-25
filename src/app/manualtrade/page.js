@@ -84,6 +84,18 @@ const columns = [
           </div>
         );
       }
+      if (broker === "jmfinancials") {
+        return (
+          <div>
+            <Image
+              className="rounded-full"
+              src="/images/jmfinancial.png"
+              width={40}
+              height={40}
+            />
+          </div>
+        );
+      }
       if (broker === "iifl") {
         return (
           <div>

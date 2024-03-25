@@ -41,7 +41,7 @@ const addUserButton = ({ refresh, setRefresh }) => {
       token,
     );
     console.log(res);
-    setRefresh(!refresh)
+    setRefresh(!refresh);
   };
 
   return (
@@ -52,7 +52,7 @@ const addUserButton = ({ refresh, setRefresh }) => {
           <span>Add user</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[825px]">
         <DialogHeader>
           <DialogTitle>Add User</DialogTitle>
           <DialogDescription>
@@ -104,6 +104,18 @@ const addUserButton = ({ refresh, setRefresh }) => {
                 }
                 onClick={() => setBroker("iifl")}
                 src="/images/iifllogo.jpeg"
+                width={80}
+                height={80}
+              />
+              <Image
+                className={
+                  "rounded-full border-2 inline-block" +
+                  (broker == "jmfinancials"
+                    ? " border-[4px] border-green-300"
+                    : "")
+                }
+                onClick={() => setBroker("jmfinancials")}
+                src="/images/jmfinancial.png"
                 width={80}
                 height={80}
               />

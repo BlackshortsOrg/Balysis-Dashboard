@@ -13,9 +13,9 @@ import {
 import { ClientPositionsTable } from "@/components/ClientPositions/ClientPositionsTable";
 import ControlPanelButton from "@/components/ClientPositions/ControlPanelButton";
 import { activeClientPositionsAPI } from "@/api/activePositions";
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { squareOffUser } from "@/api/squareOffUsers";
 import { toast } from "sonner";
 import {
@@ -23,7 +23,7 @@ import {
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp"
+} from "@/components/ui/input-otp";
 import {
   Dialog,
   DialogContent,
@@ -35,16 +35,16 @@ import {
 import { Button } from "@/components/ui/button";
 
 const clientpositions = () => {
-  const [token, setToken] = useState("")
-  const [otp, setOTP] = useState("")
+  const [token, setToken] = useState("");
+  const [otp, setOTP] = useState("");
   async function squareOffUserToday(user_id) {
-    await squareOffUser(token, otp, user_id, false)
-    toast("Squared Off User for Today")
+    await squareOffUser(token, otp, user_id, false);
+    toast("Squared Off User for Today");
   }
 
   async function shutdownUser(user_id) {
-    await squareOffUser(token, otp, user_id, true)
-    toast("Shutdown User")
+    await squareOffUser(token, otp, user_id, true);
+    toast("Shutdown User");
   }
   const columns = [
     {
@@ -58,8 +58,10 @@ const clientpositions = () => {
         <div
           className="flex flex-row items-center hover:underline hover:cursor-pointer"
           onClick={(e) =>
-          (document.location.href =
-            "/clientpositions/" + row.original.id + `?name=${cell.getValue()}`)
+            (document.location.href =
+              "/clientpositions/" +
+              row.original.id +
+              `?name=${cell.getValue()}`)
           }
         >
           <Image
@@ -83,6 +85,18 @@ const clientpositions = () => {
               <Image
                 className="rounded-full"
                 src="/images/fyers.jpeg"
+                width={40}
+                height={40}
+              />
+            </div>
+          );
+        }
+        if (broker === "jmfinancials") {
+          return (
+            <div>
+              <Image
+                className="rounded-full"
+                src="/images/jmfinancial.png"
                 width={40}
                 height={40}
               />
@@ -177,7 +191,9 @@ const clientpositions = () => {
                       </InputOTPGroup>
                     </InputOTP>
                   </DialogDescription>
-                  <Button variant="addUser" onClick>Confirm</Button>
+                  <Button variant="addUser" onClick>
+                    Confirm
+                  </Button>
                 </DialogContent>
               </Dialog>
             </MenubarMenu>
@@ -187,7 +203,7 @@ const clientpositions = () => {
     },
   ];
 
-  const [daily, setDaily] = useState(true)
+  const [daily, setDaily] = useState(true);
   const [table_data, setTableData] = useState([]);
   const [total_data, setTotalData] = useState({
     total_realized_pnl: 0,
@@ -229,8 +245,8 @@ const clientpositions = () => {
       window.location.href = "/login";
     } else {
       const tkn = sessionStorage.getItem("token");
-      setToken(tkn)
-      return tkn
+      setToken(tkn);
+      return tkn;
     }
   }
   useEffect(() => {
@@ -253,11 +269,25 @@ const clientpositions = () => {
       <div className="my-4 flex flex-row">
         <ControlPanelButton token={token} />
         <div className="pt-1 mx-4">Relaized P/L:</div>
-        <div className={"pt-1 mx-4 font-semibold " + (total_data.total_realized_pnl < 0 ? "text-red-500" : "text-green-500")}>
+        <div
+          className={
+            "pt-1 mx-4 font-semibold " +
+            (total_data.total_realized_pnl < 0
+              ? "text-red-500"
+              : "text-green-500")
+          }
+        >
           Rs {total_data.total_realized_pnl}
         </div>
         <div className="pt-1 mx-4">Unrelaized P/L:</div>
-        <div className={"pt-1 mx-4 font-semibold " + (total_data.total_unrealized_pnl < 0 ? "text-red-500" : "text-green-500")}>
+        <div
+          className={
+            "pt-1 mx-4 font-semibold " +
+            (total_data.total_unrealized_pnl < 0
+              ? "text-red-500"
+              : "text-green-500")
+          }
+        >
           Rs {total_data.total_unrealized_pnl}
         </div>
         <div className="pt-1 mx-4">Total Available Margin:</div>
@@ -270,7 +300,14 @@ const clientpositions = () => {
         </div>
       </div>
       <div>
-        <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="w-[400px]">
+        <Tabs
+          defaultValue="daily"
+          value={daily ? "daily" : "alltime"}
+          onValueChange={(e) => {
+            setDaily(e === "daily");
+          }}
+          className="w-[400px]"
+        >
           <TabsList>
             <TabsTrigger value="daily">Daily</TabsTrigger>
             <TabsTrigger value="alltime">All Time</TabsTrigger>
@@ -280,7 +317,7 @@ const clientpositions = () => {
         </Tabs>
       </div>
       <ClientPositionsTable columns={columns} data={table_data} daily={daily} />
-    </div >
+    </div>
   );
 };
 
