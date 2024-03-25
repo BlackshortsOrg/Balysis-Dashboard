@@ -32,39 +32,34 @@ const columns = [
       <div>
         {`${row.original.symbol}-${row.original.segment}-${row.original.product_type}`}
       </div>
-    )
+    ),
   },
   {
     header: "Order Type",
-    cell: ({ cell, row }) => (
-      <div>
-        {row.original.order_type}
-      </div>
-    )
+    cell: ({ cell, row }) => <div>{row.original.order_type}</div>,
   },
   {
     header: "Limit Price",
     accessorKey: "limit_price",
     cell: ({ cell }) => {
-      const val = cell.getValue()
-      return (
-        <div>
-          {(val == -1 || val == 0) ? "--" : val}
-        </div>
-      )
-    }
+      const val = cell.getValue();
+      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+    },
   },
   {
     header: "Stop Price",
     accessorKey: "stop_price",
     cell: ({ cell }) => {
-      const val = cell.getValue()
-      return (
-        <div>
-          {(val == -1 || val == 0) ? "--" : val}
-        </div>
-      )
-    }
+      const val = cell.getValue();
+      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+    },
+  },
+  {
+    header: "Side",
+    accessorKey: "side",
+    cell: ({ cell }) => {
+      return <div>{cell.getValue() == 1 ? "BUY" : "SELL"}</div>;
+    },
   },
   // {
   //   header: "Signal ID",
@@ -174,26 +169,17 @@ const columns = [
     header: "Traded Price",
     accessorKey: "traded_price",
     cell: ({ cell }) => {
-      const val = cell.getValue()
-      return (
-        <div>
-          {(val == -1 || val == 0) ? "--" : val}
-        </div>
-      )
-    }
-
+      const val = cell.getValue();
+      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+    },
   },
   {
     header: "Traded Qty",
     accessorKey: "filledqty",
     cell: ({ cell }) => {
-      const val = cell.getValue()
-      return (
-        <div>
-          {(val == -1 || val == 0) ? "--" : val}
-        </div>
-      )
-    }
+      const val = cell.getValue();
+      return <div>{val == -1 || val == 0 ? "--" : val}</div>;
+    },
   },
   {
     header: "Message",

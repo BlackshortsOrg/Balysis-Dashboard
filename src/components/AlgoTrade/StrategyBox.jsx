@@ -1,4 +1,6 @@
 "use client";
+import { getStrategyNotes } from "@/api/getStrategyNotes";
+import { getStrategySignals } from "@/api/getStrategySignals";
 import {
   Dialog,
   DialogContent,
@@ -6,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -16,10 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import { getStrategySignals } from "@/api/getStrategySignals";
-import moment from "moment";
+import { updateStrategyNote } from "@/api/updateStrategyNote";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import _ from "lodash";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
+
 export default function StrategyBox({
   id,
   name,
@@ -29,11 +35,15 @@ export default function StrategyBox({
 }) {
   const [signals, setSignals] = useState([]);
   const [daily, setDaily] = useState(true);
+  const [notes, setNotes] = useState("");
+  const [token, setToken] = useState("");
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      return sessionStorage.getItem("token");
+      const tk = sessionStorage.getItem("token");
+      setToken(tk);
+      return tk;
     }
   }
   useEffect(() => {
@@ -41,6 +51,9 @@ export default function StrategyBox({
       getStrategySignals(id, token, daily).then((data) => {
         console.log(data);
         setSignals(data);
+      });
+      getStrategyNotes(token, id).then((data) => {
+        setNotes(data["notes"] || "");
       });
     });
   }, [daily]);
@@ -157,11 +170,40 @@ export default function StrategyBox({
             </DialogContent>
           </Dialog>
           <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
-            Stop
+            Square Off Today
           </button>
           <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
-            Notes
+            Shutdown
           </button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
+                Notes
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[825px] max-h-[1000px] overflow-auto">
+              <DialogHeader>
+                <DialogTitle>Notes</DialogTitle>
+              </DialogHeader>
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+              <Button
+                variant="addUser"
+                onClick={() =>
+                  updateStrategyNote(token, id, notes).then(() => {
+                    toast("Updated");
+                  })
+                }
+              >
+                Update
+              </Button>
+            </DialogContent>
+          </Dialog>
+          {/* <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md"> */}
+          {/*   Notes */}
+          {/* </button> */}
         </div>
       </div>
     </div>
