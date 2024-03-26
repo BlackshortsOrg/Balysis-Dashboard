@@ -6,9 +6,17 @@ import { useEffect } from "react";
 export default function Home() {
   const router = useRouter();
 
+  async function checkLogin() {
+    if (localStorage.getItem("token") === null) {
+      window.location.href = "/login";
+    } else {
+      return localStorage.getItem("token");
+    }
+  }
+
   useEffect(() => {
     // Redirect to another route after the component mounts
-    router.push("/login");
+    checkLogin().then((token) => { router.push("/dashboard"); });
   }, []);
 
   return <div></div>;
