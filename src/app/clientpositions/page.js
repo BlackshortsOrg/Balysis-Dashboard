@@ -58,10 +58,10 @@ const clientpositions = () => {
         <div
           className="flex flex-row items-center hover:underline hover:cursor-pointer"
           onClick={(e) =>
-            (document.location.href =
-              "/clientpositions/" +
-              row.original.id +
-              `?name=${cell.getValue()}`)
+          (document.location.href =
+            "/clientpositions/" +
+            row.original.id +
+            `?name=${cell.getValue()}`)
           }
         >
           <Image
@@ -244,7 +244,7 @@ const clientpositions = () => {
     if (localStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      const tkn = sessionStorage.getItem("token");
+      const tkn = localStorage.getItem("token");
       setToken(tkn);
       return tkn;
     }
@@ -253,14 +253,14 @@ const clientpositions = () => {
     checkLogin().then((token) => {
       callAPI(token, daily);
     });
-    // const interval = setInterval(() => {
-    //   checkLogin().then((token) => {
-    //     callAPI(token, daily);
-    //   });
-    // }, 3000)
-    // return () => {
-    //   clearInterval(interval)
-    // }
+    const interval = setInterval(() => {
+      checkLogin().then((token) => {
+        callAPI(token, daily);
+      });
+    }, 3000)
+    return () => {
+      clearInterval(interval)
+    }
   }, [daily]);
 
   return (

@@ -60,7 +60,7 @@ const columns = [
         />
         <a
           className="ml-2 hover:underline"
-          href={`/clientpositions/${row.original.id}`}
+          href={`/clientpositions/${row.original.id}?name=${row.original.name}`}
         >
           {cell.getValue()}
         </a>

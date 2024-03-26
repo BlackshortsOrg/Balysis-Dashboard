@@ -121,11 +121,11 @@ export default function client({ params }) {
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto ">
       <div className="pl-[50px] flex flex-row w-full pt-10">
-        <h1 className="font-bold text-2xl">{name}</h1>
+        <h1 className="font-bold text-xl">{name}</h1>
         <div className="px-4">
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
-        <div className="basis-[75%]"></div>
+        <div className="basis-[65%]"></div>
         <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="">
           <TabsList>
             <TabsTrigger value="daily">Daily</TabsTrigger>

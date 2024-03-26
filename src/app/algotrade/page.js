@@ -46,7 +46,7 @@ export default function algotrade() {
         </Tabs>
       </div>
       <StrategiesHeader />
-      {Object.keys(strategies_data).filter((k) => k != "manual").map((k) => (
+      {Object.keys(strategies_data).filter((k) => k != "manual" && k != "ltps").map((k) => (
         <StrategyBox
           key={strategies_data[k].id}
           id={strategies_data[k].id}
