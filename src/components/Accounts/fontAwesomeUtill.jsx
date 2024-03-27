@@ -23,21 +23,19 @@ export const EyeIcon = ({ isVisible, setIsVisible }) => {
   );
 };
 
-export const ToggleButton = (props) => {
-  const [isToggled, setIsToggled] = useState(props.status);
-
-  const toggleSwitch = () => {
-    setIsToggled(!isToggled);
-  };
+export const ToggleButton = ({ status, flipStatus }) => {
+  // const [isToggled, setIsToggled] = useState(props.status);
+  //
+  // const toggleSwitch = () => {
+  //   setIsToggled(!isToggled);
+  // };
 
   return (
     <div className="flex items-center">
-      <button className="focus:outline-none" onClick={toggleSwitch}>
+      <button className="focus:outline-none" onClick={flipStatus}>
         <FontAwesomeIcon
-          icon={isToggled ? faToggleOn : faToggleOff}
-          className={`${
-            isToggled ? "text-green-500" : "text-red-500"
-          } text-3xl`}
+          icon={status ? faToggleOn : faToggleOff}
+          className={`${status ? "text-green-500" : "text-red-500"} text-3xl`}
         />
       </button>
     </div>

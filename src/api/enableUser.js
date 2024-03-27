@@ -1,7 +1,7 @@
 import { API_BASE_URL } from "./constants";
 
-export const squareOffUser = async (token, pin, user_id, shutdown) => {
-  const response = await fetch(`${API_BASE_URL}/trade/squareoff/user`, {
+export const enableUser = async (token, pin, user_id) => {
+  const response = await fetch(`${API_BASE_URL}/user/enable`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -10,7 +10,6 @@ export const squareOffUser = async (token, pin, user_id, shutdown) => {
     },
     body: JSON.stringify({
       user_id,
-      shutdown,
     }),
   });
   return response;
