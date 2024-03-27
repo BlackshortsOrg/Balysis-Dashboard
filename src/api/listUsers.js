@@ -5,5 +5,8 @@ export const listUsersAPI = async (token) => {
     method: "GET",
     headers: { "Content-Type": "application/json", Authorization: token },
   });
+  if (response.status === 401) {
+    window.location.href = "/login";
+  }
   return await response.json();
 };

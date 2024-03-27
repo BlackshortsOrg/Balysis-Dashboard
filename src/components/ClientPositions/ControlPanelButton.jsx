@@ -13,23 +13,31 @@ import {
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp"
+} from "@/components/ui/input-otp";
 import { useState } from "react";
 import { squareOffAll } from "@/api/squareOffAll";
 import { toast } from "sonner";
 
 export default function ControlPanelButton({ token }) {
   async function squareofftoday() {
-    squareOffAll(token, otp, false).then(() => {
-      toast("Squared Off Today For All")
-    })
+    squareOffAll(token, otp, false).then((resp) => {
+      if (resp.status === 200) {
+        toast("Squared Off Today For All");
+      } else {
+        toast("Failed to square off");
+      }
+    });
   }
   async function shutdown() {
-    squareOffAll(token, otp, true).then(() => {
-      toast("Fundhouse Shutdown")
-    })
+    squareOffAll(token, otp, true).then((resp) => {
+      if (resp.status === 200) {
+        toast("Fundhouse Shutdown");
+      } else {
+        toast("Failed to shutdown");
+      }
+    });
   }
-  const [otp, setOTP] = useState()
+  const [otp, setOTP] = useState();
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -42,7 +50,8 @@ export default function ControlPanelButton({ token }) {
         <DialogHeader>
           <DialogTitle>Master Control Panel</DialogTitle>
           <DialogDescription>
-            Here you can square off all positions for all accounts and this is a kill switch, this action is not reversible.
+            Here you can square off all positions for all accounts and this is a
+            kill switch, this action is not reversible.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-12 text-center">
@@ -69,7 +78,9 @@ export default function ControlPanelButton({ token }) {
                   </InputOTPGroup>
                 </InputOTP>
               </DialogDescription>
-              <Button variant="addUser" onClick={squareofftoday}>Submit</Button>
+              <Button variant="addUser" onClick={squareofftoday}>
+                Submit
+              </Button>
             </DialogContent>
           </Dialog>
           <Dialog>
@@ -95,7 +106,9 @@ export default function ControlPanelButton({ token }) {
                   </InputOTPGroup>
                 </InputOTP>
               </DialogDescription>
-              <Button variant="addUser" onClick={shutdown}>Submit</Button>
+              <Button variant="addUser" onClick={shutdown}>
+                Submit
+              </Button>
             </DialogContent>
           </Dialog>
         </div>

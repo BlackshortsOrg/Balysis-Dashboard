@@ -37,15 +37,6 @@ import { Button } from "@/components/ui/button";
 const clientpositions = () => {
   const [token, setToken] = useState("");
   const [otp, setOTP] = useState("");
-  async function squareOffUserToday(user_id) {
-    await squareOffUser(token, otp, user_id, false);
-    toast("Squared Off User for Today");
-  }
-
-  async function shutdownUser(user_id) {
-    await squareOffUser(token, otp, user_id, true);
-    toast("Shutdown User");
-  }
   const columns = [
     {
       header: "ID",
@@ -58,10 +49,10 @@ const clientpositions = () => {
         <div
           className="flex flex-row items-center hover:underline hover:cursor-pointer"
           onClick={(e) =>
-          (document.location.href =
-            "/clientpositions/" +
-            row.original.id +
-            `?name=${cell.getValue()}`)
+            (document.location.href =
+              "/clientpositions/" +
+              row.original.id +
+              `?name=${cell.getValue()}`)
           }
         >
           <Image
@@ -144,10 +135,32 @@ const clientpositions = () => {
     },
     {
       id: "actions",
-      cell: ({ row }) => (
+      cell: ({ row, table }) => (
         <div className="flex flex-row items-center">
-          <Menubar>
-            <MenubarMenu>
+          <Menubar
+            value={
+              table.options.meta.menuOpen[row.original.name]
+                ? row.original.name
+                : ""
+            }
+            onValueChange={(value) => {
+              if (value !== "") {
+                table.options.meta.setSquareoffUser({
+                  id: row.original.id,
+                  name: row.original.name,
+                });
+              }
+              console.log(value);
+              table.options.meta.setMenuOpen({
+                ...table.options.meta.menuOpen,
+                [row.original.name]:
+                  table.options.meta.menuOpen[row.original.name] === undefined
+                    ? true
+                    : !table.options.meta.menuOpen[row.original.name],
+              });
+            }}
+          >
+            <MenubarMenu value={row.original.name}>
               <MenubarTrigger>
                 <svg
                   width="15"
@@ -164,38 +177,11 @@ const clientpositions = () => {
                   ></path>
                 </svg>
               </MenubarTrigger>
-              {/* <MenubarItem>Square Off</MenubarItem> */}
-              <Dialog>
+              <MenubarContent>
                 <DialogTrigger asChild>
-                  {/* <div className="col-span-6 border font-semibold hover:text-white hover:cursor-pointer hover:bg-[#FF2241] hover:border-black border-[#FF2241] mx-2 py-4 rounded-lg"> */}
-                  {/*   Square Off All Positions Today */}
-                  {/* </div> */}
-                  <MenubarContent>
-                    <MenubarItem>Square Off</MenubarItem>
-                  </MenubarContent>
+                  <MenubarItem>Square Off</MenubarItem>
                 </DialogTrigger>
-                <DialogContent className="w-full">
-                  <DialogTitle>Enter PIN For Disabling User</DialogTitle>
-                  <DialogDescription className="mx-auto">
-                    <InputOTP maxLength={6} value={otp} onChange={setOTP}>
-                      <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                      </InputOTPGroup>
-                      <InputOTPSeparator />
-                      <InputOTPGroup>
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </DialogDescription>
-                  <Button variant="addUser" onClick>
-                    Confirm
-                  </Button>
-                </DialogContent>
-              </Dialog>
+              </MenubarContent>
             </MenubarMenu>
           </Menubar>
         </div>
@@ -257,10 +243,10 @@ const clientpositions = () => {
       checkLogin().then((token) => {
         callAPI(token, daily);
       });
-    }, 3000)
+    }, 3000);
     return () => {
-      clearInterval(interval)
-    }
+      clearInterval(interval);
+    };
   }, [daily]);
 
   return (
@@ -316,7 +302,12 @@ const clientpositions = () => {
           {/* <TabsContent value="password">Change your password here.</TabsContent> */}
         </Tabs>
       </div>
-      <ClientPositionsTable columns={columns} data={table_data} daily={daily} />
+      <ClientPositionsTable
+        columns={columns}
+        data={table_data}
+        daily={daily}
+        token={token}
+      />
     </div>
   );
 };
