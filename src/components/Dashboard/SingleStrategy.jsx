@@ -24,7 +24,7 @@ const SingleStrategy = ({ strategy }) => {
           <TableRow>
             {columns.map((column) => (
               <TableCell
-                className="text-xl font-bold"
+                className="text-2xl font-bold"
                 key={column.accessorKey}
               >
                 {column.header}
@@ -37,7 +37,18 @@ const SingleStrategy = ({ strategy }) => {
             <TableRow key={row.id}>
               {columns.map((column) => (
                 <TableCell key={column.accessorKey}>
-                  {row[column.accessorKey]}
+                  {column.accessorKey === "name" ? (
+                    <a
+                      className="col-span-7 text-xl font-bold hover:underline"
+                      href={`/algotrade/${row.id}?strategy_name=${
+                        row[column.accessorKey]
+                      }`}
+                    >
+                      {row[column.accessorKey]}
+                    </a>
+                  ) : (
+                    row[column.accessorKey]
+                  )}
                 </TableCell>
               ))}
             </TableRow>

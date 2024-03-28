@@ -46,10 +46,10 @@ export default function StrategyBox({
   const [token, setToken] = useState("");
   const [otp, setOTP] = useState("");
   async function checkLogin() {
-    if (sessionStorage.getItem("token") === null) {
+    if (localStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      const tk = sessionStorage.getItem("token");
+      const tk = localStorage.getItem("token");
       setToken(tk);
       return tk;
     }
@@ -206,7 +206,7 @@ export default function StrategyBox({
                       <TableRow>
                         <TableCell>
                           {moment(new Date(signal.created_at)).format(
-                            "DD MMM hh:mm:ss",
+                            "DD MMM hh:mm:ss"
                           )}
                         </TableCell>
                         <TableCell>{signal.signal_type}</TableCell>
@@ -224,8 +224,8 @@ export default function StrategyBox({
                           {signal.side == 0
                             ? ""
                             : signal.side == 1
-                              ? "BUY"
-                              : "SELL"}
+                            ? "BUY"
+                            : "SELL"}
                         </TableCell>
                         <TableCell>{signal.limit_price}</TableCell>
                         <TableCell>{signal.stop_price}</TableCell>

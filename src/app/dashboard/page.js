@@ -7,7 +7,7 @@ import SecurityCards from "@/components/Dashboard/SecurityCards";
 import { useEffect, useState } from "react";
 
 export default function dashboard() {
-  const [daily, setDaily] = useState(false);
+  const [daily, setDaily] = useState(true);
   const [total_data, setTotalData] = useState({
     "Total P&L": 0,
     "Realized P&L": 0,
@@ -70,6 +70,7 @@ export default function dashboard() {
     let deployedStrategies = [];
     for (const strategy in resp) {
       deployedStrategies.push({
+        id: resp[strategy].id,
         name: resp[strategy].name,
         acount: resp[strategy].acount,
         scout: resp[strategy].scount,
