@@ -114,7 +114,7 @@ export function UserTable({
           <DialogHeader>
             {toEnable
               ? `Enable User ${toEnableUser.name}`
-              : `Disable User ${toEnableUser.name}`}
+              : `Disable and Square Off User ${toEnableUser.name}`}
           </DialogHeader>
           <DialogDescription className="mx-auto">
             <InputOTP maxLength={6} value={otp} onChange={setOTP}>

@@ -2,7 +2,8 @@ import { Inter, Montserrat } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
-const montserrat = Montserrat({ subsets: ["latin"] })
+const montserrat = Montserrat({ subsets: ["latin"] });
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "Create Next App",
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
       <body className={"flex flex-row " + montserrat.className}>
         <Navbar />
         {children}
+        <Toaster richColors closeButton />
       </body>
     </html>
   );

@@ -6,11 +6,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getUserMetricAPI } from "@/api/getUserMetric";
 import { useSearchParams } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function client({ params }) {
-  const [daily, setDaily] = useState(true)
-  const [ltps, setLTPs] = useState({})
+  const [daily, setDaily] = useState(true);
+  const [ltps, setLTPs] = useState({});
   const searchParams = useSearchParams();
   const name = searchParams.get("name");
   const [metrics, setMetrics] = useState({
@@ -33,9 +33,9 @@ export default function client({ params }) {
   const [strategiesData, setStrategiesData] = useState([]);
   async function fetchStrategiesData(token, daily) {
     const resp = await getUserMetricAPI(parseInt(params.id), token, daily);
-    console.log(resp.ltps)
-    setLTPs(resp.ltps)
-    console.log(resp)
+    console.log(resp.ltps);
+    setLTPs(resp.ltps);
+    console.log(resp);
     const global_metrics = {
       "Total P&L": (
         parseFloat(resp.total_realised_pnl) +
@@ -64,7 +64,7 @@ export default function client({ params }) {
         positions: {},
         active: resp.strategies[strat].active,
         subscribed: resp.strategies[strat].subscribed,
-        id: resp.strategies[strat].id
+        id: resp.strategies[strat].id,
       };
       for (const symbol in resp.strategies[strat].symbols) {
         if (symbol.endsWith("CNC")) {
@@ -101,21 +101,21 @@ export default function client({ params }) {
       }
       strategiesData.push(data);
     }
-    strategiesData.sort((a, b) => a.name.localeCompare(b.name))
+    strategiesData.sort((a, b) => a.name.localeCompare(b.name));
     setStrategiesData(strategiesData);
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      fetchStrategiesData(token, daily)
-    })
+      fetchStrategiesData(token, daily);
+    });
     const interval = setInterval(() => {
       checkLogin().then((token) => {
-        fetchStrategiesData(token, daily)
-      })
-    }, 3000)
+        fetchStrategiesData(token, daily);
+      });
+    }, 3000);
     return () => {
-      clearInterval(interval)
-    }
+      clearInterval(interval);
+    };
   }, [daily]);
 
   return (
@@ -126,7 +126,14 @@ export default function client({ params }) {
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
         <div className="basis-[65%]"></div>
-        <Tabs defaultValue="daily" value={daily ? "daily" : "alltime"} onValueChange={(e) => { setDaily(e === "daily") }} className="">
+        <Tabs
+          defaultValue="daily"
+          value={daily ? "daily" : "alltime"}
+          onValueChange={(e) => {
+            setDaily(e === "daily");
+          }}
+          className=""
+        >
           <TabsList>
             <TabsTrigger value="daily">Daily</TabsTrigger>
             <TabsTrigger value="alltime">All Time</TabsTrigger>
@@ -136,7 +143,13 @@ export default function client({ params }) {
       <SecurityCards metrics={metrics} />
       <StrategiesHeader />
       {strategiesData.map((strategy) => (
-        <StrategyCard key={strategy.id} strategy={strategy} user_id={params.id} daily={daily} ltps={ltps} />
+        <StrategyCard
+          key={strategy.id}
+          strategy={strategy}
+          user_id={params.id}
+          daily={daily}
+          ltps={ltps}
+        />
       ))}
     </div>
   );

@@ -179,7 +179,7 @@ const clientpositions = () => {
               </MenubarTrigger>
               <MenubarContent>
                 <DialogTrigger asChild>
-                  <MenubarItem>Square Off</MenubarItem>
+                  <MenubarItem>Square Off and Disable</MenubarItem>
                 </DialogTrigger>
               </MenubarContent>
             </MenubarMenu>
