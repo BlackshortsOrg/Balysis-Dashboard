@@ -30,7 +30,7 @@ const columns = [
     header: "Symbol",
     cell: ({ cell, row }) => (
       <div>
-        {`${row.original.symbol}-${row.original.segment}-${row.original.product_type}`}
+        {`${row.original.symbol} | ${row.original.segment} | ${row.original.product_type}`}
       </div>
     ),
   },

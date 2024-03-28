@@ -124,10 +124,36 @@ const clientpositions = () => {
     {
       header: "Unrealized PnL",
       accessorKey: "unrealized",
+      cell: ({ cell }) => (
+        <div
+          className={
+            "font-semibold " +
+            (parseFloat(cell.getValue()) < 0
+              ? "text-red-500"
+              : "text-green-500")
+          }
+        >
+          {parseFloat(cell.getValue()) > 0 ? "+" : ""}
+          {cell.getValue()}
+        </div>
+      ),
     },
     {
       header: "Realized PnL",
       accessorKey: "realized",
+      cell: ({ cell }) => (
+        <div
+          className={
+            "font-semibold " +
+            (parseFloat(cell.getValue()) < 0
+              ? "text-red-500"
+              : "text-green-500")
+          }
+        >
+          {parseFloat(cell.getValue()) > 0 ? "+" : ""}
+          {cell.getValue()}
+        </div>
+      ),
     },
     {
       header: "No. of Strategies",
