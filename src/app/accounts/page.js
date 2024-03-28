@@ -162,7 +162,11 @@ const accounts = () => {
           setToEnableUser({ id: row.original.id, name: row.original.name });
           setToEnable(!status);
         };
-        return <ToggleButton status={status} flipStatus={flipStatus} />;
+        return (
+          <div className="flex justify-center">
+            <ToggleButton status={status} flipStatus={flipStatus} />
+          </div>
+        );
       },
     },
     {
@@ -296,6 +300,7 @@ const accounts = () => {
       data[i].last_login = new Date(data[i].created_at);
     }
     console.log(data);
+    data.sort((a, b) => {return a.name>b.name?1:-1}); 
     setData(data);
   }
   async function deleteUser(user_id, otp) {

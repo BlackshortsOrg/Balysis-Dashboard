@@ -36,12 +36,6 @@ export default function Navbar() {
             <p>Accounts</p>
           </h1>
         </Link>
-        {/* <Link className="flex flex-row" href="/sets"> */}
-        {/*   <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row"> */}
-        {/*     <AiOutlineCodeSandbox className="mr-2 mt-1 scale-[1.50]" /> */}
-        {/*     Sets */}
-        {/*   </h1> */}
-        {/* </Link> */}
         <Link className="flex flex-row" href="/clientpositions">
           <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
             <AiOutlineStock className="mr-2 mt-1 scale-[1.50]" />
@@ -66,9 +60,21 @@ export default function Navbar() {
             Transaction History
           </h1>
         </Link>
+        <Link className="flex flex-row" href="">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiFillFund className="mr-2 mt-1 scale-[1.50]" />
+            Analytics
+          </h1>
+        </Link>
+        <Link className="flex flex-row" href="">
+          <h1 className="text-[16px] font-medium w-full py-4 hover:shadow-2xl hover:rounded-lg pl-6 hover:border-[2px] hover:bg-slate-800 hover:text-white mx-2 flex flex-row">
+            <AiFillFund className="mr-2 mt-1 scale-[1.50]" />
+            Backtest & Report
+          </h1>
+        </Link>
       </div>
       <h1
-        className="text-[16px] text-[#41AFFF] font-bold mb-6 pl-9 mt-[30vh] hover:cursor-pointer"
+        className="text-[16px] text-[#41AFFF] font-bold mt-8 pl-10 hover:cursor-pointer"
         onClick={logout}
       >
         Log Out
