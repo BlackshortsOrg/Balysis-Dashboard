@@ -20,11 +20,19 @@ export default function algotrade() {
   useEffect(() => {
     checkLogin().then((token) => {
       getAllStrategyMetrics(token, daily).then((data) => {
-        console.log(data);
-        console.log(Object.keys(data));
         setStrategiesData(data);
       });
     });
+    const interval = setInterval(() => {
+      checkLogin().then((token) => {
+        getAllStrategyMetrics(token, daily).then((data) => {
+          setStrategiesData(data);
+        });
+      });
+    }, 3000);
+    return () => {
+      clearInterval(interval);
+    };
   }, [daily]);
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto">
@@ -46,16 +54,18 @@ export default function algotrade() {
         </Tabs>
       </div>
       <StrategiesHeader />
-      {Object.keys(strategies_data).filter((k) => k != "manual" && k != "ltps").map((k) => (
-        <StrategyBox
-          key={strategies_data[k].id}
-          id={strategies_data[k].id}
-          name={k}
-          total_realised_pnl={strategies_data[k].total_realised_pnl}
-          total_unrealised_pnl={strategies_data[k].total_unrealised_pnl}
-          active={strategies_data[k].active}
-        />
-      ))}
+      {Object.keys(strategies_data)
+        .filter((k) => k != "manual" && k != "ltps")
+        .map((k) => (
+          <StrategyBox
+            key={strategies_data[k].id}
+            id={strategies_data[k].id}
+            name={k}
+            total_realised_pnl={strategies_data[k].total_realised_pnl}
+            total_unrealised_pnl={strategies_data[k].total_unrealised_pnl}
+            active={strategies_data[k].active}
+          />
+        ))}
     </div>
   );
 }

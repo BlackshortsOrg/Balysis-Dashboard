@@ -25,6 +25,13 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { squareOffStrategy } from "@/api/squareOffStrategy";
 
 export default function StrategyBox({
   id,
@@ -37,6 +44,7 @@ export default function StrategyBox({
   const [daily, setDaily] = useState(true);
   const [notes, setNotes] = useState("");
   const [token, setToken] = useState("");
+  const [otp, setOTP] = useState("");
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
@@ -57,6 +65,44 @@ export default function StrategyBox({
       });
     });
   }, [daily]);
+  async function squareOffStrategyForToday() {
+    const pms = new Promise((resolve, reject) => {
+      squareOffStrategy(token, id, name, false, otp).then((res) => {
+        if (res.status === 200) {
+          resolve(res);
+        } else {
+          reject(res);
+        }
+      });
+    });
+    toast.promise(pms, {
+      loading: "Square Off in Progress",
+      success: "Strategy Square Off Successful",
+      error: "Strategy Square Off Failed",
+    });
+  }
+  async function shutdownStrategy() {
+    const pms = new Promise((resolve, reject) => {
+      squareOffStrategy(token, id, name, true, otp).then((res) => {
+        if (res.status === 200) {
+          resolve(res);
+        } else {
+          reject(res);
+        }
+      });
+    });
+    toast.promise(pms, {
+      loading: "Shutting Down Strategy in Progress",
+      success: "Strategy Shutdown Successful",
+      error: "Strategy Shutdown Failed",
+    });
+    // const res = await squareOffStrategy(token, id, name, true, otp);
+    // if (res.status === 200) {
+    //   toast.success("Strategy Square Off Successful");
+    // } else {
+    //   toast.error("Strategy Square Off Failed");
+    // }
+  }
   return (
     <div className="mx-12 bg-white mt-8 rounded-md shadow-md">
       <div className="mx-8 grid grid-cols-12 py-4">
@@ -76,9 +122,30 @@ export default function StrategyBox({
           )}
         </a>
         <div className="col-span-5 flex flex-row justify-between">
-          <div className="text-red-400">{total_unrealised_pnl.toFixed(2)}</div>
-          <div>{total_realised_pnl.toFixed(2)}</div>
-          <div className="text-red-400 pr-2">
+          <div
+            className={
+              "font-semibold " +
+              (total_unrealised_pnl < 0 ? "text-red-500" : "text-green-500")
+            }
+          >
+            {total_unrealised_pnl.toFixed(2)}
+          </div>
+          <div
+            className={
+              "font-semibold " +
+              (total_realised_pnl < 0 ? "text-red-500" : "text-green-500")
+            }
+          >
+            {total_realised_pnl.toFixed(2)}
+          </div>
+          <div
+            className={
+              "font-semibold pr-2 " +
+              (total_realised_pnl + total_unrealised_pnl < 0
+                ? "text-red-500"
+                : "text-green-500")
+            }
+          >
             {(total_realised_pnl + total_unrealised_pnl).toFixed(2)}
           </div>
         </div>
@@ -169,12 +236,67 @@ export default function StrategyBox({
               </div>
             </DialogContent>
           </Dialog>
-          <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
-            Square Off Today
-          </button>
-          <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
-            Shutdown
-          </button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
+                Square Off Today
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>Square Off Strategy for Today</DialogHeader>
+              <div className="flex gap-4">
+                <p>Enter PIN - </p>
+                <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              <Button variant="addUser" onClick={squareOffStrategyForToday}>
+                Confirm
+              </Button>
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DialogTrigger asChild>
+              {/* <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md"> */}
+              {/*   Square Off Today */}
+              {/* </button> */}
+              <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">
+                Shutdown
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>Shutdown Strategy</DialogHeader>
+              <div className="flex gap-4">
+                <p>Enter PIN- </p>
+                <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              <Button variant="addUser" onClick={shutdownStrategy}>
+                Confirm
+              </Button>
+            </DialogContent>
+          </Dialog>
           <Dialog>
             <DialogTrigger asChild>
               <button className="bg-[#41AFFF] text-white shadow-sm py-2 px-6 mx-2 rounded-md">

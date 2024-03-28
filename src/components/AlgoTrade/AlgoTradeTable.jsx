@@ -33,7 +33,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { subscribeStrategyAPI } from "@/api/subscribeStrategy";
 import { toast } from "sonner";
-import { squareOffStrategyForUserAPI } from "@/api/squareOffStrategy";
+import { squareOffStrategyForUserAPI } from "@/api/squareOffStrategyForUser";
 
 export function AlgoTradeTable({
   columns,

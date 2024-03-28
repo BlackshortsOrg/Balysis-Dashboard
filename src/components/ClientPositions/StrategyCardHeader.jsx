@@ -22,8 +22,14 @@ import {
 import { useEffect, useState } from "react";
 import { getMultiplierUserStrategy } from "@/api/getMultiplierUserStrategy";
 import { subscribeStrategyAPI } from "@/api/subscribeStrategy";
-import { squareOffStrategyForUserAPI } from "@/api/squareOffStrategy";
+import { squareOffStrategyForUserAPI } from "@/api/squareOffStrategyForUser";
 import { toast } from "sonner";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 export default function StrategyCardHeader({
   name,
@@ -36,12 +42,25 @@ export default function StrategyCardHeader({
   subscribed,
   user_id,
   strategy_id,
-  daily
+  daily,
 }) {
-  const [token, setToken] = useState("")
-  const [multiplier, setMultiplier] = useState(1)
+  const [token, setToken] = useState("");
+  const [multiplier, setMultiplier] = useState(1);
+  const [otp, setOTP] = useState("");
   async function changeSubscription() {
-    await subscribeStrategyAPI(token, [user_id], strategy_id, [multiplier], name)
+    const res = await subscribeStrategyAPI(
+      token,
+      [user_id],
+      strategy_id,
+      [multiplier],
+      name,
+      otp,
+    );
+    if (res.status === 200) {
+      toast.success("Multiplier Updated");
+    } else {
+      toast.error("Error Updating Multiplier");
+    }
   }
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
@@ -56,46 +75,94 @@ export default function StrategyCardHeader({
     if (!subscribed) return;
     checkLogin().then((token) => {
       getMultiplierUserStrategy(token, user_id, strategy_id).then((res) => {
-        console.log([user_id, strategy_id, res[0].multiplier])
-        setMultiplier(res[0].multiplier)
-      })
-    })
-  }, [daily])
+        console.log([user_id, strategy_id, res[0].multiplier]);
+        setMultiplier(res[0].multiplier);
+      });
+    });
+  }, [daily]);
   async function squareOffToday() {
-    squareOffStrategyForUserAPI(token, user_id, strategy_id, false).then((resp) => {
-      toast("Squared off Strategy for Today")
-    })
+    const res = await squareOffStrategyForUserAPI(
+      token,
+      user_id,
+      strategy_id,
+      false,
+      otp,
+    );
+    if (res.status === 200) {
+      toast.success("Squared Off for Today");
+    } else {
+      toast.error("Error Squaring Off");
+    }
   }
   async function shutdown() {
-    squareOffStrategyForUserAPI(token, user_id, strategy_id, true).then((resp) => {
-      toast("Shutdown Strategy")
-    })
+    const res = await squareOffStrategyForUserAPI(
+      token,
+      user_id,
+      strategy_id,
+      true,
+      otp,
+    );
+    if (res.status === 200) {
+      toast.success("Shutdown Strategy");
+    } else {
+      toast.error("Error Shutting Down Strategy");
+    }
   }
-  const totalpnl = parseFloat(realizedpnl) + parseFloat(unrealizedpnl)
+  const totalpnl = parseFloat(realizedpnl) + parseFloat(unrealizedpnl);
   return (
     <div className="mx-12 bg-white mt-8 rounded-md shadow-md">
       <div className="mx-8 grid grid-cols-12 py-4">
         <div className="col-span-7 text-3xl font-bold">
           <span>{name}</span>
-          {subscribed && !active && <span className="text-sm  text-red-600 border-1 border border-red-600 ml-2">DISABLED TODAY</span>}
-          {!subscribed && <span className="text-sm text-red-600 border-1 border border-red-600 ml-2">UNSUBSCRIBED</span>}
+          {subscribed && !active && (
+            <span className="text-sm  text-red-600 border-1 border border-red-600 ml-2">
+              DISABLED TODAY
+            </span>
+          )}
+          {!subscribed && (
+            <span className="text-sm text-red-600 border-1 border border-red-600 ml-2">
+              UNSUBSCRIBED
+            </span>
+          )}
         </div>
         <div className="col-span-5 flex flex-row justify-between">
           <div></div>
-          <div className={unrealizedpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>{unrealizedpnl}</div>
-          <div className={realizedpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>{realizedpnl}</div>
-          <div className={totalpnl < 0 ? "text-red-500 font-semibold" : "text-green-500 font-semibold"}>
+          <div
+            className={
+              unrealizedpnl < 0
+                ? "text-red-500 font-semibold"
+                : "text-green-500 font-semibold"
+            }
+          >
+            {unrealizedpnl}
+          </div>
+          <div
+            className={
+              realizedpnl < 0
+                ? "text-red-500 font-semibold"
+                : "text-green-500 font-semibold"
+            }
+          >
+            {realizedpnl}
+          </div>
+          <div
+            className={
+              totalpnl < 0
+                ? "text-red-500 font-semibold"
+                : "text-green-500 font-semibold"
+            }
+          >
             {(parseFloat(realizedpnl) + parseFloat(unrealizedpnl)).toFixed(2)}
           </div>
         </div>
       </div>
       <div className="ml-4 flex flex-row pb-4">
         <div className="basis-[90%] flex flex-row">
-          {subscribed &&
+          {subscribed && (
             <Dialog>
               <DialogTrigger asChild>
                 <button className="bg-[#41AFFF] text-white shadow-sm px-6 mx-2 rounded-md  ">
-                  Multiplier
+                  {active ? "Edit Multiplier" : "Enable"}
                 </button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
@@ -114,21 +181,41 @@ export default function StrategyCardHeader({
                       type="number"
                       value={multiplier}
                       onChange={(e) => {
-                        setMultiplier(e.target.value)
+                        setMultiplier(e.target.value);
                       }}
                       id="multiplier"
                       className="col-span-3"
                     />
                   </div>
                 </div>
+                <div className="mx-auto">
+                  <Label>Enter OTP</Label>
+                  <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
                 <DialogFooter>
-                  <Button variant="addUser" type="submit" onClick={changeSubscription}>
+                  <Button
+                    variant="addUser"
+                    type="submit"
+                    onClick={changeSubscription}
+                  >
                     Save changes
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-          }
+          )}
           <Dialog>
             <DialogTrigger asChild>
               <button className="bg-[#41AFFF] text-white shadow-sm px-6 mx-2 rounded-md  ">
@@ -200,12 +287,83 @@ export default function StrategyCardHeader({
               {/* </DialogFooter> */}
             </DialogContent>
           </Dialog>
-          {active && <button className="bg-[#E01133] text-white shadow-sm px-6 mx-2 rounded-md  " onClick={squareOffToday}>
-            Square Off Today({numpositions})
-          </button>}
-          {name !== "manual" && subscribed && <button className="bg-[#E01133] text-white shadow-sm px-6 mx-2 rounded-md  " onClick={shutdown}>
-            Shutdown
-          </button>}
+          {active && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button
+                  className="bg-[#E01133] text-white shadow-sm px-6 mx-2 rounded-md  "
+                  // onClick={squareOffToday}
+                >
+                  Square Off Today({numpositions})
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Square Off {name} for Today</DialogTitle>
+                  <DialogDescription>
+                    NOTE - This is brought to effect immediately
+                  </DialogDescription>
+                </DialogHeader>
+                <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+                <DialogFooter>
+                  <Button
+                    variant="addUser"
+                    type="submit"
+                    onClick={squareOffToday}
+                  >
+                    Save changes
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+          {name !== "manual" && subscribed && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="bg-[#E01133] text-white shadow-sm px-6 mx-2 rounded-md  ">
+                  Shutdown
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Shutdown {name}</DialogTitle>
+                  <DialogDescription>
+                    NOTE - This is brought to effect immediately
+                  </DialogDescription>
+                </DialogHeader>
+                <InputOTP maxLength={6} value={otp} onChange={setOTP}>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <InputOTPSeparator />
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+                <DialogFooter>
+                  <Button variant="addUser" type="submit" onClick={shutdown}>
+                    Save changes
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
         <div className="basis-[20%]">
           <button
