@@ -65,12 +65,12 @@ export function UserTable({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="text-center" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -87,10 +87,10 @@ export function UserTable({
                   onClick={(e) => console.log("Row Clicked", row)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell className="text-center" key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -158,7 +158,7 @@ export function UserTable({
                       setRefresh(!refresh);
                       setOpenDialog(false);
                     }
-                  },
+                  }
                 );
               }
             }}
