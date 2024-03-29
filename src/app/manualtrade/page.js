@@ -132,15 +132,15 @@ const accounts = () => {
       },
     },
     {
-      header: "Margin",
+      header: "Margin(₹)",
       accessorKey: "margin",
     },
     {
-      header: "Unrealized PnL",
+      header: "Unrealized PnL(₹)",
       accessorKey: "unrealized",
     },
     {
-      header: "Realized PnL",
+      header: "Realized PnL(₹)",
       accessorKey: "realized",
     },
     {

@@ -10,7 +10,7 @@ const SingleData = ({ data }) => {
       <div className="flex flex-col items-end justify-end">
         <h1 className="text-lg font-semibold ml-6">
           <span class="text-xl font-semibold">&#x20B9; </span>
-          {data.totalPnl}
+          {data.totalPnl.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         </h1>
         <h1 className="text-xs font-semibold ml-6 text-green-600">--%</h1>
       </div>

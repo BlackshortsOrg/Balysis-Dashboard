@@ -69,6 +69,7 @@ export default function dashboard() {
     const resp = await getDeployedStrategies(token);
     let deployedStrategies = [];
     for (const strategy in resp) {
+      if(resp[strategy].name === "manual") continue;
       deployedStrategies.push({
         id: resp[strategy].id,
         name: resp[strategy].name,
