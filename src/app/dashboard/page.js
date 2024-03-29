@@ -87,6 +87,15 @@ export default function dashboard() {
       callAPI(token, daily);
       getStrategies(token);
     });
+    const interval = setInterval(() => {
+      checkLogin().then((token) => {
+        callAPI(token, daily);
+        getStrategies(token);
+      });
+    }, 3000);
+    return () => {
+      clearInterval(interval);
+    };
   }, [daily]);
 
   return (

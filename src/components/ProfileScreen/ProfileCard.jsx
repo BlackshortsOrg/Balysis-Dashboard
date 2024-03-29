@@ -7,7 +7,16 @@ import Mail from "../../public/profileScreenSvgs/mail.svg";
 import Cake from "../../public/profileScreenSvgs/cake.svg";
 import Phone from "../../public/profileScreenSvgs/Call.svg";
 import { getUserDetails } from "@/api/getUserDetails";
-import { get } from "lodash";
+import { get, isNull } from "lodash";
+import {
+  faArrowTrendUp,
+  faEnvelope,
+  faIdCard,
+  faPhone,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { updateProfile } from "@/api/updateProfileDetails";
 
 const ProfileCard = ({ param }) => {
   async function checkLogin() {
@@ -26,90 +35,187 @@ const ProfileCard = ({ param }) => {
   const [userDetails, setUserDetails] = useState(null);
   async function fetchData(token) {
     const data = await getUserDetails(get(param, "id"), token);
+    setName(data[0].name);
+    setDescription(data[0].description);
+    setEmail(data[0].email);
+    setAadhar(data[0].aadhar);
+    setPan(data[0].pan);
+    setPhone(data[0].phone);
+    setBroker(data[0].broker);
     setUserDetails(data);
-    console.log(data, userDetails);
   }
+  const [editMode, setEditMode] = useState(false);
+  const [name, setName] = useState();
+  const [description, setDescription] = useState();
+  const [email, setEmail] = useState();
+  const [aadhar, setAadhar] = useState();
+  const [pan, setPan] = useState();
+  const [phone, setPhone] = useState();
+  const [broker, setBroker] = useState();
+
+  const handleEdit = () => {
+    setEditMode(true);
+  };
+
+  async function handleSave() {
+    // Save the updated values to the server
+    let updatedDetails = userDetails[0];
+    updatedDetails.name = name;
+    updatedDetails.description = description;
+    updatedDetails.email = email;
+    updatedDetails.aadhar = aadhar;
+    updatedDetails.pan = pan;
+    updatedDetails.phone = phone;
+    updatedDetails.broker = broker;
+    console.log(updatedDetails);
+    const token = localStorage.getItem("token");
+    try {
+      const res = await updateProfile(token, get(param, "id"), updatedDetails);
+      console.log(res);
+      if (res.status == 200) {
+        alert("Updated Successfully");
+        window.location.reload();
+      } else {
+        alert("Failed to update");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setEditMode(false);
+  }
+
   return (
     <>
-      <div className="w-[75vw] h-[35vh] ml-[3.5vw] mt-[10vh] relative bg-stone-300 rounded-[5px]">
-        <div className="relative">
-          <Image
-            className="w-[12rem] h-[12.3rem] ml-[5vw] mt-[16vh] bg-amber-400 rounded-full"
-            width={"175"}
-            height={"179"}
-            src={ProfilePic}
-            alt="Profile Picture"
-          />
-          <div className="w-[15rem] h-[2.5rem] relative ml-[15vw] text-sky-400 text-3xl font-bold font-['Montserrat']">
-            {userDetails && userDetails[0].name}
-          </div>
-          <div className="w-[11rem] h-[1.6rem] relative ml-[15vw] opacity-70 text-sky-400 text-base font-normal font-['Montserrat']">
-            {userDetails && userDetails[0].description}
+      <div className="bg-slate-400 h-[70vh] w-[60vh] ml-[25vw] mt-[10vh]">
+        <div className="pt-[12vh] relative flex justify-center text-3xl font-bold text-white">
+          {editMode ? (
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="bg-transparent border-b border-white outline-none"
+            />
+          ) : (
+            name
+          )}
+        </div>
+        <div className="pt-2 relative flex justify-center text-base font-normal text-white">
+          {editMode ? (
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="bg-transparent border-b border-white outline-none"
+            />
+          ) : isNull(description) ? (
+            "No Description"
+          ) : (
+            description
+          )}
+        </div>
+        <div className="flex justify-start ml-16 mt-10 relative text-2xl text-indigo-100">
+          <FontAwesomeIcon icon={faEnvelope} />
+          <div className="ml-6 text-base underline text-white">
+            {editMode ? (
+              <input
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-transparent border-b border-white outline-none"
+              />
+            ) : isNull(email) ? (
+              "No Email"
+            ) : (
+              email
+            )}
           </div>
         </div>
-        <div className="flex row-span-2 w-[60vw] justify-between">
-          <div className="mt-[8vh] ml-[3vw] text-sky-400 text-2xl font-bold font-['Nunito']">
-            About
-          </div>
-          <div className="w-[14rem] h-15 mt-[8vh] flex row-auto justify-start opacity-70 text-black text-base font-normal font-['Montserrat']">
-            <Image
-              className="mr-2"
-              width={"17"}
-              height={"15"}
-              src={Location}
-              alt="location"
-            />
-            {userDetails && userDetails[0].aadhar}
-          </div>
-        </div>
-        <div className="flex row-span-2 w-[60vw] justify-between">
-          <div className="w-[14rem] h-15 mt-[2vh] ml-[3vw] flex row-auto justify-start opacity-70 text-black text-base font-normal font-['Montserrat']">
-            <Image
-              className="mr-2"
-              width={"17"}
-              height={"15"}
-              src={Person}
-              alt="gender"
-            />
-            {userDetails && userDetails[0].pan}
-          </div>
-          <div className="w-[14rem] h-15 mt-[2vh] flex row-auto justify-start opacity-70 text-black text-base font-normal font-['Montserrat']">
-            <Image
-              className="mr-2"
-              width={"17"}
-              height={"15"}
-              src={Mail}
-              alt="mail"
-            />
-            {userDetails && userDetails[0].email}
+        <div className="flex justify-start ml-16  mt-4 relative text-2xl text-indigo-100">
+          <FontAwesomeIcon icon={faIdCard} />
+          <div className="ml-6 text-base underline text-white">
+            {editMode ? (
+              <input
+                type="text"
+                value={aadhar}
+                onChange={(e) => setAadhar(e.target.value)}
+                className="bg-transparent border-b border-white outline-none"
+              />
+            ) : isNull(aadhar) ? (
+              "No Aadhar"
+            ) : (
+              aadhar
+            )}
           </div>
         </div>
-        <div className="flex row-span-2 w-[60vw] justify-between">
-          <div className=" w-[14rem] h-0 mt-[1vh] ml-[3vw] opacity-10 border border-slate-950"></div>
-          <div className=" w-[14rem] h-0 mt-[1vh] opacity-10 border border-slate-950"></div>
-        </div>
-        <div className="flex row-span-2 w-[60vw] justify-between">
-          <div className="w-[14rem] h-15 mt-[2vh] ml-[3vw] flex row-auto justify-start opacity-70 text-black text-base font-normal font-['Montserrat']">
-            <Image
-              className="mr-2"
-              width={"17"}
-              height={"15"}
-              src={Cake}
-              alt="birth date"
-            />
-            {userDetails && userDetails[0].broker}
-          </div>
-          <div className="w-[14rem] h-15 mt-[2vh] flex row-auto justify-start opacity-70 text-black text-base font-normal font-['Montserrat']">
-            <Image
-              className="mr-2"
-              width={"17"}
-              height={"15"}
-              src={Phone}
-              alt="Phone Number"
-            />
-            {userDetails && userDetails[0].phone}
+        <div className="flex justify-start ml-16 mt-4 relative text-2xl text-indigo-100">
+          <FontAwesomeIcon icon={faUser} />
+          <div className="ml-6 text-base underline text-white">
+            {editMode ? (
+              <input
+                type="text"
+                value={pan}
+                onChange={(e) => setPan(e.target.value)}
+                className="bg-transparent border-b border-white outline-none"
+              />
+            ) : isNull(pan) ? (
+              "No Pan"
+            ) : (
+              pan
+            )}
           </div>
         </div>
+        <div className="flex justify-start ml-16 mt-4 relative text-2xl text-indigo-100">
+          <FontAwesomeIcon icon={faPhone} />
+          <div className="ml-6 text-base underline text-white">
+            {editMode ? (
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-transparent border-b border-white outline-none"
+              />
+            ) : isNull(phone) ? (
+              "No Phone Number"
+            ) : (
+              phone
+            )}
+          </div>
+        </div>
+        <div className="flex justify-start ml-16 mt-4 relative text-2xl text-indigo-100">
+          <FontAwesomeIcon icon={faArrowTrendUp} />
+          <div className="ml-6 text-base underline text-white uppercase">
+            {editMode ? (
+              <input
+                type="text"
+                value={broker}
+                onChange={(e) => setBroker(e.target.value)}
+                className="bg-transparent border-b border-white outline-none"
+              />
+            ) : isNull(broker) ? (
+              "No Broker"
+            ) : (
+              broker
+            )}
+          </div>
+        </div>
+        {editMode ? (
+          <div className="flex justify-center mt-8">
+            <button
+              className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded"
+              onClick={handleSave}
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <div className="flex justify-center mt-8">
+            <button
+              className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded"
+              onClick={handleEdit}
+            >
+              Edit
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
