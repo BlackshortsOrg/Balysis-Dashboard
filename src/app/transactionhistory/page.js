@@ -17,6 +17,10 @@ const columns = [
   //   width: "auto",
   // },
   {
+    id: "id",
+    accessorKey: "id",
+  },
+  {
     header: "Time",
     accessorKey: "created_at",
     cell: ({ cell }) => {
@@ -213,9 +217,10 @@ const transactionhistory = () => {
     }
   }
 
+  const [daily, setDaily] = useState(true);
   const [data, setData] = useState([]);
   async function callAPI(token) {
-    const data = await getTransactionHistoryAPI(token);
+    const data = await getTransactionHistoryAPI(token, daily);
     setData(data);
   }
 
@@ -223,12 +228,17 @@ const transactionhistory = () => {
     checkLogin().then((token) => {
       callAPI(token);
     });
-  }, []);
+  }, [daily]);
 
   return (
     <div className="h-screen w-full mx-8 overflow-auto">
       <h1 className="text-4xl my-4 font-semibold">Transaction History</h1>
-      <TxTable columns={columns} data={data} />
+      <TxTable
+        columns={columns}
+        data={data}
+        daily={daily}
+        setDaily={setDaily}
+      />
     </div>
   );
 };

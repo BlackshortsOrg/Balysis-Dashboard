@@ -20,13 +20,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Listbox } from "@headlessui/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const status_options = ["PENDING", "FILLED", "REJECTED", "FAILED", ""];
+const status_options = ["PENDING", "TRADED", "REJECTED", "FAILED", ""];
 
-export function TxTable({ columns, data }) {
+export function TxTable({ columns, data, daily, setDaily }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedFilterStatus, setSelectedFilterStatus] = React.useState();
   const [columnFilters, setColumnFilters] = React.useState([]);
+  const [columnVisibility, setColumnVisibility] = React.useState({ id: false });
 
   const table = useReactTable({
     data,
@@ -41,6 +43,7 @@ export function TxTable({ columns, data }) {
     state: {
       rowSelection,
       columnFilters,
+      columnVisibility,
     },
     initialState: {
       pagination: {
@@ -139,6 +142,31 @@ export function TxTable({ columns, data }) {
             className="max-w-sm"
           />
         </div>
+        <div className="">
+          <Input
+            placeholder="Filter signals..."
+            value={table.getColumn("id")?.getFilterValue() ?? ""}
+            onChange={(event) =>
+              table.getColumn("id")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        </div>
+        <div className="text-right">
+          <Tabs
+            defaultValue="daily"
+            value={daily ? "daily" : "alltime"}
+            onValueChange={(e) => {
+              setDaily(e === "daily");
+            }}
+            className=""
+          >
+            <TabsList>
+              <TabsTrigger value="daily">Daily</TabsTrigger>
+              <TabsTrigger value="alltime">All Time</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -152,7 +180,7 @@ export function TxTable({ columns, data }) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -172,7 +200,7 @@ export function TxTable({ columns, data }) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
