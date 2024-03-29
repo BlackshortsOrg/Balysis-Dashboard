@@ -73,6 +73,21 @@ export default function OrderTypeCarousel({ orderType, setOrderType, carouselApi
               Stop Limit Order
             </div>
           )}
+          {orderType === "GTT_ORDER" ? (
+            <div className="text-white bg-[#41AFFF] col-span-1 py-4 shadow-gray-50 border-slate-200 border rounded-xl">
+              GTT Order
+            </div>
+          ) : (
+            <div
+              className="col-span-1 py-4 shadow-gray-50 border-slate-200 border rounded-xl hover:bg-slate-100"
+              onClick={() => {
+                setOrderType("GTT_ORDER")
+                carouselApi.scrollNext()
+              }}
+            >
+              GTT Order
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

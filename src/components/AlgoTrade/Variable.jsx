@@ -3,13 +3,15 @@ import { getAlgoTradeVariable, postAlgoTradeVariable } from "@/api/algoTradeVari
 import { get, map, startCase } from "lodash";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const Variable = () => {
   // State to store variable data from the API
   const [variables, setVariables] = useState();
   const [formValue, setFormValue] = useState({});
+  const [token, setToken] = useState("")
 
-  const {id} = useParams();
+  const { id } = useParams();
   const searchParams = useSearchParams();
   const strategy_name = searchParams.get('strategy_name');
 
@@ -17,35 +19,41 @@ const Variable = () => {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      return sessionStorage.getItem("token");
+      const tk = sessionStorage.getItem("token");
+      setToken(tk)
+      return tk
     }
   }
 
   async function callAPI(token) {
-    const rawData = await getAlgoTradeVariable(token, id, strategy_name );
+    const rawData = await getAlgoTradeVariable(token, id, strategy_name);
     const schemizedData = map(rawData, (value, key) => ({
       name: startCase(key),
       key: key
     }));
-   setVariables(schemizedData);
-   setFormValue(rawData);
+    setVariables(schemizedData);
+    setFormValue(rawData);
   }
 
   // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
     //* TODO:  Need to add validation checks later on
-    postAlgoTradeVariable(token, id, strategy_name, formValue).then((res) => {
-      toast(res);
+    console.log(formValue)
+    postAlgoTradeVariable(token, id, strategy_name, { variables: formValue }).then((res) => {
+      if (res.status === 200) {
+        toast.success("Variables Changed")
+      } else {
+        toast.error("Error changing variables")
+      }
     });
   };
 
   //* Handle Input
   const handleInput = (opt, key) => {
     const textValue = opt.target.value;
-    setFormValue({...formValue, [key]: textValue});
+    setFormValue({ ...formValue, [key]: textValue });
   }
-  console.log(formValue,'1212')
 
   useEffect(() => {
     checkLogin().then((token) => {
@@ -56,7 +64,7 @@ const Variable = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        {map(variables, ({key, name}) => (
+        {map(variables, ({ key, name }) => (
           <div key={key} className="mb-4">
             <label className="block text-sm font-medium text-gray-600">
               {name}

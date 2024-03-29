@@ -142,9 +142,9 @@ export function AlgoTradeTable({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}
@@ -156,7 +156,7 @@ export function AlgoTradeTable({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    // data-state={row.getIsSelected() && "selected"}
+                  // data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -199,7 +199,7 @@ export function AlgoTradeTable({
             Squareoff Strategy for User - {event.name}
           </DialogHeader>
           <div className="flex gap-4">
-            <p>Enter OTP - </p>
+            <p>Enter PIN- </p>
             <InputOTP maxLength={6} value={otp} onChange={setOTP}>
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
@@ -223,7 +223,7 @@ export function AlgoTradeTable({
         <DialogContent>
           <DialogHeader>Shutdown Strategy for User - {event.name}</DialogHeader>
           <div className="flex gap-4">
-            <p>Enter OTP - </p>
+            <p>Enter PIN- </p>
             <InputOTP maxLength={6} value={otp} onChange={setOTP}>
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
@@ -257,7 +257,7 @@ export function AlgoTradeTable({
             />
           </div>
           <div className="flex gap-4">
-            <p>Enter OTP - </p>
+            <p>Enter PIN - </p>
             <InputOTP maxLength={6} value={otp} onChange={setOTP}>
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
@@ -281,7 +281,7 @@ export function AlgoTradeTable({
         <DialogContent>
           <DialogHeader>Update Subscriptions</DialogHeader>
           <div className="flex gap-4">
-            <p>Enter OTP - </p>
+            <p>Enter PIN - </p>
             <InputOTP maxLength={6} value={otp} onChange={setOTP}>
               <InputOTPGroup>
                 <InputOTPSlot index={0} />

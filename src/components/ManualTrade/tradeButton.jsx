@@ -31,8 +31,9 @@ import {
 import OrderTypeCarousel from "./orderTypeCarousel";
 import PlaceOrderCarousel from "./placeOrderCarousel";
 import { getAllPresets } from "@/api/getAllPresets";
+import moment from "moment";
 
-const TradeButton = ({ rowSelection, data }) => {
+const TradeButton = ({ rowSelection, data, refresh, setRefresh }) => {
   const [token, setToken] = useState("");
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
@@ -89,6 +90,7 @@ const TradeButton = ({ rowSelection, data }) => {
       getAllPresets(token).then((resp) => {
         setPresetObj(resp)
         console.log(resp)
+        console.log([...Object.keys(resp), "None"])
         setPresets([...Object.keys(resp), "None"])
       })
     });
@@ -97,6 +99,10 @@ const TradeButton = ({ rowSelection, data }) => {
   const newTradeAPICall = (e) => {
     if (!selectedStock) {
       toast("Please select a valid stock", { dismissible: true })
+      return
+    }
+    if (!orderType) {
+      toast.error("Please select order Type")
       return
     }
     console.log(rowSelection);
@@ -150,10 +156,11 @@ const TradeButton = ({ rowSelection, data }) => {
         });
       }
     }
+    setRefresh(!refresh)
   };
 
   const [selectedStock, setSelectedStock] = useState(stocks[0]);
-  const [selectedSet, setSelectedSet] = useState()
+  const [selectedSet, setSelectedSet] = useState(presets[0])
   const [query, setQuery] = useState("");
   const [setsQuery, setSetsQuery] = useState("")
 
@@ -162,7 +169,7 @@ const TradeButton = ({ rowSelection, data }) => {
       ? presets.slice(0, 50)
       : presets
         .filter((preset) => {
-          return preset.toLowerCase().includes(query.toLowerCase());
+          return preset.toLowerCase().includes(setsQuery.toLowerCase());
         })
         .slice(0, 50);
 
@@ -217,15 +224,15 @@ const TradeButton = ({ rowSelection, data }) => {
                               className=""
                             >
                               <div className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl" onClick={() => carouselApi.scrollNext()}>
-                                {stock.fyers_ticker},
+                                {stock.fyers_ticker + ", "}
                                 {segment === "Futures" || segment === "Options"
-                                  ? new Date(stock.expiry).toString()
-                                  : ""}{" "}
-                                ,
+                                  ? (moment(new Date(parseInt(stock.expiry) * 1000)).format("Do MMM") + ", ")
+                                  : ""}{""}
+
                                 {segment === "Futures" || segment === "Options"
-                                  ? stock.lotsize
+                                  ? (stock.lotsize + ", ")
                                   : ""}{" "}
-                                ,{stock.name},{" "}
+                                {stock.name}
                               </div>
                             </Combobox.Option>
                           ))}
@@ -240,20 +247,6 @@ const TradeButton = ({ rowSelection, data }) => {
                   orderType={orderType}
                   setOrderType={setOrderType}
                   carouselApi={carouselApi}
-                />
-              </CarouselItem>
-              <CarouselItem>
-                <PlaceOrderCarousel
-                  side={side}
-                  setSide={setSide}
-                  limit_price={limit_price}
-                  setLimitPrice={setLimitPrice}
-                  stop_price={stop_price}
-                  setStopPrice={setStopPrice}
-                  product_type={product_type}
-                  setProductType={setProductType}
-                  qty={qty}
-                  setQty={setQty}
                 />
               </CarouselItem>
               <CarouselItem>
@@ -298,6 +291,21 @@ const TradeButton = ({ rowSelection, data }) => {
                     </Combobox>
                   </CardContent>
                 </Card>
+              </CarouselItem>
+              <CarouselItem>
+                <PlaceOrderCarousel
+                  selectedStock={selectedStock}
+                  side={side}
+                  setSide={setSide}
+                  limit_price={limit_price}
+                  setLimitPrice={setLimitPrice}
+                  stop_price={stop_price}
+                  setStopPrice={setStopPrice}
+                  product_type={product_type}
+                  setProductType={setProductType}
+                  qty={qty}
+                  setQty={setQty}
+                />
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious />

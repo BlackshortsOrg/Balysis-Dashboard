@@ -6,5 +6,5 @@ export const placeTradeAPI = async (trade, token) => {
     headers: { "Content-Type": "application/json", Authorization: token },
     body: JSON.stringify(trade),
   });
-  return await response.json();
+  return response;
 };

@@ -11,7 +11,7 @@ import { Listbox } from "@headlessui/react";
 
 const product_types = ['CNC', 'INTRADAY', 'MARGIN']
 
-export default function PlaceOrderCarousel({ side, setSide, limit_price, setLimitPrice, stop_price, setStopPrice, product_type, setProductType, qty, setQty }) {
+export default function PlaceOrderCarousel({ side, setSide, limit_price, setLimitPrice, stop_price, setStopPrice, product_type, setProductType, qty, setQty, selectedStock }) {
   return (
     <Card>
       <CardHeader>
@@ -57,12 +57,13 @@ export default function PlaceOrderCarousel({ side, setSide, limit_price, setLimi
           </div>
         </div>
         <div className="flex flex-row">
-          <div className="w-20">
-            <Label htmlFor="qty">Qty</Label>
+          <div className="w-40">
+            <Label htmlFor="qty">Qty Lot Size: {selectedStock ? selectedStock.lotsize ? selectedStock.lotsize : 1 : 1}</Label>
             <Input
               type="number"
               id="qty"
               placeholder="Qty"
+              step={selectedStock ? selectedStock.lotsize ? selectedStock.lotsize : 1 : 1}
               value={qty}
               onChange={(e) => setQty(e.target.value)}
             />

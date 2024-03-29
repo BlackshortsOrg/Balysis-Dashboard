@@ -57,7 +57,7 @@ export default function algo({ params }) {
       accessorKey: "multiplier",
       cell: ({ cell, row }) => (
         <div>
-          {row.original.subscribed ? (
+          {row.original.subscribed && row.original.active ? (
             <Input
               type="number"
               value={multiplierChanges[row.original.id] || cell.getValue()}
@@ -68,6 +68,21 @@ export default function algo({ params }) {
                 })
               }
             />
+          ) : row.original.subscribed && !row.original.active ? (
+            <DialogTrigger asChild>
+              <Button
+                variant="addUser"
+                onClick={(e) =>
+                  setEvent({
+                    event: "Subscribe",
+                    id: row.original.id,
+                    name: row.original.username,
+                  })
+                }
+              >
+                Re Enable
+              </Button>
+            </DialogTrigger>
           ) : (
             <DialogTrigger asChild>
               <Button
@@ -100,9 +115,8 @@ export default function algo({ params }) {
       accessorKey: "total_unrealised_pnl",
       cell: ({ cell, row }) => (
         <div
-          className={`flex flex-row items-center font-semibold ${
-            cell.getValue() < 0 ? "text-red-500" : "text-green-500"
-          }`}
+          className={`flex flex-row items-center font-semibold ${cell.getValue() < 0 ? "text-red-500" : "text-green-500"
+            }`}
         >
           {cell.getValue() > 0 ? "+" : ""}
           {cell.getValue().toFixed(2)}
@@ -114,9 +128,8 @@ export default function algo({ params }) {
       accessorKey: "total_realised_pnl",
       cell: ({ cell, row }) => (
         <div
-          className={`flex flex-row items-center font-semibold ${
-            cell.getValue() < 0 ? "text-red-500" : "text-green-500"
-          }`}
+          className={`flex flex-row items-center font-semibold ${cell.getValue() < 0 ? "text-red-500" : "text-green-500"
+            }`}
         >
           {cell.getValue() > 0 ? "+" : ""}
           {cell.getValue().toFixed(2)}

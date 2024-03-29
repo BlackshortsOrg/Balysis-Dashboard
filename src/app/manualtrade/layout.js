@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
       <body className={"flex flex-row " + montserrat.className}>
         <Navbar />
         {children}
-        <Toaster />
+        <Toaster richColors closeButton />
       </body>
     </html>
   );

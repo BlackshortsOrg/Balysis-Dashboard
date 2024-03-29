@@ -19,5 +19,5 @@ export const cancelTradeAPI = async (org_signal, token) => {
       users: [-1],
     }),
   });
-  return await response.json();
+  return response;
 };
