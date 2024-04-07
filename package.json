@@ -33,6 +33,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "embla-carousel-react": "^8.0.0-rc18",
+    "fuse.js": "^7.0.0",
     "input-otp": "^1.2.2",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
