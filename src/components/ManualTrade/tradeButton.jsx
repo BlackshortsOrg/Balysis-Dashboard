@@ -36,14 +36,19 @@ import moment from "moment";
 
 const TradeButton = () => {
   const [stocksList, setStocksList] = useState([]);
-  const [selectedStock, setSelectedStock] = useState(null)
+  const [selectedStock, setSelectedStock] = useState(null);
   const [token, setToken] = useState("");
   const [query, setQuery] = useState("");
-  const [carouselApi, setCarouselAPI] = useState()
+  const [carouselApi, setCarouselAPI] = useState();
 
-  const fuse = new Fuse(stocksList, { keys: ["symbol"] })
-  const filteredStocksList = query === "" ? stocksList.slice(0, 50) : fuse.search(query).slice(0, 50)
-  console.log(filteredStocksList)
+  const fuse = new Fuse(stocksList, { keys: ["symbol"] });
+  const filteredStocksList =
+    query === ""
+      ? stocksList.slice(0, 50)
+      : fuse
+          .search(query)
+          .map((s) => s.item)
+          .slice(0, 50);
 
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
@@ -55,27 +60,29 @@ const TradeButton = () => {
     }
   }
   async function fetchStocksData(token) {
-    await Promise.all([setEquityData(token), setOptionsData(token), setFuturesData(token)])
+    const res = await Promise.all([
+      setEquityData(token),
+      setOptionsData(token),
+      setFuturesData(token),
+    ]);
+    setStocksList(_.flatten(res));
   }
 
   async function setEquityData(token) {
-    const data = await getEquityTickersAPI(token);
-    setStocksList([...stocksList, ...data])
+    return await getEquityTickersAPI(token);
   }
   async function setOptionsData(token) {
-    const data = await getOptionsTickersAPI(token);
-    setStocksList([...stocksList, ...data])
+    return await getOptionsTickersAPI(token);
   }
   async function setFuturesData(token) {
-    const data = await getFuturesTickersAPI(token);
-    setStocksList([...stocksList, ...data])
+    return await getFuturesTickersAPI(token);
   }
 
   useEffect(() => {
     checkLogin().then((token) => {
-      fetchStocksData(token).then()
-    })
-  }, [])
+      fetchStocksData(token).then();
+    });
+  }, []);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -108,20 +115,27 @@ const TradeButton = () => {
                         <Combobox.Options className="bg-slate-50 py-1 rounded-xl mt-2 overflow-auto h-[200px]">
                           {filteredStocksList.map((stock) => (
                             <Combobox.Option
-                              key={stock.item.ticker}
-                              value={stock.item}
+                              key={stock.ticker}
+                              value={stock}
                               className=""
                             >
-                              <div className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl" onClick={() => carouselApi.scrollNext()}>
-                                {stock.item.fyers_ticker + ", "}
-                                {stock.item.segment === "FUT" || stock.item.segment === "OPT"
-                                  ? (moment(new Date(parseInt(stock.expiry) * 1000)).format("Do MMM") + ", ")
-                                  : ""}{""}
-
-                                {stock.item.segment === "FUT" || stock.item.segment === "OPT"
-                                  ? (stock.item.lotsize + ", ")
+                              <div
+                                className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl"
+                                onClick={() => carouselApi.scrollNext()}
+                              >
+                                {stock.fyers_ticker + ", "}
+                                {stock.segment === "FUT" ||
+                                stock.segment === "OPT"
+                                  ? moment(
+                                      new Date(parseInt(stock.expiry) * 1000),
+                                    ).format("Do MMM") + ", "
+                                  : ""}
+                                {""}
+                                {stock.segment === "FUT" ||
+                                stock.segment === "OPT"
+                                  ? stock.lotsize + ", "
                                   : ""}{" "}
-                                {stock.item.name}
+                                {stock.name}, {stock.segment}
                               </div>
                             </Combobox.Option>
                           ))}
@@ -136,8 +150,8 @@ const TradeButton = () => {
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
 // const TradeButton = ({rowSelection, data, refresh, setRefresh}) => {
 //   const [segment, setSegment] = useState("Equity");
