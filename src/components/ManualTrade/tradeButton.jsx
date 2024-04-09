@@ -33,22 +33,39 @@ import OrderTypeCarousel from "./orderTypeCarousel";
 import PlaceOrderCarousel from "./placeOrderCarousel";
 import { getAllPresets } from "@/api/getAllPresets";
 import moment from "moment";
+import { fetchLTPApi } from "@/api/fetchLTP";
+import { TabsList, Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
+import GttOrder from "./gttOrder";
 
 const TradeButton = () => {
   const [stocksList, setStocksList] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
+  const [selectedPreset, setSelectedPreset] = useState(null);
   const [token, setToken] = useState("");
   const [query, setQuery] = useState("");
+  const [presetQuery, setPresetQuery] = useState("")
   const [carouselApi, setCarouselAPI] = useState();
+  const [presetsObj, setPresetsObj] = useState({});
+  const [presetsList, setPresetsList] = useState([]);
+  const [ltp, setLTP] = useState(0)
+  const [openDialog, setOpenDialog] = useState(false)
 
-  const fuse = new Fuse(stocksList, { keys: ["symbol"] });
+  const fuse_stock = new Fuse(stocksList, { keys: ["symbol"] });
   const filteredStocksList =
     query === ""
       ? stocksList.slice(0, 50)
-      : fuse
-          .search(query)
-          .map((s) => s.item)
-          .slice(0, 50);
+      : fuse_stock
+        .search(query)
+        .map((s) => s.item)
+        .slice(0, 50);
+  const fuse_presets = new Fuse(presetsList)
+  const filteredPresets =
+    presetQuery === ""
+      ? presetsList.slice(0, 50)
+      : fuse_presets
+        .search(presetQuery)
+        .map((s) => s.item)
+        .slice(0, 50);
 
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
@@ -67,6 +84,11 @@ const TradeButton = () => {
     ]);
     setStocksList(_.flatten(res));
   }
+  async function fetchPresets(token) {
+    const res = await getAllPresets(token)
+    setPresetsList([...Object.keys(res), "None"])
+    setPresetsObj(res)
+  }
 
   async function setEquityData(token) {
     return await getEquityTickersAPI(token);
@@ -77,14 +99,30 @@ const TradeButton = () => {
   async function setFuturesData(token) {
     return await getFuturesTickersAPI(token);
   }
+  async function fetchLTP(symbol, segment, exchange) {
+    const ltp = await fetchLTPApi(token, symbol, segment, exchange)
+    setLTP(ltp)
+  }
+  useEffect(() => {
+    if (selectedStock) {
+      fetchLTP(selectedStock.symbol, selectedStock.segment, selectedStock.exchange)
+    }
+    const interval = setInterval(() => {
+      if (selectedStock) {
+        fetchLTP(selectedStock.symbol, selectedStock.segment, selectedStock.exchange)
+      }
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [selectedStock])
 
   useEffect(() => {
     checkLogin().then((token) => {
       fetchStocksData(token).then();
+      fetchPresets(token).then()
     });
   }, []);
   return (
-    <Dialog>
+    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogTrigger asChild>
         <Button variant="addUser">
           <Pencil2Icon />
@@ -93,29 +131,81 @@ const TradeButton = () => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]">
         <DialogHeader>
-          <DialogTitle className="">{selectedStock?.symbol}</DialogTitle>
+          <DialogTitle className="">{selectedStock?.symbol} | {selectedPreset} | {ltp?.ltp?.toFixed(2)}</DialogTitle>
         </DialogHeader>
         <div className="px-6">
           <Carousel setApi={setCarouselAPI} className="max-w-[725px]">
             <CarouselContent>
+              {/* <CarouselItem> */}
+              {/*   <Card> */}
+              {/*     <CardHeader> */}
+              {/*       <CardTitle>Chose Stock</CardTitle> */}
+              {/*       <CardContent> */}
+              {/*         <Combobox */}
+              {/*           value={selectedStock} */}
+              {/*           onChange={setSelectedStock} */}
+              {/*         > */}
+              {/*           <Combobox.Input */}
+              {/*             onChange={_.debounce((e) => setQuery(e.target.value), 1000)} */}
+              {/*             displayValue={(stock) => stock?.fyers_ticker} */}
+              {/*             className="w-full bg-slate-50 border-slate-200 border rounded-xl px-4 py-2 mt-4" */}
+              {/*           /> */}
+              {/*           <Combobox.Options className="bg-slate-50 py-1 rounded-xl mt-2 overflow-auto h-[200px]"> */}
+              {/*             {filteredStocksList.map((stock) => ( */}
+              {/*               <Combobox.Option */}
+              {/*                 key={stock.ticker} */}
+              {/*                 value={stock} */}
+              {/*                 className="" */}
+              {/*               > */}
+              {/*                 <div */}
+              {/*                   className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl" */}
+              {/*                   onClick={() => carouselApi.scrollNext()} */}
+              {/*                 > */}
+              {/*                   {stock.fyers_ticker + ", "} */}
+              {/*                   {stock.segment === "FUT" || */}
+              {/*                     stock.segment === "OPT" */}
+              {/*                     ? moment( */}
+              {/*                       new Date(parseInt(stock.expiry) * 1000), */}
+              {/*                     ).format("Do MMM") + ", " */}
+              {/*                     : ""} */}
+              {/*                   {""} */}
+              {/*                   {stock.segment === "FUT" || */}
+              {/*                     stock.segment === "OPT" */}
+              {/*                     ? stock.lotsize + ", " */}
+              {/*                     : ""}{" "} */}
+              {/*                   {stock.name}, {stock.segment} */}
+              {/*                 </div> */}
+              {/*               </Combobox.Option> */}
+              {/*             ))} */}
+              {/*           </Combobox.Options> */}
+              {/*         </Combobox> */}
+              {/*       </CardContent> */}
+              {/*     </CardHeader> */}
+              {/*   </Card> */}
+              {/* </CarouselItem> */}
               <CarouselItem>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Chose Stock</CardTitle>
+                    <CardTitle>Chose Preset
+                      <Button className="ml-2" variant="addUser" onClick={(e) => {
+                        setSelectedPreset("None")
+                        carouselApi.scrollNext()
+                      }}>No Preset</Button>
+                    </CardTitle>
                     <CardContent>
                       <Combobox
-                        value={selectedStock}
-                        onChange={setSelectedStock}
+                        value={selectedPreset}
+                        onChange={setSelectedPreset}
                       >
                         <Combobox.Input
-                          onChange={(event) => setQuery(event.target.value)}
-                          displayValue={(stock) => stock?.fyers_ticker}
+                          onChange={(event) => setPresetQuery(event.target.value)}
+                          displayValue={(stock) => stock}
                           className="w-full bg-slate-50 border-slate-200 border rounded-xl px-4 py-2 mt-4"
                         />
                         <Combobox.Options className="bg-slate-50 py-1 rounded-xl mt-2 overflow-auto h-[200px]">
-                          {filteredStocksList.map((stock) => (
+                          {filteredPresets.map((stock) => (
                             <Combobox.Option
-                              key={stock.ticker}
+                              key={stock}
                               value={stock}
                               className=""
                             >
@@ -123,19 +213,7 @@ const TradeButton = () => {
                                 className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl"
                                 onClick={() => carouselApi.scrollNext()}
                               >
-                                {stock.fyers_ticker + ", "}
-                                {stock.segment === "FUT" ||
-                                stock.segment === "OPT"
-                                  ? moment(
-                                      new Date(parseInt(stock.expiry) * 1000),
-                                    ).format("Do MMM") + ", "
-                                  : ""}
-                                {""}
-                                {stock.segment === "FUT" ||
-                                stock.segment === "OPT"
-                                  ? stock.lotsize + ", "
-                                  : ""}{" "}
-                                {stock.name}, {stock.segment}
+                                {stock}
                               </div>
                             </Combobox.Option>
                           ))}
@@ -145,7 +223,62 @@ const TradeButton = () => {
                   </CardHeader>
                 </Card>
               </CarouselItem>
+              <CarouselItem>
+                <h1>Chose Stock</h1>
+                <Combobox
+                  value={selectedStock}
+                  onChange={setSelectedStock}
+                >
+                  <Combobox.Input
+                    onChange={_.debounce((e) => setQuery(e.target.value), 1000)}
+                    displayValue={(stock) => stock?.fyers_ticker}
+                    className="w-full bg-slate-50 border-slate-200 border rounded-xl px-4 py-2 mt-4"
+                  />
+                  <Combobox.Options className="bg-slate-50 py-1 rounded-xl mt-2 overflow-auto h-[200px]">
+                    {filteredStocksList.map((stock) => (
+                      <Combobox.Option
+                        key={stock.ticker}
+                        value={stock}
+                        className=""
+                      >
+                        <div
+                          className="hover:bg-[#41AFFF] pl-4 py-2 hover:text-white rounded-xl"
+                          onClick={() => carouselApi.scrollNext()}
+                        >
+                          {stock.fyers_ticker + ", "}
+                          {stock.segment === "FUT" ||
+                            stock.segment === "OPT"
+                            ? moment(
+                              new Date(parseInt(stock.expiry) * 1000),
+                            ).format("Do MMM") + ", "
+                            : ""}
+                          {""}
+                          {stock.segment === "FUT" ||
+                            stock.segment === "OPT"
+                            ? stock.lotsize + ", "
+                            : ""}{" "}
+                          {stock.name}, {stock.segment}
+                        </div>
+                      </Combobox.Option>
+                    ))}
+                  </Combobox.Options>
+                </Combobox>
+                <Tabs defaultValue="normal" className="w-full mt-4">
+                  <TabsList className="w-full grid-cols-2">
+                    <TabsTrigger className="col-span-1 w-full" value="normal">Normal</TabsTrigger>
+                    <TabsTrigger className="col-span-1 w-full" value="gtt">GTT</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="normal">
+                    <PlaceOrderCarousel stock={selectedStock} preset={selectedPreset} closeDialog={() => setOpenDialog(false)} />
+                  </TabsContent>
+                  <TabsContent value="gtt">
+                    <GttOrder stock={selectedStock} preset={selectedPreset} closeDialog={() => setOpenDialog(false)} />
+                  </TabsContent>
+                </Tabs>
+              </CarouselItem>
             </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
           </Carousel>
         </div>
       </DialogContent>
