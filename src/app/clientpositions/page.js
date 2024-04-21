@@ -13,6 +13,7 @@ import {
 import { ClientPositionsTable } from "@/components/ClientPositions/ClientPositionsTable";
 import ControlPanelButton from "@/components/ClientPositions/ControlPanelButton";
 import { activeClientPositionsAPI } from "@/api/activePositions";
+import { FaRegCalendarAlt } from "react-icons/fa";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,6 +34,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import 'react-date-range/dist/styles.css'
+import 'react-date-range/dist/theme/default.css'
+import { DateRangePicker } from "react-date-range";
 
 const clientpositions = () => {
   const [token, setToken] = useState("");
@@ -49,10 +53,10 @@ const clientpositions = () => {
         <div
           className="flex flex-row items-center hover:underline hover:cursor-pointer"
           onClick={(e) =>
-            (document.location.href =
-              "/clientpositions/" +
-              row.original.id +
-              `?name=${cell.getValue()}`)
+          (document.location.href =
+            "/clientpositions/" +
+            row.original.id +
+            `?name=${cell.getValue()}`)
           }
         >
           <Image
@@ -215,7 +219,8 @@ const clientpositions = () => {
     },
   ];
 
-  const [daily, setDaily] = useState(true);
+  const [dateRangeState, setDateRangeState] = useState([{ startDate: null, endDate: new Date(), key: 'selection' }])
+  // const [daily, setDaily] = useState(true);
   const [table_data, setTableData] = useState([]);
   const [total_data, setTotalData] = useState({
     total_realized_pnl: 0,
@@ -223,8 +228,14 @@ const clientpositions = () => {
     total_strategies: 0,
     total_margin: 0,
   });
-  async function callAPI(token, daily) {
-    const resp = await activeClientPositionsAPI(token, daily);
+  async function callAPI(token) {
+    const start_time = dateRangeState[0].startDate ? dateRangeState[0].startDate : new Date(0);
+    start_time.setHours(0, 0, 0)
+    const start = start_time.getTime() / 1000
+    const end_time = dateRangeState[0].endDate
+    const end = end_time.getTime() / 1000
+    end_time.setHours(23, 59, 59)
+    const resp = await activeClientPositionsAPI(token, start, end)
     console.log(resp);
     const tot = {
       total_realized_pnl: resp.totalMetrics.total_realised_pnl.toFixed(2),
@@ -263,17 +274,17 @@ const clientpositions = () => {
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      callAPI(token, daily);
+      callAPI(token);
     });
     const interval = setInterval(() => {
       checkLogin().then((token) => {
-        callAPI(token, daily);
+        callAPI(token);
       });
     }, 3000);
     return () => {
       clearInterval(interval);
     };
-  }, [daily]);
+  }, [dateRangeState]);
 
   return (
     <div className="h-screen w-full mx-8">
@@ -312,26 +323,41 @@ const clientpositions = () => {
         </div>
       </div>
       <div>
-        <Tabs
-          defaultValue="daily"
-          value={daily ? "daily" : "alltime"}
-          onValueChange={(e) => {
-            setDaily(e === "daily");
-          }}
-          className="w-[400px]"
-        >
-          <TabsList>
-            <TabsTrigger value="daily">Daily</TabsTrigger>
-            <TabsTrigger value="alltime">All Time</TabsTrigger>
-          </TabsList>
-          {/* <TabsContent value="account">Make changes to your account here.</TabsContent> */}
-          {/* <TabsContent value="password">Change your password here.</TabsContent> */}
-        </Tabs>
+        {/* <Tabs */}
+        {/*   defaultValue="daily" */}
+        {/*   value={daily ? "daily" : "alltime"} */}
+        {/*   onValueChange={(e) => { */}
+        {/*     setDaily(e === "daily"); */}
+        {/*   }} */}
+        {/*   className="w-[400px]" */}
+        {/* > */}
+        {/* <TabsList> */}
+        {/*   <TabsTrigger value="daily">Daily</TabsTrigger> */}
+        {/*   <TabsTrigger value="alltime">All Time</TabsTrigger> */}
+        {/* </TabsList> */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
+          </DialogTrigger>
+          <DialogContent className="min-w-[1000px]">
+            <DateRangePicker
+              onChange={item => setDateRangeState([item.selection])}
+              showPreview={true}
+              moveRangeOnFirstSelection={false}
+              months={2}
+              ranges={dateRangeState}
+              direction="horizontal"
+            />
+          </DialogContent>
+        </Dialog>
+        {/* <TabsContent value="account">Make changes to your account here.</TabsContent> */}
+        {/* <TabsContent value="password">Change your password here.</TabsContent> */}
+        {/* </Tabs> */}
       </div>
       <ClientPositionsTable
         columns={columns}
         data={table_data}
-        daily={daily}
+        daily={true}
         token={token}
       />
     </div>

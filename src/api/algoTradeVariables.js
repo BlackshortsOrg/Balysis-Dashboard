@@ -8,23 +8,23 @@ import { API_BASE_URL } from "./constants";
  * @returns {Promise<Object>} - A promise that resolves to the response JSON containing algorithmic trading variables.
  */
 export const getAlgoTradeVariable = async (token, strategy_id, strategy_name) => {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/strategy/env?strategy_id=${strategy_id}&strategy_name=${strategy_name}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": token
-          },
-        }
-      );
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching algorithmic trading variables:", error.message);
-      throw error;
-    }
-  };
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/strategy/env?instance_id=${strategy_id}&strategy_name=${strategy_name}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+      }
+    );
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching algorithmic trading variables:", error.message);
+    throw error;
+  }
+};
 
 /**
  * Updates algorithmic trading variables for a specific strategy on the server.
@@ -34,7 +34,7 @@ export const getAlgoTradeVariable = async (token, strategy_id, strategy_name) =>
  * @param {Object} updatedValue - Object containing updated variables.
  * @returns {Promise<Response>} - A promise that resolves to the fetch response.
  */
-export const postAlgoTradeVariable = async (token, strategy_id, strategy_name, updatedValue) => {
+export const postAlgoTradeVariable = async (token, instance_id, strategy_id, strategy_name, updatedValue) => {
   try {
     const response = await fetch(`${API_BASE_URL}/strategy/change-env`, {
       method: "PUT",
@@ -43,9 +43,10 @@ export const postAlgoTradeVariable = async (token, strategy_id, strategy_name, u
         "Authorization": token
       },
       body: JSON.stringify({
+        instance_id,
         strategy_id,
         strategy_name,
-        ...updatedValue
+        ...updatedValue,
       }),
     });
     return response;
@@ -55,4 +56,4 @@ export const postAlgoTradeVariable = async (token, strategy_id, strategy_name, u
   }
 };
 
-  
+

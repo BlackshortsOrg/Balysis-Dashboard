@@ -1,4 +1,14 @@
 "use client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { FaRegCalendarAlt } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
 import StrategiesHeader from "@/components/ClientPositions/StrategiesHeader";
 import StrategyCard from "@/components/ClientPositions/StrategyCard";
 import SecurityCards from "@/components/Dashboard/SecurityCards";
@@ -7,9 +17,13 @@ import { useEffect, useState } from "react";
 import { getUserMetricAPI } from "@/api/getUserMetric";
 import { useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import 'react-date-range/dist/styles.css'
+import 'react-date-range/dist/theme/default.css'
+import { DateRangePicker } from "react-date-range";
 
 export default function client({ params }) {
-  const [daily, setDaily] = useState(true);
+  const [dateRangeState, setDateRangeState] = useState([{ startDate: null, endDate: new Date(), key: 'selection' }])
+  const [daily, setDaily] = useState(false);
   const [ltps, setLTPs] = useState({});
   const searchParams = useSearchParams();
   const name = searchParams.get("name");
@@ -31,8 +45,14 @@ export default function client({ params }) {
     }
   }
   const [strategiesData, setStrategiesData] = useState([]);
-  async function fetchStrategiesData(token, daily) {
-    const resp = await getUserMetricAPI(parseInt(params.id), token, daily);
+  async function fetchStrategiesData(token) {
+    const start_time = dateRangeState[0].startDate ? dateRangeState[0].startDate : new Date(0);
+    start_time.setHours(0, 0, 0)
+    const start = start_time.getTime() / 1000
+    const end_time = dateRangeState[0].endDate
+    end_time.setHours(23, 59, 59)
+    const end = end_time.getTime() / 1000
+    const resp = await getUserMetricAPI(parseInt(params.id), token, start, end);
     console.log(resp.ltps);
     setLTPs(resp.ltps);
     console.log(resp);
@@ -53,7 +73,7 @@ export default function client({ params }) {
     let strategiesData = [];
     for (const strat in resp.strategies) {
       let data = {
-        name: strat,
+        name: resp.strategies[strat].name + "-" + resp.strategies[strat].instance_id,
         realizedpnl: parseFloat(
           resp.strategies[strat].total_realised_pnl,
         ).toFixed(2),
@@ -64,7 +84,7 @@ export default function client({ params }) {
         positions: {},
         active: resp.strategies[strat].active,
         subscribed: resp.strategies[strat].subscribed,
-        id: resp.strategies[strat].id,
+        id: strat,
       };
       for (const symbol in resp.strategies[strat].symbols) {
         if (symbol.endsWith("CNC")) {
@@ -106,17 +126,17 @@ export default function client({ params }) {
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      fetchStrategiesData(token, daily);
+      fetchStrategiesData(token);
     });
     const interval = setInterval(() => {
       checkLogin().then((token) => {
-        fetchStrategiesData(token, daily);
+        fetchStrategiesData(token);
       });
     }, 3000);
     return () => {
       clearInterval(interval);
     };
-  }, [daily]);
+  }, [dateRangeState, daily]);
 
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto ">
@@ -126,19 +146,40 @@ export default function client({ params }) {
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
         <div className="basis-[65%]"></div>
-        <Tabs
-          defaultValue="daily"
-          value={daily ? "daily" : "alltime"}
-          onValueChange={(e) => {
-            setDaily(e === "daily");
-          }}
-          className=""
-        >
-          <TabsList>
-            <TabsTrigger value="daily">Daily</TabsTrigger>
-            <TabsTrigger value="alltime">All Time</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* <Tabs */}
+        {/*   defaultValue="daily" */}
+        {/*   value={daily ? "daily" : "alltime"} */}
+        {/*   onValueChange={(e) => { */}
+        {/*     if (e === "daily") { */}
+        {/*       setDateRangeState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }]) */}
+        {/*       setDaily(true); */}
+        {/*     } else { */}
+        {/*       setDateRangeState([{ startDate: null, endDate: new Date(), key: 'selection' }]) */}
+        {/*       setDaily(false); */}
+        {/*     } */}
+        {/*   }} */}
+        {/*   className="" */}
+        {/* > */}
+        {/*   <TabsList> */}
+        {/*     <TabsTrigger value="daily">Daily</TabsTrigger> */}
+        {/*     <TabsTrigger value="alltime">All Time</TabsTrigger> */}
+        {/*   </TabsList> */}
+        {/* </Tabs> */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
+          </DialogTrigger>
+          <DialogContent className="min-w-[1000px]">
+            <DateRangePicker
+              onChange={item => setDateRangeState([item.selection])}
+              showPreview={true}
+              moveRangeOnFirstSelection={false}
+              months={2}
+              ranges={dateRangeState}
+              direction="horizontal"
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       <SecurityCards metrics={metrics} />
       <StrategiesHeader />

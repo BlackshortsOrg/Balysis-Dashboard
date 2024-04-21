@@ -39,6 +39,8 @@ export default function StrategyBox({
   total_unrealised_pnl,
   total_realised_pnl,
   active,
+  start,
+  end
 }) {
   const [signals, setSignals] = useState([]);
   const [daily, setDaily] = useState(true);
@@ -56,15 +58,15 @@ export default function StrategyBox({
   }
   useEffect(() => {
     checkLogin().then((token) => {
-      getStrategySignals(id, token, daily).then((data) => {
+      getStrategySignals(name, token, start, end).then((data) => {
         console.log(data);
         setSignals(data);
       });
-      getStrategyNotes(token, id).then((data) => {
+      getStrategyNotes(token, name).then((data) => {
         setNotes(data["notes"] || "");
       });
     });
-  }, [daily]);
+  }, [start, end]);
   async function squareOffStrategyForToday() {
     const pms = new Promise((resolve, reject) => {
       squareOffStrategy(token, id, name, false, otp).then((res) => {
@@ -108,7 +110,7 @@ export default function StrategyBox({
       <div className="mx-8 grid grid-cols-12 py-4">
         <a
           className="col-span-7 text-3xl font-bold hover:underline"
-          href={`/algotrade/${id}?strategy_name=${name}`}
+          href={`/algotrade/${name}?strategy_name=${name}`}
         >
           {name}
           {active == 0 ? (
@@ -164,19 +166,19 @@ export default function StrategyBox({
               </DialogHeader>
               <div className="">
                 <div>
-                  <Tabs
-                    defaultValue="daily"
-                    value={daily ? "daily" : "alltime"}
-                    onValueChange={(e) => {
-                      setDaily(e === "daily");
-                    }}
-                    className=""
-                  >
-                    <TabsList>
-                      <TabsTrigger value="daily">Daily</TabsTrigger>
-                      <TabsTrigger value="alltime">All Time</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
+                  {/* <Tabs */}
+                  {/*   defaultValue="daily" */}
+                  {/*   value={daily ? "daily" : "alltime"} */}
+                  {/*   onValueChange={(e) => { */}
+                  {/*     setDaily(e === "daily"); */}
+                  {/*   }} */}
+                  {/*   className="" */}
+                  {/* > */}
+                  {/*   <TabsList> */}
+                  {/*     <TabsTrigger value="daily">Daily</TabsTrigger> */}
+                  {/*     <TabsTrigger value="alltime">All Time</TabsTrigger> */}
+                  {/*   </TabsList> */}
+                  {/* </Tabs> */}
                   {/* <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1"> */}
                   {/*   All Time */}
                   {/* </button> */}
@@ -224,8 +226,8 @@ export default function StrategyBox({
                           {signal.side == 0
                             ? ""
                             : signal.side == 1
-                            ? "BUY"
-                            : "SELL"}
+                              ? "BUY"
+                              : "SELL"}
                         </TableCell>
                         <TableCell>{signal.limit_price}</TableCell>
                         <TableCell>{signal.stop_price}</TableCell>

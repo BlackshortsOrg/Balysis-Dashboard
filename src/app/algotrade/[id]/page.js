@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { DialogTrigger } from "radix-ui";
 import { Input } from "@/components/ui/input";
+import { listInstancesAPI } from "@/api/listInstances";
 
 export default function algo({ params }) {
   const searchParams = useSearchParams();
@@ -206,6 +207,8 @@ export default function algo({ params }) {
   const [data, setData] = useState([]);
   const [token, setToken] = useState("");
   const [event, setEvent] = useState({});
+  const [instancesData, setInstancesData] = useState([])
+  const [selectedInstance, setSelectedInstance] = useState(1)
 
   const AlgoTabs = [
     { label: "Config", value: "Config" },
@@ -222,8 +225,14 @@ export default function algo({ params }) {
       return tk;
     }
   }
-  async function fetchCombinedStrategyMetrics(token) {
-    getAlgoMetricsUserwise(token, params.id, daily).then((res) => {
+  async function fetchInstances(token) {
+    const instances_obj = await listInstancesAPI(token, searchParams.get("strategy_name"))
+    console.log("instances_obj", instances_obj)
+    setInstancesData(instances_obj)
+    setSelectedInstance(instances_obj[0])
+  }
+  async function fetchCombinedStrategyMetrics(token, strategy_id) {
+    getAlgoMetricsUserwise(token, strategy_id).then((res) => {
       console.log(res);
       let data = [];
       for (const [key, val] of Object.entries(res)) {
@@ -240,20 +249,26 @@ export default function algo({ params }) {
     });
   }
   const [multiplierChanges, setMultiplierChanges] = useState({});
-  const [daily, setDaily] = useState(true);
+  // const [daily, setDaily] = useState(true);
   useEffect(() => {
     checkLogin().then((token) => {
-      fetchCombinedStrategyMetrics(token);
+      fetchInstances(token)
+    })
+  }, [])
+  useEffect(() => {
+    if (instancesData.length == 0) { return }
+    checkLogin().then((token) => {
+      fetchCombinedStrategyMetrics(token, selectedInstance.id);
     });
     const interval = setInterval(() => {
       checkLogin().then((token) => {
-        fetchCombinedStrategyMetrics(token);
+        fetchCombinedStrategyMetrics(token, selectedInstance.id);
       });
     }, 3000);
     return () => {
       clearInterval(interval);
     };
-  }, [daily]);
+  }, [selectedInstance]);
 
   return (
     <div className="bg-[#F8FCFF] w-full h-[100vh] relative overflow-auto">
@@ -265,21 +280,6 @@ export default function algo({ params }) {
           ]}
         />
       </div>
-      <Tabs
-        defaultValue="daily"
-        value={daily ? "daily" : "alltime"}
-        onValueChange={(e) => {
-          setDaily(e === "daily");
-        }}
-        className="w-[400px] mx-12 pt-3"
-      >
-        <TabsList>
-          <TabsTrigger value="daily">Daily</TabsTrigger>
-          <TabsTrigger value="alltime">All Time</TabsTrigger>
-        </TabsList>
-        {/* <TabsContent value="account">Make changes to your account here.</TabsContent> */}
-        {/* <TabsContent value="password">Change your password here.</TabsContent> */}
-      </Tabs>
       <div className="mx-12">
         {/* Tabs for Multiplier, Variables, and Transaction Journals */}
         <div className="pt-2">
@@ -302,6 +302,11 @@ export default function algo({ params }) {
             </TabsList>
           </Tabs>
         </div>
+        <Tabs value={selectedInstance} onValueChange={(e) => setSelectedInstance(e)}>
+          <TabsList className="w-full flex flex-row mt-4">
+            {instancesData.map((instance) => (<TabsTrigger value={instance} className="text-xl w-full">{instance.instance_id}</TabsTrigger>))}
+          </TabsList>
+        </Tabs>
 
         <div className="py-6 w-full h-full">
           {/* Conditionally render content based on the active tab */}
@@ -312,12 +317,12 @@ export default function algo({ params }) {
               event={event}
               setEvent={setEvent}
               token={token}
-              strategy_id={params.id}
+              strategy_id={selectedInstance.id}
               strategy_name={searchParams.get("strategy_name")}
               multiplierChanges={multiplierChanges}
             />
           )}
-          {activeTab === "Variables" && <Variable />}
+          {activeTab === "Variables" && <Variable instance_id={selectedInstance.instance_id} strategy_id={selectedInstance.id} />}
           {activeTab === "Transactions" && <TrxJournals />}
         </div>
       </div>
