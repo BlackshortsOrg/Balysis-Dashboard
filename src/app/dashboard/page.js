@@ -28,7 +28,7 @@ export default function dashboard() {
   }
 
   async function callAPI(token, daily) {
-    const resp = await activeClientPositionsAPI(token, daily);
+    const resp = await activeClientPositionsAPI(token, 0, Infinity);
 
     let totalEquityPnl = 0;
     let totalDerivativePnl = 0;
@@ -69,7 +69,7 @@ export default function dashboard() {
     const resp = await getDeployedStrategies(token);
     let deployedStrategies = [];
     for (const strategy in resp) {
-      if(resp[strategy].name === "manual") continue;
+      if (resp[strategy].name === "manual") continue;
       deployedStrategies.push({
         id: resp[strategy].id,
         name: resp[strategy].name,

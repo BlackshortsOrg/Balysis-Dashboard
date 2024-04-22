@@ -161,7 +161,7 @@ const accounts = () => {
 
   async function callAPI(token) {
 
-    const resp = await activeClientPositionsAPI(token, daily);
+    const resp = await activeClientPositionsAPI(token, 0, Infinity);
     console.log(resp);
     let data = [];
 
