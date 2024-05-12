@@ -209,7 +209,7 @@ const accounts = () => {
       <h1 className="text-4xl font-semibold mt-10">Manual Trade</h1>
       <div className="flex">
         <div className="my-4 inline-block">
-          <TradeButton rowSelection={rowSelection} data={data} refresh={refresh} setRefresh={setRefresh} />
+          <TradeButton rowSelection={rowSelection} refresh={refresh} setRefresh={setRefresh} userData={data} />
         </div>
         <a
           href="/sets"

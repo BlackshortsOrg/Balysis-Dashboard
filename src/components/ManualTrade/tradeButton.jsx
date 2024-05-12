@@ -37,7 +37,7 @@ import { fetchLTPApi } from "@/api/fetchLTP";
 import { TabsList, Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
 import GttOrder from "./gttOrder";
 
-const TradeButton = () => {
+const TradeButton = ({ rowSelection, refresh, setRefresh, userData }) => {
   const [stocksList, setStocksList] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [selectedPreset, setSelectedPreset] = useState(null);
@@ -49,23 +49,57 @@ const TradeButton = () => {
   const [presetsList, setPresetsList] = useState([]);
   const [ltp, setLTP] = useState(0)
   const [openDialog, setOpenDialog] = useState(false)
+  const [fuse_stock, setFuseStock] = useState(null)
+  const [fuse_presets, setFusePresets] = useState(null)
+  const [filteredStocksList, setFilteredStocksList] = useState([])
+  const [filteredPresets, setFilteredPresets] = useState([])
 
-  const fuse_stock = new Fuse(stocksList, { keys: ["symbol"] });
-  const filteredStocksList =
-    query === ""
-      ? stocksList.slice(0, 50)
-      : fuse_stock
-        .search(query)
-        .map((s) => s.item)
-        .slice(0, 50);
-  const fuse_presets = new Fuse(presetsList)
-  const filteredPresets =
-    presetQuery === ""
-      ? presetsList.slice(0, 50)
-      : fuse_presets
-        .search(presetQuery)
-        .map((s) => s.item)
-        .slice(0, 50);
+  useEffect(() => {
+    setFuseStock(new Fuse(stocksList, { keys: ["symbol"] }));
+  }, [stocksList])
+
+  useEffect(() => {
+    setFusePresets(new Fuse(presetsList))
+  }, [presetsList])
+
+  useEffect(() => {
+    setFilteredStocksList(
+      query === ""
+        ? stocksList.slice(0, 50)
+        : fuse_stock
+          .search(query)
+          .map((s) => s.item)
+          .slice(0, 50)
+    )
+  }, [query])
+
+  useEffect(() => {
+    setFilteredPresets(
+      presetQuery === ""
+        ? presetsList.slice(0, 50)
+        : fuse_presets
+          .search(presetQuery)
+          .map((s) => s.item)
+          .slice(0, 50)
+    )
+  }, [presetQuery])
+
+  // const fuse_stock = new Fuse(stocksList, { keys: ["symbol"] });
+  // const filteredStocksList =
+  //   query === ""
+  //     ? stocksList.slice(0, 50)
+  //     : fuse_stock
+  //       .search(query)
+  //       .map((s) => s.item)
+  //       .slice(0, 50);
+  // const fuse_presets = new Fuse(presetsList)
+  // const filteredPresets =
+  //   presetQuery === ""
+  //     ? presetsList.slice(0, 50)
+  //     : fuse_presets
+  //       .search(presetQuery)
+  //       .map((s) => s.item)
+  //       .slice(0, 50);
 
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
@@ -269,7 +303,16 @@ const TradeButton = () => {
                     <TabsTrigger className="col-span-1 w-full" value="gtt">GTT</TabsTrigger>
                   </TabsList>
                   <TabsContent value="normal">
-                    <PlaceOrderCarousel stock={selectedStock} preset={selectedPreset} closeDialog={() => setOpenDialog(false)} />
+                    <PlaceOrderCarousel
+                      stock={selectedStock}
+                      preset={selectedPreset}
+                      presetsObj={presetsObj}
+                      closeDialog={() => setOpenDialog(false)}
+                      rowSelection={rowSelection}
+                      userData={userData}
+                      toggleRefresh={() => setRefresh(!refresh)}
+                      token={token}
+                    />
                   </TabsContent>
                   <TabsContent value="gtt">
                     <GttOrder stock={selectedStock} preset={selectedPreset} closeDialog={() => setOpenDialog(false)} />

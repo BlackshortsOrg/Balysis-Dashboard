@@ -94,7 +94,7 @@ export default function algotrade() {
       </div>
       <StrategiesHeader />
       {Object.keys(strategies_data)
-        .filter((k) => k != "manual" && k != "ltps")
+        .filter((k) => k != "Manual" && k != "ltps")
         .map((k) => (
           <StrategyBox
             start={start}

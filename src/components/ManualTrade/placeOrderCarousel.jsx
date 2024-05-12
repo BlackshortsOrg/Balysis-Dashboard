@@ -7,7 +7,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Switch } from "../ui/switch"
-export default function PlaceOrderCarousel({ stock, preset, closeDialog }) {
+import { toast } from "sonner"
+import { placeTradeAPI } from "@/api/placeTrade"
+export default function PlaceOrderCarousel({ stock, preset, closeDialog, toggleRefresh, userData, rowSelection, token, presetsObj }) {
 
   const productTypeSchema = z.object({
     product_type: z.enum(["CNC", "INTRADAY"], {
@@ -35,9 +37,78 @@ export default function PlaceOrderCarousel({ stock, preset, closeDialog }) {
   })
   const order_type = form.watch("order_type")
   const side_state = form.watch("side")
+
+  const newTradeAPI = async (data) => {
+    console.log(data)
+    console.log(preset)
+    console.log(stock)
+    console.log(rowSelection)
+    console.log(userData)
+    if (!stock) {
+      toast.error("Stock not chosen")
+      return
+    }
+    if (!preset) {
+      toast.error("Preset not chosen")
+      return
+    }
+    if (preset == "None" && rowSelection.length == 0) {
+      toast.error("No User selected for NONE preset")
+      closeDialog()
+      return
+    }
+    const actual_product_type = data.product_type === "CNC" && (stock.segment === "OPT" || stock.segment === "FUT") ? "NRML" : data.product_type
+    if (preset == "None") {
+      const selectedIDs = Object.keys(rowSelection).map((key) => parseInt(userData[key].id))
+      const tradeObj = {
+        exchange: stock.exchange,
+        symbol: stock.symbol,
+        segment: stock.segment,
+        signal_type: "NEW_ORDER",
+        product_type: actual_product_type,
+        order_type: data.order_type,
+        limit_price: data.limit_price,
+        stop_price: data.stop_price,
+        users: selectedIDs,
+        quantity: data.qty,
+        side: data.side ? 1 : -1,
+      }
+      console.log(tradeObj)
+      closeDialog()
+      toast.promise(placeTradeAPI(tradeObj, token), {
+        loading: "Placing Trades",
+        success: "Trades Placed Successfully",
+        error: "Failed to place trades"
+      })
+    } else {
+      closeDialog()
+      for (const user of presetsObj[preset]) {
+        const tradeObj = {
+          exchange: stock.exchange,
+          symbol: stock.symbol,
+          segment: stock.segment,
+          signal_type: "NEW_ORDER",
+          product_type: actual_product_type,
+          order_type: data.order_type,
+          limit_price: data.limit_price,
+          stop_price: data.stop_price,
+          users: [user.user_id],
+          quantity: data.qty * user.multiplier,
+          side: data.side ? 1 : -1,
+        }
+        console.log(tradeObj)
+        toast.promise(placeTradeAPI(tradeObj, token), {
+          loading: "Placing Trades",
+          success: "Trades Placed Successfully",
+          error: "Failed to place trades"
+        })
+      }
+    }
+  }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((data) => console.log(data))}>
+      <form onSubmit={form.handleSubmit(newTradeAPI)}>
         {/* <div className="w-full"> */}
         {/*   Tabs */}
         {/* </div> */}
@@ -91,7 +162,7 @@ export default function PlaceOrderCarousel({ stock, preset, closeDialog }) {
                 <FormControl>
                   <Input value={field.value} step={stock?.lotsize || 1} onChange={(e) => {
                     const new_val = parseInt(e.target.value)
-                    const tick = stock.lotsize || 1
+                    const tick = stock?.lotsize || 1
                     if (new_val >= 0) {
                       field.onChange(Math.round(new_val / tick) * tick)
                     } else {
