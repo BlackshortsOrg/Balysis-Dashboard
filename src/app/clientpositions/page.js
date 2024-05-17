@@ -219,7 +219,7 @@ const clientpositions = () => {
     },
   ];
 
-  const [dateRangeState, setDateRangeState] = useState([{ startDate: null, endDate: new Date(), key: 'selection' }])
+  const [dateRangeState, setDateRangeState] = useState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }])
   // const [daily, setDaily] = useState(true);
   const [table_data, setTableData] = useState([]);
   const [total_data, setTotalData] = useState({
@@ -322,37 +322,25 @@ const clientpositions = () => {
           {total_data.total_strategies}
         </div>
       </div>
-      <div>
-        {/* <Tabs */}
-        {/*   defaultValue="daily" */}
-        {/*   value={daily ? "daily" : "alltime"} */}
-        {/*   onValueChange={(e) => { */}
-        {/*     setDaily(e === "daily"); */}
-        {/*   }} */}
-        {/*   className="w-[400px]" */}
-        {/* > */}
-        {/* <TabsList> */}
-        {/*   <TabsTrigger value="daily">Daily</TabsTrigger> */}
-        {/*   <TabsTrigger value="alltime">All Time</TabsTrigger> */}
-        {/* </TabsList> */}
+      <div className="flex gap-2">
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
           </DialogTrigger>
-          <DialogContent className="min-w-[1000px]">
+          <DialogContent className="min-w-[600px]">
             <DateRangePicker
               onChange={item => setDateRangeState([item.selection])}
               showPreview={true}
               moveRangeOnFirstSelection={false}
-              months={2}
+              months={1}
               ranges={dateRangeState}
               direction="horizontal"
             />
           </DialogContent>
         </Dialog>
-        {/* <TabsContent value="account">Make changes to your account here.</TabsContent> */}
-        {/* <TabsContent value="password">Change your password here.</TabsContent> */}
-        {/* </Tabs> */}
+        <div>
+          {dateRangeState[0].startDate ? dateRangeState[0].startDate.toDateString() : "Start"} - {dateRangeState[0].endDate.toDateString()}
+        </div>
       </div>
       <ClientPositionsTable
         columns={columns}

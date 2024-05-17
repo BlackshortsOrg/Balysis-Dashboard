@@ -59,32 +59,21 @@ export default function algotrade() {
     <div className="bg-[#F8FCFF] w-full h-[100vh] overflow-auto">
       <div className="flex flex-row w-full pt-10">
         <h1 className="pl-[50px] font-bold text-2xl">Algo Trade</h1>
-        <div className="basis-[70%]"></div>
-        {/* <Tabs */}
-        {/*   defaultValue="daily" */}
-        {/*   value={daily ? "daily" : "alltime"} */}
-        {/*   onValueChange={(e) => { */}
-        {/*     setDaily(e === "daily"); */}
-        {/*   }} */}
-        {/*   className="" */}
-        {/* > */}
-        {/*   <TabsList> */}
-        {/*     <TabsTrigger value="daily">Daily</TabsTrigger> */}
-        {/*     <TabsTrigger value="alltime">All Time</TabsTrigger> */}
-        {/*   </TabsList> */}
-        {/* </Tabs> */}
-        <div className="">
-          <p> {moment(dateRangeState[0].startDate).format("Do MMM YY")} - {moment(dateRangeState[0].endDate).format("Do MMM YY")}</p>
+        <div className="flex-grow"></div>
+        <div className="flex gap-2">
+          <div>
+            {dateRangeState[0].startDate ? dateRangeState[0].startDate.toDateString() : "Start"} - {dateRangeState[0].endDate.toDateString()}
+          </div>
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[1000px]">
+            <DialogContent className="min-w-[600px]">
               <DateRangePicker
                 onChange={item => setDateRangeState([item.selection])}
                 showPreview={true}
                 moveRangeOnFirstSelection={false}
-                months={2}
+                months={1}
                 ranges={dateRangeState}
                 direction="horizontal"
               />

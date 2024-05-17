@@ -5,6 +5,19 @@ import DataCard from "@/components/Dashboard/DataCard";
 import DeployedStrategies from "@/components/Dashboard/DeployedStrategies";
 import SecurityCards from "@/components/Dashboard/SecurityCards";
 import { useEffect, useState } from "react";
+import 'react-date-range/dist/styles.css'
+import 'react-date-range/dist/theme/default.css'
+import { DateRangePicker } from "react-date-range";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 export default function dashboard() {
   const [daily, setDaily] = useState(true);
@@ -26,9 +39,16 @@ export default function dashboard() {
       return tkn;
     }
   }
+  const [dateRangeState, setDateRangeState] = useState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }])
 
   async function callAPI(token, daily) {
-    const resp = await activeClientPositionsAPI(token, 0, Infinity);
+    const start_time = dateRangeState[0].startDate ? dateRangeState[0].startDate : new Date(0);
+    start_time.setHours(0, 0, 0)
+    const start = start_time.getTime() / 1000
+    const end_time = dateRangeState[0].endDate
+    const end = end_time.getTime() / 1000
+    end_time.setHours(23, 59, 59)
+    const resp = await activeClientPositionsAPI(token, start, end);
 
     let totalEquityPnl = 0;
     let totalDerivativePnl = 0;
@@ -97,27 +117,47 @@ export default function dashboard() {
     return () => {
       clearInterval(interval);
     };
-  }, [daily]);
+  }, [dateRangeState]);
 
   return (
     <div className="bg-[#FBFEFF] w-full h-[100vh] overflow-auto">
       <h1 className="pt-10 pl-[50px] font-bold text-2xl">Admin Dashboard</h1>
       <div className="flex items-center justify-end pr-[50px]">
-        <label
-          htmlFor="toggle"
-          class="inline-flex items-center cursor-pointer text-gray-900 dark:text-gray-300"
-        >
-          All Time
-          <input
-            type="checkbox"
-            id="toggle"
-            checked={daily}
-            onChange={toggleDaily}
-            class="sr-only peer"
-          />
-          <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-          <span class="text-gray-900 dark:text-gray-300">Daily</span>
-        </label>
+        <div className="flex gap-2">
+          <div>
+            {dateRangeState[0].startDate ? dateRangeState[0].startDate.toDateString() : "Start"} - {dateRangeState[0].endDate.toDateString()}
+          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-[600px]">
+              <DateRangePicker
+                onChange={item => setDateRangeState([item.selection])}
+                showPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={1}
+                ranges={dateRangeState}
+                direction="horizontal"
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+        {/* <label */}
+        {/*   htmlFor="toggle" */}
+        {/*   class="inline-flex items-center cursor-pointer text-gray-900 dark:text-gray-300" */}
+        {/* > */}
+        {/*   All Time */}
+        {/*   <input */}
+        {/*     type="checkbox" */}
+        {/*     id="toggle" */}
+        {/*     checked={daily} */}
+        {/*     onChange={toggleDaily} */}
+        {/*     class="sr-only peer" */}
+        {/*   /> */}
+        {/*   <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div> */}
+        {/*   <span class="text-gray-900 dark:text-gray-300">Daily</span> */}
+        {/* </label> */}
       </div>
       <SecurityCards metrics={total_data} />
       <div className="flex flex-row">

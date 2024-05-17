@@ -145,41 +145,28 @@ export default function client({ params }) {
         <div className="px-4">
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
-        <div className="basis-[65%]"></div>
-        {/* <Tabs */}
-        {/*   defaultValue="daily" */}
-        {/*   value={daily ? "daily" : "alltime"} */}
-        {/*   onValueChange={(e) => { */}
-        {/*     if (e === "daily") { */}
-        {/*       setDateRangeState([{ startDate: new Date(), endDate: new Date(), key: 'selection' }]) */}
-        {/*       setDaily(true); */}
-        {/*     } else { */}
-        {/*       setDateRangeState([{ startDate: null, endDate: new Date(), key: 'selection' }]) */}
-        {/*       setDaily(false); */}
-        {/*     } */}
-        {/*   }} */}
-        {/*   className="" */}
-        {/* > */}
-        {/*   <TabsList> */}
-        {/*     <TabsTrigger value="daily">Daily</TabsTrigger> */}
-        {/*     <TabsTrigger value="alltime">All Time</TabsTrigger> */}
-        {/*   </TabsList> */}
-        {/* </Tabs> */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
-          </DialogTrigger>
-          <DialogContent className="min-w-[1000px]">
-            <DateRangePicker
-              onChange={item => setDateRangeState([item.selection])}
-              showPreview={true}
-              moveRangeOnFirstSelection={false}
-              months={2}
-              ranges={dateRangeState}
-              direction="horizontal"
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex-grow">
+        </div>
+        <div className="flex gap-2">
+          <div>
+            {dateRangeState[0].startDate ? dateRangeState[0].startDate.toDateString() : "Start"} - {dateRangeState[0].endDate.toDateString()}
+          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-[600px]">
+              <DateRangePicker
+                onChange={item => setDateRangeState([item.selection])}
+                showPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={1}
+                ranges={dateRangeState}
+                direction="horizontal"
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       <SecurityCards metrics={metrics} />
       <StrategiesHeader />
