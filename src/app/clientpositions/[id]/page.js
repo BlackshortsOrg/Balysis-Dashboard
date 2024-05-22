@@ -17,12 +17,14 @@ import { useEffect, useState } from "react";
 import { getUserMetricAPI } from "@/api/getUserMetric";
 import { useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import 'react-date-range/dist/styles.css'
-import 'react-date-range/dist/theme/default.css'
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 import { DateRangePicker } from "react-date-range";
 
 export default function client({ params }) {
-  const [dateRangeState, setDateRangeState] = useState([{ startDate: null, endDate: new Date(), key: 'selection' }])
+  const [dateRangeState, setDateRangeState] = useState([
+    { startDate: new Date(), endDate: new Date(), key: "selection" },
+  ]);
   const [daily, setDaily] = useState(false);
   const [ltps, setLTPs] = useState({});
   const searchParams = useSearchParams();
@@ -46,12 +48,14 @@ export default function client({ params }) {
   }
   const [strategiesData, setStrategiesData] = useState([]);
   async function fetchStrategiesData(token) {
-    const start_time = dateRangeState[0].startDate ? dateRangeState[0].startDate : new Date(0);
-    start_time.setHours(0, 0, 0)
-    const start = start_time.getTime() / 1000
-    const end_time = dateRangeState[0].endDate
-    end_time.setHours(23, 59, 59)
-    const end = end_time.getTime() / 1000
+    const start_time = dateRangeState[0].startDate
+      ? dateRangeState[0].startDate
+      : new Date(0);
+    start_time.setHours(0, 0, 0);
+    const start = start_time.getTime() / 1000;
+    const end_time = dateRangeState[0].endDate;
+    end_time.setHours(23, 59, 59);
+    const end = end_time.getTime() / 1000;
     const resp = await getUserMetricAPI(parseInt(params.id), token, start, end);
     console.log(resp.ltps);
     setLTPs(resp.ltps);
@@ -73,7 +77,10 @@ export default function client({ params }) {
     let strategiesData = [];
     for (const strat in resp.strategies) {
       let data = {
-        name: resp.strategies[strat].name + "-" + resp.strategies[strat].instance_id,
+        name:
+          resp.strategies[strat].name +
+          "-" +
+          resp.strategies[strat].instance_id,
         realizedpnl: parseFloat(
           resp.strategies[strat].total_realised_pnl,
         ).toFixed(2),
@@ -145,19 +152,24 @@ export default function client({ params }) {
         <div className="px-4">
           <Image src="/images/dummy.png" height={40} width={40} />
         </div>
-        <div className="flex-grow">
-        </div>
+        <div className="flex-grow"></div>
         <div className="flex gap-2">
           <div>
-            {dateRangeState[0].startDate ? dateRangeState[0].startDate.toDateString() : "Start"} - {dateRangeState[0].endDate.toDateString()}
+            {dateRangeState[0].startDate
+              ? dateRangeState[0].startDate.toDateString()
+              : "Start"}{" "}
+            - {dateRangeState[0].endDate.toDateString()}
           </div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="addUser"><FaRegCalendarAlt />Change Date Range</Button>
+              <Button variant="addUser">
+                <FaRegCalendarAlt />
+                Change Date Range
+              </Button>
             </DialogTrigger>
             <DialogContent className="min-w-[600px]">
               <DateRangePicker
-                onChange={item => setDateRangeState([item.selection])}
+                onChange={(item) => setDateRangeState([item.selection])}
                 showPreview={true}
                 moveRangeOnFirstSelection={false}
                 months={1}

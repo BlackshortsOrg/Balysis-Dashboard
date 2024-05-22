@@ -142,9 +142,9 @@ export function AlgoTradeTable({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -156,7 +156,7 @@ export function AlgoTradeTable({
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                  // data-state={row.getIsSelected() && "selected"}
+                    // data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

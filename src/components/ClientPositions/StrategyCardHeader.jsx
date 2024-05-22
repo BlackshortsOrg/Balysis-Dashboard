@@ -216,77 +216,74 @@ export default function StrategyCardHeader({
               </DialogContent>
             </Dialog>
           )}
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="bg-[#41AFFF] text-white shadow-sm px-6 mx-2 rounded-md  ">
-                Orderbook
-              </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[1025px]">
-              <DialogHeader>
-                <DialogTitle>Orderbook</DialogTitle>
-              </DialogHeader>
-              <div className="">
-                <div>
-                  <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">
-                    All Time
-                  </button>
-                  <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1">
-                    Daily
-                  </button>
-                </div>
-                <Table>
-                  <TableCaption>
-                    Orders for current user based on this strategy
-                  </TableCaption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="">Time</TableHead>
-                      <TableHead>Signal ID</TableHead>
-                      <TableHead>Stock</TableHead>
-                      <TableHead>Product Type</TableHead>
-                      <TableHead>Order Type</TableHead>
-                      <TableHead>Qty</TableHead>
-                      <TableHead>Side</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="font-medium">
-                        18-Jul-2023 11:44:29
-                      </TableCell>
-                      <TableCell>abcde-asd-asd</TableCell>
-                      <TableCell>NIFTY23JANFUT</TableCell>
-                      <TableCell>NRML</TableCell>
-                      <TableCell>MARKET ORDER</TableCell>
-                      <TableCell>23</TableCell>
-                      <TableCell>BUY</TableCell>
-                      <TableCell>PENDING</TableCell>
-                      <TableCell className="text-right">Rs 250.00</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">
-                        18-Jul-2023 11:44:29
-                      </TableCell>
-                      <TableCell>abcde-asd-asd</TableCell>
-                      <TableCell>NIFTY23JANFUT</TableCell>
-                      <TableCell>NRML</TableCell>
-                      <TableCell>MARKET ORDER</TableCell>
-                      <TableCell>23</TableCell>
-                      <TableCell>BUY</TableCell>
-                      <TableCell>FILLED</TableCell>
-                      <TableCell className="text-right">Rs 250.00</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
-              {/* <DialogFooter> */}
-              {/*   <Button variant="addUser" type="submit">Save changes</Button> */}
-              {/* </DialogFooter> */}
-            </DialogContent>
-          </Dialog>
+          {/* <Dialog> */}
+          {/*   <DialogTrigger asChild> */}
+          {/*     <button className="bg-[#41AFFF] text-white shadow-sm px-6 mx-2 rounded-md  "> */}
+          {/*       Orderbook */}
+          {/*     </button> */}
+          {/*   </DialogTrigger> */}
+          {/*   <DialogContent className="sm:max-w-[1025px]"> */}
+          {/*     <DialogHeader> */}
+          {/*       <DialogTitle>Orderbook</DialogTitle> */}
+          {/*     </DialogHeader> */}
+          {/*     <div className=""> */}
+          {/*       <div> */}
+          {/*         <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1"> */}
+          {/*           All Time */}
+          {/*         </button> */}
+          {/*         <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1"> */}
+          {/*           Daily */}
+          {/*         </button> */}
+          {/*       </div> */}
+          {/*       <Table> */}
+          {/*         <TableCaption> */}
+          {/*           Orders for current user based on this strategy */}
+          {/*         </TableCaption> */}
+          {/*         <TableHeader> */}
+          {/*           <TableRow> */}
+          {/*             <TableHead className="">Time</TableHead> */}
+          {/*             <TableHead>Signal ID</TableHead> */}
+          {/*             <TableHead>Stock</TableHead> */}
+          {/*             <TableHead>Product Type</TableHead> */}
+          {/*             <TableHead>Order Type</TableHead> */}
+          {/*             <TableHead>Qty</TableHead> */}
+          {/*             <TableHead>Side</TableHead> */}
+          {/*             <TableHead>Status</TableHead> */}
+          {/*             <TableHead className="text-right">Price</TableHead> */}
+          {/*           </TableRow> */}
+          {/*         </TableHeader> */}
+          {/*         <TableBody> */}
+          {/*           <TableRow> */}
+          {/*             <TableCell className="font-medium"> */}
+          {/*               18-Jul-2023 11:44:29 */}
+          {/*             </TableCell> */}
+          {/*             <TableCell>abcde-asd-asd</TableCell> */}
+          {/*             <TableCell>NIFTY23JANFUT</TableCell> */}
+          {/*             <TableCell>NRML</TableCell> */}
+          {/*             <TableCell>MARKET ORDER</TableCell> */}
+          {/*             <TableCell>23</TableCell> */}
+          {/*             <TableCell>BUY</TableCell> */}
+          {/*             <TableCell>PENDING</TableCell> */}
+          {/*             <TableCell className="text-right">Rs 250.00</TableCell> */}
+          {/*           </TableRow> */}
+          {/*           <TableRow> */}
+          {/*             <TableCell className="font-medium"> */}
+          {/*               18-Jul-2023 11:44:29 */}
+          {/*             </TableCell> */}
+          {/*             <TableCell>abcde-asd-asd</TableCell> */}
+          {/*             <TableCell>NIFTY23JANFUT</TableCell> */}
+          {/*             <TableCell>NRML</TableCell> */}
+          {/*             <TableCell>MARKET ORDER</TableCell> */}
+          {/*             <TableCell>23</TableCell> */}
+          {/*             <TableCell>BUY</TableCell> */}
+          {/*             <TableCell>FILLED</TableCell> */}
+          {/*             <TableCell className="text-right">Rs 250.00</TableCell> */}
+          {/*           </TableRow> */}
+          {/*         </TableBody> */}
+          {/*       </Table> */}
+          {/*     </div> */}
+          {/*   </DialogContent> */}
+          {/* </Dialog> */}
           {active && (
             <Dialog>
               <DialogTrigger asChild>

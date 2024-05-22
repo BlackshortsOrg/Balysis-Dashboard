@@ -8,6 +8,17 @@ import { getManualSignals } from "@/api/getManualSignals";
 import { AiOutlineCodeSandbox } from "react-icons/ai";
 import Image from "next/image";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { FaRegCalendarAlt } from "react-icons/fa";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import { DateRangePicker } from "react-date-range";
+import {
   Menubar,
   MenubarContent,
   MenubarItem,
@@ -22,15 +33,17 @@ import OpenOrders from "@/components/ManualTrade/OpenOrders";
 import { DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-
 const accounts = () => {
   const [daily, setDaily] = useState(true);
   // const [signals_data, setSignalsData] = useState([]);
   const [rowSelection, setRowSelection] = React.useState([]);
   const [data, setData] = useState([]);
   const [token, setToken] = useState("");
-  const [refresh, setRefresh] = useState(true)
-  const [squareoffuser, setSquareoffuser] = useState({})
+  const [refresh, setRefresh] = useState(true);
+  const [squareoffuser, setSquareoffuser] = useState({});
+  const [dateRangeState, setDateRangeState] = useState([
+    { startDate: new Date(), endDate: new Date(), key: "selection" },
+  ]);
 
   const columns = [
     {
@@ -152,7 +165,17 @@ const accounts = () => {
       cell: ({ row }) => (
         <div className="flex flex-row items-center">
           <DialogTrigger asChild>
-            <Button variant="destructive" onClick={() => setSquareoffuser({ id: row.original.id, name: row.original.name })}>Square Off</Button>
+            <Button
+              variant="destructive"
+              onClick={() =>
+                setSquareoffuser({
+                  id: row.original.id,
+                  name: row.original.name,
+                })
+              }
+            >
+              Square Off User All Strategies
+            </Button>
           </DialogTrigger>
         </div>
       ),
@@ -160,8 +183,15 @@ const accounts = () => {
   ];
 
   async function callAPI(token) {
-
-    const resp = await activeClientPositionsAPI(token, 0, Infinity);
+    const start_time = dateRangeState[0].startDate
+      ? dateRangeState[0].startDate
+      : new Date(0);
+    start_time.setHours(0, 0, 0);
+    const start = start_time.getTime() / 1000;
+    const end_time = dateRangeState[0].endDate;
+    const end = end_time.getTime() / 1000;
+    end_time.setHours(23, 59, 59);
+    const resp = await activeClientPositionsAPI(token, start, end);
     console.log(resp);
     let data = [];
 
@@ -202,14 +232,19 @@ const accounts = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [daily]);
+  }, [dateRangeState]);
 
   return (
     <div className="h-screen w-full mx-8 overflow-auto">
       <h1 className="text-4xl font-semibold mt-10">Manual Trade</h1>
       <div className="flex">
         <div className="my-4 inline-block">
-          <TradeButton rowSelection={rowSelection} refresh={refresh} setRefresh={setRefresh} userData={data} />
+          <TradeButton
+            rowSelection={rowSelection}
+            refresh={refresh}
+            setRefresh={setRefresh}
+            userData={data}
+          />
         </div>
         <a
           href="/sets"
@@ -218,22 +253,49 @@ const accounts = () => {
           <AiOutlineCodeSandbox className="mt-1" />
           Sets
         </a>
+        <div className="flex-grow"></div>
+        <div className="flex gap-2">
+          <div className="mt-2">
+            {dateRangeState[0].startDate
+              ? dateRangeState[0].startDate.toDateString()
+              : "Start"}{" "}
+            - {dateRangeState[0].endDate.toDateString()}
+          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="addUser">
+                <FaRegCalendarAlt />
+                Change Date Range
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-[600px]">
+              <DateRangePicker
+                onChange={(item) => setDateRangeState([item.selection])}
+                showPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={1}
+                ranges={dateRangeState}
+                direction="horizontal"
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
-      <div>
-        <Tabs
-          defaultValue="daily"
-          value={daily ? "daily" : "alltime"}
-          onValueChange={(e) => {
-            setDaily(e === "daily");
-          }}
-          className="w-[400px]"
-        >
-          <TabsList>
-            <TabsTrigger value="daily">Daily</TabsTrigger>
-            <TabsTrigger value="alltime">All Time</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+      {/* <div> */}
+      {/*   <Tabs */}
+      {/*     defaultValue="daily" */}
+      {/*     value={daily ? "daily" : "alltime"} */}
+      {/*     onValueChange={(e) => { */}
+      {/*       setDaily(e === "daily"); */}
+      {/*     }} */}
+      {/*     className="w-[400px]" */}
+      {/*   > */}
+      {/*     <TabsList> */}
+      {/*       <TabsTrigger value="daily">Daily</TabsTrigger> */}
+      {/*       <TabsTrigger value="alltime">All Time</TabsTrigger> */}
+      {/*     </TabsList> */}
+      {/*   </Tabs> */}
+      {/* </div> */}
       <UserTable
         columns={columns}
         data={data}

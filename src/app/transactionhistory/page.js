@@ -2,6 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { TxTable } from "@/components/TransactionHistory/table";
 import Image from "next/image";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  getPaginationRowModel,
+  getFilteredRowModel,
+  getFacetedRowModel,
+} from "@tanstack/react-table";
 import { getTransactionHistoryAPI } from "@/api/getTransactionHistory";
 import {
   HoverCard,
@@ -12,19 +20,28 @@ import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Listbox } from "@headlessui/react";
-
-
+import { FaRegCalendarAlt } from "react-icons/fa";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import { DateRangePicker } from "react-date-range";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const transactionhistory = () => {
   const [daily, setDaily] = useState(true);
   const [data, setData] = useState([]);
+  const [dateRangeState, setDateRangeState] = useState([
+    { startDate: new Date(), endDate: new Date(), key: "selection" },
+  ]);
 
-  const all_strategies = [
-    "",
-    ...new Set(data.map((item) => item.strategy_name)),
-  ];
-  const status_options = ["PENDING", "TRADED", "REJECTED", "FAILED", ""];
-  const all_users = ["", ...new Set(data.map((item) => item.name))];
+  const status_options = ["PENDING", "TRADED", "FAILED", "CANCELLED", ""];
 
   const columns = [
     // {
@@ -41,22 +58,78 @@ const transactionhistory = () => {
       accessorKey: "created_at",
       cell: ({ cell }) => {
         const date = moment(new Date(cell.getValue())).format(
-          "DD/MM/YYYY hh:mm:ss A"
+          "DD/MM/YYYY hh:mm:ss A",
         );
         return <p className="">{date}</p>;
       },
     },
     {
-      header: "Symbol",
+      id: "symbol",
+      header: ({ table, column }) => {
+        const all_symbols = [
+          "",
+          ...new Set(
+            column
+              .getFacetedRowModel()
+              .flatRows.map((item) => item.original.symbol),
+          ),
+        ];
+        return (
+          <div className="flex flex-row">
+            <div>Symbol</div>
+            <div className="ml-2">
+              <div className="relative">
+                <Listbox
+                  value={table.getColumn("symbol")?.getFilterValue() ?? ""}
+                  onChange={(value) => {
+                    table.getColumn("symbol")?.setFilterValue(value);
+                  }}
+                >
+                  <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
+                    <FontAwesomeIcon icon={faFilter} />
+                  </Listbox.Button>
+                  <Listbox.Options className="absolute border-2 border-blue-400 z-10 mt-1 bg-white rounded-md shadow-lg text-center">
+                    {all_symbols.map((option) => (
+                      <Listbox.Option
+                        className={`p-1 border-1 uppercase rounded-md cursor-pointer ${
+                          option === table.getColumn("symbol")?.getFilterValue()
+                            ? "bg-blue-400 text-white"
+                            : "hover:bg-blue-400 hover:text-white"
+                        }`}
+                        key={option}
+                        value={option}
+                      >
+                        {option ? option : "None"}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Listbox>
+              </div>
+            </div>
+          </div>
+        );
+      },
+      accessorKey: "symbol",
       cell: ({ cell, row }) => (
-        <div>
-          {`${row.original.symbol} | ${row.original.segment} | ${row.original.product_type}`}
-        </div>
+        <div>{`${row.original.symbol}-${row.original.product_type}`}</div>
       ),
     },
     {
       header: "Order Type",
-      cell: ({ cell, row }) => <div>{row.original.order_type}</div>,
+      cell: ({ cell, row }) => {
+        switch (row.original.order_type) {
+          case "MARKET_ORDER":
+            return "Market";
+          case "LIMIT_ORDER":
+            return "Limit";
+          case "STOP_ORDER":
+            return "SL-M";
+          case "STOP_LIMIT_ORDER":
+            return "SL";
+          default:
+            return row.original.order_type;
+        }
+      },
     },
     {
       header: "Limit Price",
@@ -86,74 +159,68 @@ const transactionhistory = () => {
       header: "Side",
       accessorKey: "side",
       cell: ({ cell }) => {
-        return <div>{cell.getValue() == 1 ? "BUY" : "SELL"}</div>;
+        if (cell.getValue() == 1) {
+          return (
+            <div className="text-green-600 font-semibold bg-green-200 border-[1px] px-2 border-green-600">
+              BUY
+            </div>
+          );
+        } else {
+          return (
+            <div className="text-red-600 font-semibold bg-red-200 border-[1px] px-2 border-red-600">
+              SELL
+            </div>
+          );
+        }
       },
     },
-    // {
-    //   header: "Signal ID",
-    //   accessorKey: "id",
-    //   cell: ({ cell, row }) => {
-    //     console.log(row);
-    //     return (
-    //       <HoverCard>
-    //         <HoverCardTrigger>
-    //           <p className="text-blue-500 cursor-pointer">{cell.getValue()}</p>
-    //         </HoverCardTrigger>
-    //         <HoverCardContent>
-    //           <div className="flex flex-col">
-    //             <p className="text-xs font-semibold">
-    //               Signal Type: {row.original.signal_type}
-    //             </p>
-    //             <p className="text-xs">Order Type: {row.original.order_type}</p>
-    //             <p className="text-xs">Ref ID: {row.original.ref_id}</p>
-    //             <p className="text-xs">
-    //               Ticker:{" "}
-    //               {`${row.original.exchange}:${row.original.symbol}-${row.original.exchange}-${row.original.product_type}`}
-    //             </p>
-    //             <p className="text-xs">Limit Price: {row.original.limit_price}</p>
-    //             <p className="text-xs">Stop Price: {row.original.stop_price}</p>
-    //           </div>
-    //         </HoverCardContent>
-    //       </HoverCard>
-    //     );
-    //   },
-    // },
     {
-      header: ({ table }) => (
-        <div className="flex flex-row">
-          <div>Name</div>
-          <div className="ml-2">
-            <div className="relative">
-              <Listbox
-                value={table.getColumn("name")?.getFilterValue() ?? ""}
-                onChange={(value) => {
-                  table.getColumn("name")?.setFilterValue(value);
-                }}
-              >
-                <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
-                  <FontAwesomeIcon icon={faFilter} />
-                </Listbox.Button>
-                <Listbox.Options className="absolute border-2 border-blue-400 z-10 mt-1 bg-white rounded-md shadow-lg text-center">
-                  {all_users.map((option) => (
-                    <Listbox.Option
-                      className={`p-1 border-1 uppercase rounded-md cursor-pointer ${
-                        option ===
-                        table.getColumn("strategy_name")?.getFilterValue()
-                          ? "bg-blue-400 text-white"
-                          : "hover:bg-blue-400 hover:text-white"
-                      }`}
-                      key={option}
-                      value={option}
-                    >
-                      {option ? option : "None"}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Listbox>
+      header: ({ table, column }) => {
+        const all_users = [
+          "",
+          ...new Set(
+            column
+              .getFacetedRowModel()
+              .flatRows.map((item) => item.original.name),
+          ),
+        ];
+        console.log("All Users", all_users);
+        return (
+          <div className="flex flex-row">
+            <div>Name</div>
+            <div className="ml-2">
+              <div className="relative">
+                <Listbox
+                  value={table.getColumn("name")?.getFilterValue() ?? ""}
+                  onChange={(value) => {
+                    table.getColumn("name")?.setFilterValue(value);
+                  }}
+                >
+                  <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
+                    <FontAwesomeIcon icon={faFilter} />
+                  </Listbox.Button>
+                  <Listbox.Options className="absolute border-2 border-blue-400 z-10 mt-1 bg-white rounded-md shadow-lg text-center">
+                    {all_users.map((option) => (
+                      <Listbox.Option
+                        className={`p-1 border-1 uppercase rounded-md cursor-pointer ${
+                          option ===
+                          table.getColumn("strategy_name")?.getFilterValue()
+                            ? "bg-blue-400 text-white"
+                            : "hover:bg-blue-400 hover:text-white"
+                        }`}
+                        key={option}
+                        value={option}
+                      >
+                        {option ? option : "None"}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Listbox>
+              </div>
             </div>
           </div>
-        </div>
-      ),
+        );
+      },
       accessorKey: "name",
       cell: ({ cell }) => (
         <div className="flex flex-row items-center mx-1">
@@ -168,41 +235,53 @@ const transactionhistory = () => {
       ),
     },
     {
-      header: ({ table }) => (
-        <div className="flex flex-row">
-          <div>Strategy</div>
-          <div className="ml-2">
-            <div className="relative">
-              <Listbox
-                value={table.getColumn("strategy_name")?.getFilterValue() ?? ""}
-                onChange={(value) => {
-                  table.getColumn("strategy_name")?.setFilterValue(value);
-                }}
-              >
-                <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
-                  <FontAwesomeIcon icon={faFilter} />
-                </Listbox.Button>
-                <Listbox.Options className="absolute border-2 border-blue-400 z-10 mt-1 bg-white rounded-md shadow-lg text-center">
-                  {all_strategies.map((option) => (
-                    <Listbox.Option
-                      className={`p-1 border-1 uppercase rounded-md cursor-pointer ${
-                        option ===
-                        table.getColumn("strategy_name")?.getFilterValue()
-                          ? "bg-blue-400 text-white"
-                          : "hover:bg-blue-400 hover:text-white"
-                      }`}
-                      key={option}
-                      value={option}
-                    >
-                      {option ? option : "None"}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Listbox>
+      header: ({ table, column }) => {
+        const all_strategies = [
+          "",
+          ...new Set(
+            column
+              .getFacetedRowModel()
+              .flatRows.map((item) => item.original.strategy_name),
+          ),
+        ];
+        return (
+          <div className="flex flex-row">
+            <div>Strategy</div>
+            <div className="ml-2">
+              <div className="relative">
+                <Listbox
+                  value={
+                    table.getColumn("strategy_name")?.getFilterValue() ?? ""
+                  }
+                  onChange={(value) => {
+                    table.getColumn("strategy_name")?.setFilterValue(value);
+                  }}
+                >
+                  <Listbox.Button className="border shadow-sm rounded-md px-2 py-1 flex flex-col">
+                    <FontAwesomeIcon icon={faFilter} />
+                  </Listbox.Button>
+                  <Listbox.Options className="absolute border-2 border-blue-400 z-10 mt-1 bg-white rounded-md shadow-lg text-center">
+                    {all_strategies.map((option) => (
+                      <Listbox.Option
+                        className={`p-1 border-1 uppercase rounded-md cursor-pointer ${
+                          option ===
+                          table.getColumn("strategy_name")?.getFilterValue()
+                            ? "bg-blue-400 text-white"
+                            : "hover:bg-blue-400 hover:text-white"
+                        }`}
+                        key={option}
+                        value={option}
+                      >
+                        {option ? option : "None"}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Listbox>
+              </div>
             </div>
           </div>
-        </div>
-      ),
+        );
+      },
       accessorKey: "strategy_name",
     },
     {
@@ -212,7 +291,7 @@ const transactionhistory = () => {
           <div className="ml-2">
             <div className="relative">
               <Listbox
-                value={table.getColumn("status")?.getFilterValue() ?? ""}
+                value={table.getColumn("status")?.getFilterValue() ?? "TRADED"}
                 onChange={(value) => {
                   table.getColumn("status")?.setFilterValue(value);
                 }}
@@ -240,6 +319,7 @@ const transactionhistory = () => {
           </div>
         </div>
       ),
+      id: "status",
       accessorKey: "status",
       cell: ({ cell }) => {
         switch (cell.getValue()) {
@@ -332,6 +412,35 @@ const transactionhistory = () => {
       },
     },
   ];
+
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnFilters, setColumnFilters] = React.useState([]);
+  const [columnVisibility, setColumnVisibility] = React.useState({ id: false });
+
+  const table = useReactTable({
+    data,
+    columns,
+    columnResizeMode: "onChange",
+    columnResizeDirection: "ltr",
+    getCoreRowModel: getCoreRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    onRowSelectionChange: setRowSelection,
+    getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      rowSelection,
+      columnFilters,
+      columnVisibility,
+    },
+    initialState: {
+      pagination: {
+        pageSize: 12,
+      },
+    },
+    enableRowSelection: true,
+  });
+
   async function checkLogin() {
     if (localStorage.getItem("token") === null) {
       window.location.href = "/login";
@@ -340,9 +449,16 @@ const transactionhistory = () => {
     }
   }
 
-  
   async function callAPI(token) {
-    const data = await getTransactionHistoryAPI(token, daily);
+    const start_time = dateRangeState[0].startDate
+      ? dateRangeState[0].startDate
+      : new Date(0);
+    start_time.setHours(0, 0, 0);
+    const start = start_time.getTime() / 1000;
+    const end_time = dateRangeState[0].endDate;
+    const end = end_time.getTime() / 1000;
+    end_time.setHours(23, 59, 59);
+    const data = await getTransactionHistoryAPI(token, start, end);
     setData(data);
   }
 
@@ -350,12 +466,42 @@ const transactionhistory = () => {
     checkLogin().then((token) => {
       callAPI(token);
     });
-  }, [daily]);
+  }, [dateRangeState]);
 
   return (
     <div className="h-screen w-full mx-8 overflow-auto">
-      <h1 className="text-4xl my-4 font-semibold">Transaction History</h1>
+      <div className="flex">
+        <h1 className="text-4xl my-4 font-semibold">Transaction History</h1>
+        <div className="flex-grow"></div>
+        <div className="flex gap-2">
+          <div className="pt-8" e>
+            {dateRangeState[0].startDate
+              ? dateRangeState[0].startDate.toDateString()
+              : "Start"}{" "}
+            - {dateRangeState[0].endDate.toDateString()}
+          </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="addUser" className="mt-8">
+                <FaRegCalendarAlt />
+                Change Date Range
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-[600px]">
+              <DateRangePicker
+                onChange={(item) => setDateRangeState([item.selection])}
+                showPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={1}
+                ranges={dateRangeState}
+                direction="horizontal"
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
       <TxTable
+        table={table}
         columns={columns}
         data={data}
         daily={daily}

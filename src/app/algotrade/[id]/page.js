@@ -116,8 +116,9 @@ export default function algo({ params }) {
       accessorKey: "total_unrealised_pnl",
       cell: ({ cell, row }) => (
         <div
-          className={`flex flex-row items-center font-semibold ${cell.getValue() < 0 ? "text-red-500" : "text-green-500"
-            }`}
+          className={`flex flex-row items-center font-semibold ${
+            cell.getValue() < 0 ? "text-red-500" : "text-green-500"
+          }`}
         >
           {cell.getValue() > 0 ? "+" : ""}
           {cell.getValue().toFixed(2)}
@@ -129,8 +130,9 @@ export default function algo({ params }) {
       accessorKey: "total_realised_pnl",
       cell: ({ cell, row }) => (
         <div
-          className={`flex flex-row items-center font-semibold ${cell.getValue() < 0 ? "text-red-500" : "text-green-500"
-            }`}
+          className={`flex flex-row items-center font-semibold ${
+            cell.getValue() < 0 ? "text-red-500" : "text-green-500"
+          }`}
         >
           {cell.getValue() > 0 ? "+" : ""}
           {cell.getValue().toFixed(2)}
@@ -207,8 +209,8 @@ export default function algo({ params }) {
   const [data, setData] = useState([]);
   const [token, setToken] = useState("");
   const [event, setEvent] = useState({});
-  const [instancesData, setInstancesData] = useState([])
-  const [selectedInstance, setSelectedInstance] = useState(1)
+  const [instancesData, setInstancesData] = useState([]);
+  const [selectedInstance, setSelectedInstance] = useState(1);
 
   const AlgoTabs = [
     { label: "Config", value: "Config" },
@@ -226,10 +228,13 @@ export default function algo({ params }) {
     }
   }
   async function fetchInstances(token) {
-    const instances_obj = await listInstancesAPI(token, searchParams.get("strategy_name"))
-    console.log("instances_obj", instances_obj)
-    setInstancesData(instances_obj)
-    setSelectedInstance(instances_obj[0])
+    const instances_obj = await listInstancesAPI(
+      token,
+      searchParams.get("strategy_name"),
+    );
+    console.log("instances_obj", instances_obj);
+    setInstancesData(instances_obj);
+    setSelectedInstance(instances_obj[0]);
   }
   async function fetchCombinedStrategyMetrics(token, strategy_id) {
     getAlgoMetricsUserwise(token, strategy_id).then((res) => {
@@ -252,11 +257,13 @@ export default function algo({ params }) {
   // const [daily, setDaily] = useState(true);
   useEffect(() => {
     checkLogin().then((token) => {
-      fetchInstances(token)
-    })
-  }, [])
+      fetchInstances(token);
+    });
+  }, []);
   useEffect(() => {
-    if (instancesData.length == 0) { return }
+    if (instancesData.length == 0) {
+      return;
+    }
     checkLogin().then((token) => {
       fetchCombinedStrategyMetrics(token, selectedInstance.id);
     });
@@ -302,9 +309,16 @@ export default function algo({ params }) {
             </TabsList>
           </Tabs>
         </div>
-        <Tabs value={selectedInstance} onValueChange={(e) => setSelectedInstance(e)}>
+        <Tabs
+          value={selectedInstance}
+          onValueChange={(e) => setSelectedInstance(e)}
+        >
           <TabsList className="w-full flex flex-row mt-4">
-            {instancesData.map((instance) => (<TabsTrigger value={instance} className="text-xl w-full">{instance.instance_id}</TabsTrigger>))}
+            {instancesData.map((instance) => (
+              <TabsTrigger value={instance} className="text-xl w-full">
+                {instance.instance_id}
+              </TabsTrigger>
+            ))}
           </TabsList>
         </Tabs>
 
@@ -322,7 +336,12 @@ export default function algo({ params }) {
               multiplierChanges={multiplierChanges}
             />
           )}
-          {activeTab === "Variables" && <Variable instance_id={selectedInstance.instance_id} strategy_id={selectedInstance.id} />}
+          {activeTab === "Variables" && (
+            <Variable
+              instance_id={selectedInstance.instance_id}
+              strategy_id={selectedInstance.id}
+            />
+          )}
           {activeTab === "Transactions" && <TrxJournals />}
         </div>
       </div>

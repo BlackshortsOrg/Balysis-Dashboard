@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "./constants";
 
-export const cancelTradeAPI = async (org_signal, token) => {
+export const cancelTradeAPI = async (org_signal, user_id, token) => {
   const response = await fetch(`${API_BASE_URL}/trade/manual`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: token },
@@ -16,7 +16,7 @@ export const cancelTradeAPI = async (org_signal, token) => {
       segment: org_signal.segment,
       quantity: org_signal.qty,
       side: org_signal.side,
-      users: [-1],
+      users: [user_id],
     }),
   });
   return response;

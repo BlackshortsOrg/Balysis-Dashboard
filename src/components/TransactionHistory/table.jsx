@@ -22,44 +22,21 @@ import {
 import { Listbox } from "@headlessui/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function TxTable({ columns, data, daily, setDaily }) {
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [selectedFilterStatus, setSelectedFilterStatus] = React.useState();
-  const [columnFilters, setColumnFilters] = React.useState([]);
-  const [columnVisibility, setColumnVisibility] = React.useState({ id: false });
-
-  const table = useReactTable({
-    data,
-    columns,
-    columnResizeMode: "onChange",
-    columnResizeDirection: "ltr",
-    getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
-    getPaginationRowModel: getPaginationRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      rowSelection,
-      columnFilters,
-      columnVisibility,
-    },
-    initialState: {
-      pagination: {
-        pageSize: 12,
-      },
-    },
-    enableRowSelection: true,
-  });
-
-  const all_strategies = [
-    "",
-    ...new Set(data.map((item) => item.strategy_name)),
-  ];
-
+export function TxTable({ table, columns, data, daily, setDaily }) {
   return (
     <div>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row">
+          <div className="">
+            <Input
+              placeholder="Filter symbols..."
+              value={table.getColumn("symbol")?.getFilterValue() ?? ""}
+              onChange={(event) =>
+                table.getColumn("symbol")?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm"
+            />
+          </div>
           <div className="">
             <Input
               placeholder="Filter messages..."
@@ -81,21 +58,21 @@ export function TxTable({ columns, data, daily, setDaily }) {
             />
           </div>
         </div>
-        <div className="text-right">
-          <Tabs
-            defaultValue="daily"
-            value={daily ? "daily" : "alltime"}
-            onValueChange={(e) => {
-              setDaily(e === "daily");
-            }}
-            className=""
-          >
-            <TabsList>
-              <TabsTrigger value="daily">Daily</TabsTrigger>
-              <TabsTrigger value="alltime">All Time</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+        {/* <div className="text-right"> */}
+        {/*   <Tabs */}
+        {/*     defaultValue="daily" */}
+        {/*     value={daily ? "daily" : "alltime"} */}
+        {/*     onValueChange={(e) => { */}
+        {/*       setDaily(e === "daily"); */}
+        {/*     }} */}
+        {/*     className="" */}
+        {/*   > */}
+        {/*     <TabsList> */}
+        {/*       <TabsTrigger value="daily">Daily</TabsTrigger> */}
+        {/*       <TabsTrigger value="alltime">All Time</TabsTrigger> */}
+        {/*     </TabsList> */}
+        {/*   </Tabs> */}
+        {/* </div> */}
       </div>
       <div className="rounded-md border">
         <Table className="h-full">
@@ -109,7 +86,7 @@ export function TxTable({ columns, data, daily, setDaily }) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -129,7 +106,7 @@ export function TxTable({ columns, data, daily, setDaily }) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
