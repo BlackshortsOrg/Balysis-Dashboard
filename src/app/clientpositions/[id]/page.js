@@ -37,6 +37,14 @@ export default function client({ params }) {
     "Derivative P&L": 100000,
     "Commodity P&L": 100000,
   });
+  const start_time = dateRangeState[0].startDate
+    ? dateRangeState[0].startDate
+    : new Date(0);
+  start_time.setHours(0, 0, 0);
+  const start = start_time.getTime() / 1000;
+  const end_time = dateRangeState[0].endDate;
+  end_time.setHours(23, 59, 59);
+  const end = end_time.getTime() / 1000;
   async function checkLogin() {
     if (sessionStorage.getItem("token") === null) {
       window.location.href = "/login";
@@ -48,14 +56,6 @@ export default function client({ params }) {
   }
   const [strategiesData, setStrategiesData] = useState([]);
   async function fetchStrategiesData(token) {
-    const start_time = dateRangeState[0].startDate
-      ? dateRangeState[0].startDate
-      : new Date(0);
-    start_time.setHours(0, 0, 0);
-    const start = start_time.getTime() / 1000;
-    const end_time = dateRangeState[0].endDate;
-    end_time.setHours(23, 59, 59);
-    const end = end_time.getTime() / 1000;
     const resp = await getUserMetricAPI(parseInt(params.id), token, start, end);
     console.log(resp.ltps);
     setLTPs(resp.ltps);
@@ -187,7 +187,8 @@ export default function client({ params }) {
           key={strategy.id}
           strategy={strategy}
           user_id={params.id}
-          daily={daily}
+          start={start}
+          end={end}
           ltps={ltps}
         />
       ))}

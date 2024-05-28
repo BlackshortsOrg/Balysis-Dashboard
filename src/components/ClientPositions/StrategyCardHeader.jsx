@@ -30,6 +30,9 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { getStrategyOrderbookAPI } from "@/api/getStrategyOrderbook";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import moment from "moment";
 
 export default function StrategyCardHeader({
   name,
@@ -42,11 +45,14 @@ export default function StrategyCardHeader({
   subscribed,
   user_id,
   strategy_id,
-  daily,
+  start,
+  end,
 }) {
   const [token, setToken] = useState("");
   const [multiplier, setMultiplier] = useState(1);
   const [otp, setOTP] = useState("");
+  const [orderbook, setOrderbook] = useState({ users: {} });
+  const [selectedUser, setSelectedUser] = useState(null);
   async function changeSubscription() {
     const res = await subscribeStrategyAPI(
       token,
@@ -78,8 +84,12 @@ export default function StrategyCardHeader({
         console.log([user_id, strategy_id, res[0].multiplier]);
         setMultiplier(res[0].multiplier);
       });
+      getStrategyOrderbookAPI(token, strategy_id, start, end).then((res) => {
+        console.log("Orderbook ", res);
+        setOrderbook(res);
+      });
     });
-  }, [daily]);
+  }, [start, end]);
   async function squareOffToday() {
     const res = await squareOffStrategyForUserAPI(
       token,
@@ -216,74 +226,113 @@ export default function StrategyCardHeader({
               </DialogContent>
             </Dialog>
           )}
-          {/* <Dialog> */}
-          {/*   <DialogTrigger asChild> */}
-          {/*     <button className="bg-[#41AFFF] text-white shadow-sm px-6 mx-2 rounded-md  "> */}
-          {/*       Orderbook */}
-          {/*     </button> */}
-          {/*   </DialogTrigger> */}
-          {/*   <DialogContent className="sm:max-w-[1025px]"> */}
-          {/*     <DialogHeader> */}
-          {/*       <DialogTitle>Orderbook</DialogTitle> */}
-          {/*     </DialogHeader> */}
-          {/*     <div className=""> */}
-          {/*       <div> */}
-          {/*         <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1"> */}
-          {/*           All Time */}
-          {/*         </button> */}
-          {/*         <button className="border border-slate-500 hover:bg-slate-500 hover:text-white px-1"> */}
-          {/*           Daily */}
-          {/*         </button> */}
-          {/*       </div> */}
-          {/*       <Table> */}
-          {/*         <TableCaption> */}
-          {/*           Orders for current user based on this strategy */}
-          {/*         </TableCaption> */}
-          {/*         <TableHeader> */}
-          {/*           <TableRow> */}
-          {/*             <TableHead className="">Time</TableHead> */}
-          {/*             <TableHead>Signal ID</TableHead> */}
-          {/*             <TableHead>Stock</TableHead> */}
-          {/*             <TableHead>Product Type</TableHead> */}
-          {/*             <TableHead>Order Type</TableHead> */}
-          {/*             <TableHead>Qty</TableHead> */}
-          {/*             <TableHead>Side</TableHead> */}
-          {/*             <TableHead>Status</TableHead> */}
-          {/*             <TableHead className="text-right">Price</TableHead> */}
-          {/*           </TableRow> */}
-          {/*         </TableHeader> */}
-          {/*         <TableBody> */}
-          {/*           <TableRow> */}
-          {/*             <TableCell className="font-medium"> */}
-          {/*               18-Jul-2023 11:44:29 */}
-          {/*             </TableCell> */}
-          {/*             <TableCell>abcde-asd-asd</TableCell> */}
-          {/*             <TableCell>NIFTY23JANFUT</TableCell> */}
-          {/*             <TableCell>NRML</TableCell> */}
-          {/*             <TableCell>MARKET ORDER</TableCell> */}
-          {/*             <TableCell>23</TableCell> */}
-          {/*             <TableCell>BUY</TableCell> */}
-          {/*             <TableCell>PENDING</TableCell> */}
-          {/*             <TableCell className="text-right">Rs 250.00</TableCell> */}
-          {/*           </TableRow> */}
-          {/*           <TableRow> */}
-          {/*             <TableCell className="font-medium"> */}
-          {/*               18-Jul-2023 11:44:29 */}
-          {/*             </TableCell> */}
-          {/*             <TableCell>abcde-asd-asd</TableCell> */}
-          {/*             <TableCell>NIFTY23JANFUT</TableCell> */}
-          {/*             <TableCell>NRML</TableCell> */}
-          {/*             <TableCell>MARKET ORDER</TableCell> */}
-          {/*             <TableCell>23</TableCell> */}
-          {/*             <TableCell>BUY</TableCell> */}
-          {/*             <TableCell>FILLED</TableCell> */}
-          {/*             <TableCell className="text-right">Rs 250.00</TableCell> */}
-          {/*           </TableRow> */}
-          {/*         </TableBody> */}
-          {/*       </Table> */}
-          {/*     </div> */}
-          {/*   </DialogContent> */}
-          {/* </Dialog> */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="bg-[#41AFFF] text-white shadow-sm px-6 mx-2 rounded-md  ">
+                Orderbook
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[1225px] max-h-[800px] overflow-auto">
+              <DialogHeader>
+                <DialogTitle>Orderbook - {name}</DialogTitle>
+              </DialogHeader>
+
+              <Tabs
+                value={selectedUser}
+                onValueChange={(e) => {
+                  setSelectedUser(e);
+                }}
+                defaultValue=""
+                className=""
+              >
+                <TabsList>
+                  {Object.keys(orderbook.users).map((user) => (
+                    <TabsTrigger value={user.id}>
+                      {orderbook.users[user].username}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                <TabsContent value="">-</TabsContent>
+                {Object.keys(orderbook.users).map((user) => (
+                  <TabsContent value={user.id}>
+                    <div className="">
+                      <Table>
+                        <TableCaption>
+                          Orders for current user based on this strategy
+                        </TableCaption>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="">
+                              Order Placement Time
+                            </TableHead>
+                            <TableHead>Symbol</TableHead>
+                            <TableHead>Order Type</TableHead>
+                            <TableHead>Limit Price</TableHead>
+                            <TableHead>Stop Price</TableHead>
+                            <TableHead>Modified</TableHead>
+                            <TableHead>Side</TableHead>
+                            <TableHead>Current Status</TableHead>
+                            <TableHead>Order Execution Time</TableHead>
+                            <TableHead className="text-right">
+                              Trade Price
+                            </TableHead>
+                            <TableHead className="text-right">
+                              Trade Qty
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {Object.entries(orderbook.users[user].orders).map(
+                            ([signal, order_obj]) => {
+                              console.log(orderbook.users[user].orders);
+                              console.log(order_obj);
+                              return (
+                                <TableRow>
+                                  <TableCell>
+                                    {order_obj.placed_time
+                                      ? moment(
+                                          new Date(order_obj.placed_time),
+                                        ).format("DD MMM hh:mm:ss")
+                                      : "-"}
+                                  </TableCell>
+                                  <TableCell>{order_obj.symbol}</TableCell>
+                                  <TableCell>{order_obj.order_type}</TableCell>
+                                  <TableCell>{order_obj.limit_price}</TableCell>
+                                  <TableCell>{order_obj.stop_price}</TableCell>
+                                  <TableCell>
+                                    {order_obj.modified ? "yes" : "no"}
+                                  </TableCell>
+                                  <TableCell>{order_obj.side}</TableCell>
+                                  <TableCell>
+                                    {order_obj.current_status}
+                                  </TableCell>
+                                  <TableCell>
+                                    {order_obj.last_modified_time
+                                      ? moment(
+                                          new Date(
+                                            order_obj.last_modified_time,
+                                          ),
+                                        ).format("DD MMM hh:mm:ss")
+                                      : "-"}
+                                  </TableCell>
+                                  <TableCell>
+                                    {order_obj.traded_price || "-"}
+                                  </TableCell>
+                                  <TableCell>
+                                    {order_obj.traded_qty || "-"}
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            },
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </TabsContent>
+                ))}
+              </Tabs>
+            </DialogContent>
+          </Dialog>
           {active && (
             <Dialog>
               <DialogTrigger asChild>
