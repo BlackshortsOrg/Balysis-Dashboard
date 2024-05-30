@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -78,12 +79,13 @@ export default function StrategyCardHeader({
     }
   }
   useEffect(() => {
-    if (!subscribed) return;
     checkLogin().then((token) => {
-      getMultiplierUserStrategy(token, user_id, strategy_id).then((res) => {
-        console.log([user_id, strategy_id, res[0].multiplier]);
-        setMultiplier(res[0].multiplier);
-      });
+      if (subscribed) {
+        getMultiplierUserStrategy(token, user_id, strategy_id).then((res) => {
+          console.log([user_id, strategy_id, res[0].multiplier]);
+          setMultiplier(res[0].multiplier);
+        });
+      }
       getStrategyOrderbookAPI(token, strategy_id, start, end).then((res) => {
         console.log("Orderbook ", res);
         setOrderbook(res);
@@ -91,32 +93,54 @@ export default function StrategyCardHeader({
     });
   }, [start, end]);
   async function squareOffToday() {
-    const res = await squareOffStrategyForUserAPI(
-      token,
-      user_id,
-      strategy_id,
-      false,
-      otp,
-    );
-    if (res.status === 200) {
-      toast.success("Squared Off for Today");
-    } else {
-      toast.error("Error Squaring Off");
+    async function internal() {
+      return new Promise((resolve, reject) => {
+        squareOffStrategyForUserAPI(
+          token,
+          user_id,
+          strategy_id,
+          false,
+          otp,
+        ).then((res) => {
+          if (res.status === 200) {
+            resolve(res);
+          } else {
+            reject(res);
+          }
+        })
+
+      })
     }
+    toast.promise(internal(), {
+      success: "Strategy Square Off Today",
+      loading: "Loading...",
+      error: "Error Squaring off Strategy",
+    })
   }
   async function shutdown() {
-    const res = await squareOffStrategyForUserAPI(
-      token,
-      user_id,
-      strategy_id,
-      true,
-      otp,
-    );
-    if (res.status === 200) {
-      toast.success("Shutdown Strategy");
-    } else {
-      toast.error("Error Shutting Down Strategy");
+    async function internal() {
+      return new Promise((resolve, reject) => {
+        squareOffStrategyForUserAPI(
+          token,
+          user_id,
+          strategy_id,
+          true,
+          otp,
+        ).then((res) => {
+          if (res.status === 200) {
+            resolve(res);
+          } else {
+            reject(res);
+          }
+        })
+
+      })
     }
+    toast.promise(internal(), {
+      success: "Strategy Shut Down",
+      loading: "Loading...",
+      error: "Error Shutting Down Strategy",
+    })
   }
   const totalpnl = parseFloat(realizedpnl) + parseFloat(unrealizedpnl);
   return (
@@ -291,8 +315,8 @@ export default function StrategyCardHeader({
                                   <TableCell>
                                     {order_obj.placed_time
                                       ? moment(
-                                          new Date(order_obj.placed_time),
-                                        ).format("DD MMM hh:mm:ss")
+                                        new Date(order_obj.placed_time),
+                                      ).format("DD MMM hh:mm:ss")
                                       : "-"}
                                   </TableCell>
                                   <TableCell>{order_obj.symbol}</TableCell>
@@ -309,10 +333,10 @@ export default function StrategyCardHeader({
                                   <TableCell>
                                     {order_obj.last_modified_time
                                       ? moment(
-                                          new Date(
-                                            order_obj.last_modified_time,
-                                          ),
-                                        ).format("DD MMM hh:mm:ss")
+                                        new Date(
+                                          order_obj.last_modified_time,
+                                        ),
+                                      ).format("DD MMM hh:mm:ss")
                                       : "-"}
                                   </TableCell>
                                   <TableCell>
@@ -338,7 +362,7 @@ export default function StrategyCardHeader({
               <DialogTrigger asChild>
                 <button
                   className="bg-[#E01133] text-white shadow-sm px-6 mx-2 rounded-md  "
-                  // onClick={squareOffToday}
+                // onClick={squareOffToday}
                 >
                   Square Off Today({numpositions})
                 </button>
@@ -364,13 +388,15 @@ export default function StrategyCardHeader({
                   </InputOTPGroup>
                 </InputOTP>
                 <DialogFooter>
-                  <Button
-                    variant="addUser"
-                    type="submit"
-                    onClick={squareOffToday}
-                  >
-                    Save changes
-                  </Button>
+                  <DialogClose asChild>
+                    <Button
+                      variant="addUser"
+                      type="submit"
+                      onClick={squareOffToday}
+                    >
+                      Save changes
+                    </Button>
+                  </DialogClose>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -403,9 +429,11 @@ export default function StrategyCardHeader({
                   </InputOTPGroup>
                 </InputOTP>
                 <DialogFooter>
-                  <Button variant="addUser" type="submit" onClick={shutdown}>
-                    Save changes
-                  </Button>
+                  <DialogClose asChild>
+                    <Button variant="addUser" type="submit" onClick={shutdown}>
+                      Save changes
+                    </Button>
+                  </DialogClose>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

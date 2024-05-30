@@ -235,6 +235,8 @@ const transactionhistory = () => {
       ),
     },
     {
+      id: "strategy_name",
+      filterFn: "equals",
       header: ({ table, column }) => {
         const all_strategies = [
           "",
