@@ -136,6 +136,9 @@ export default function OrderBookPage() {
                     <TableHead className="">
                       Trade Qty
                     </TableHead>
+                    <TableHead className="">
+                      SL Calculated
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -175,6 +178,9 @@ export default function OrderBookPage() {
                           </TableCell>
                           <TableCell>
                             {order_obj.traded_qty || "-"}
+                          </TableCell>
+                          <TableCell>
+                            {order_obj.sl_b || "-"}
                           </TableCell>
                         </TableRow>
                       );
