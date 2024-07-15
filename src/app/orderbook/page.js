@@ -22,8 +22,11 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getCompleteOrderbookAPI } from "@/api/getCompleteOrderbook";
+import { API_BASE_URL } from "@/api/constants";
+import { getJournal } from "@/api/getJournal";
 
 export default function OrderBookPage() {
+  const [token, setToken] = useState(null);
   const [orderbookData, setOrderbookData] = useState({});
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedStrategy, setSelectedStrategy] = useState(null);
@@ -35,7 +38,9 @@ export default function OrderBookPage() {
     if (localStorage.getItem("token") === null) {
       window.location.href = "/login";
     } else {
-      return localStorage.getItem("token");
+      const tk = localStorage.getItem("token");
+      setToken(tk);
+      return tk;
     }
   }
 
@@ -192,7 +197,17 @@ export default function OrderBookPage() {
           </Tabs>
         </TabsContent>)}
       </Tabs>
-
+      <Button variant="addUser" onClick={(e) => {
+        getJournal(token).then((response) => response.blob()
+        ).then((bob) => {
+          let objectURL = URL.createObjectURL(bob);
+          let a = document.createElement("a");
+          a.href = objectURL
+          a.download = "journal.csv"
+          a.click()
+          window.URL.revokeObjectURL(objectURL)
+        })
+      }}>Journal</Button>
     </div>
   )
 }
