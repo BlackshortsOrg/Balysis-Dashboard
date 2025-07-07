@@ -55,9 +55,8 @@ const accounts = () => {
       cell: ({ cell, row }) => (
         <div className="flex flex-row items-center relative">
           <div
-            className={`${
-              row.original.isactive ? "bg-green-400" : "bg-red-500"
-            } h-3 w-3  border-2 border-white z-10 rounded-full absolute bottom-0 left-0`}
+            className={`${row.original.isactive ? "bg-green-400" : "bg-red-500"
+              } h-3 w-3  border-2 border-white z-10 rounded-full absolute bottom-0 left-0`}
           ></div>
           <Image
             className="rounded-full"
@@ -175,7 +174,7 @@ const accounts = () => {
       maxWidth: "80px",
       cell: ({ row }) => {
         const broker = row.original.broker;
-        const fyersTokenURL = "http://app.blackshorts.in:3000/tokens/fyers";
+        const fyersTokenURL = "http://blackshortsapi.esharky.me:3000/tokens/fyers";
         const fyersRedirectURL = `https://api-t1.fyers.in/api/v3/generate-authcode?client_id=${row.original.client_id}&redirect_uri=${fyersTokenURL}&response_type=code&state=${row.original.id}`;
         const now = new Date(new Date() + 5.5 * 60 * 60 * 1000);
         const [otp, setOTP] = React.useState("");
@@ -184,7 +183,7 @@ const accounts = () => {
           <span className="flex flex-row justify-start w-[170px]">
             {(now.getHours() > 15 ||
               (now.getHours() === 15 && now.getMinutes() > 30)) &&
-            !row.original.isactive ? (
+              !row.original.isactive ? (
               <a className="basis-1/3">
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                   <DialogTrigger asChild>
@@ -300,7 +299,7 @@ const accounts = () => {
       data[i].last_login = new Date(data[i].created_at);
     }
     console.log(data);
-    data.sort((a, b) => {return a.name>b.name?1:-1}); 
+    data.sort((a, b) => { return a.name > b.name ? 1 : -1 });
     setData(data);
   }
   async function deleteUser(user_id, otp) {
